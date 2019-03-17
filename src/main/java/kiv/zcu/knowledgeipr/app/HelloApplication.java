@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.app;
 
 import kiv.zcu.knowledgeipr.rest.QueryRestService;
+import kiv.zcu.knowledgeipr.rest.exception.ApiExceptionHandler;
 
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ public class HelloApplication extends Application {
     public HelloApplication() {
         // Register our hello service
         singletons.add(new QueryRestService());
+        singletons.add(new ApiExceptionHandler());
     }
 
     @Override

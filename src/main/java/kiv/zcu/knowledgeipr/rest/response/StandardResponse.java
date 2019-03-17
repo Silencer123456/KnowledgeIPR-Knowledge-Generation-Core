@@ -1,6 +1,7 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.rest.response;
 
 import com.google.gson.JsonElement;
+import kiv.zcu.knowledgeipr.core.StatusResponse;
 
 /**
  * Holds the data for the response

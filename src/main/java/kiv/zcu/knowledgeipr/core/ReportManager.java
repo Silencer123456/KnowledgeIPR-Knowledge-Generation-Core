@@ -1,5 +1,7 @@
 package kiv.zcu.knowledgeipr.core;
 
+import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+
 import java.util.List;
 
 /**
