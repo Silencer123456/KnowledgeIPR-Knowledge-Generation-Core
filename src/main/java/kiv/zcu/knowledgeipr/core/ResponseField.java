@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.core;
 
 public enum ResponseField {
-    DOCUMENT_ID("documentId"),
+    DOCUMENT_ID("number"),
     TITLE("title"),
     ABSTRACT("abstract"),
     YEAR("year"),

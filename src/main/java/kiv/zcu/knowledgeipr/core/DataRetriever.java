@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoQueryException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -18,7 +19,6 @@ import static com.mongodb.client.model.Projections.include;
 /**
  * Accesses the source database, runs queries on it and gets
  * a results set back.
- * TODO: Encompass data analysis
  */
 public class DataRetriever {
 
@@ -41,7 +41,7 @@ public class DataRetriever {
      * @param limit - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    public List<DbRecord> runQuery(Query query, int page, final int limit) {
+    public List<DbRecord> runQuery(Query query, int page, final int limit) throws MongoQueryException {
 
         String sourceType = query.getSourceType();
 
@@ -68,36 +68,33 @@ public class DataRetriever {
      * @param limit          - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    private List<DbRecord> doSearch(Bson filter, String collectionName, int limit, int page) {
+    private List<DbRecord> doSearch(Bson filter, String collectionName, int limit, int page) throws MongoQueryException {
         MongoCollection<Document> collection = database.getCollection(collectionName);
         List<DbRecord> dbRecords = new ArrayList<>();
-        try {
-            MongoCursor<Document> cursor;
-            cursor = collection
-                    //.find(Filters.text(query.getQuery()))
-                    .find(filter)
-                    .skip(page > 0 ? ((page-1) * limit) : 0)
-                    .limit(limit)
-                    .projection(fields(//Projections.metaTextScore("score"),
-                            include(
-                            ResponseField.TITLE.toString(),
-                            ResponseField.YEAR.toString(),
-                            ResponseField.ABSTRACT.toString(),
-                            ResponseField.AUTHORS.toString(),
-                            ResponseField.OWNERS.toString(),
-                            ResponseField.DATA_SOURCE.toString())))
-                    //.sort(Sorts.metaTextScore("score"))
-                    .iterator();
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
-                dbRecords.add(new DbRecord(document));
-            }
 
-            cursor.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        MongoCursor<Document> cursor;
+        cursor = collection
+                //.find(Filters.text(query.getQuery()))
+                .find(filter)
+                .skip(page > 0 ? ((page-1) * limit) : 0)
+                .limit(limit)
+                .projection(fields(//Projections.metaTextScore("score"),
+                        include(
+                        ResponseField.TITLE.toString(),
+                        ResponseField.YEAR.toString(),
+                        ResponseField.ABSTRACT.toString(),
+                        ResponseField.AUTHORS.toString(),
+                        ResponseField.OWNERS.toString(),
+                        ResponseField.DOCUMENT_ID.toString(),
+                        ResponseField.DATA_SOURCE.toString())))
+                //.sort(Sorts.metaTextScore("score"))
+                .iterator();
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
+            dbRecords.add(new DbRecord(document));
         }
+
+        cursor.close();
 
         /*List<knowledgeipr.DbRecord> filteredDbRecords = new ArrayList<>();
         for (knowledgeipr.DbRecord record : dbRecords) {

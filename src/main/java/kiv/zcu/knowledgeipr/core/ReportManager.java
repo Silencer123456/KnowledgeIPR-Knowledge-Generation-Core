@@ -1,5 +1,8 @@
 package kiv.zcu.knowledgeipr.core;
 
+import com.google.gson.JsonObject;
+import com.mongodb.MongoQueryException;
+import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 
 import java.util.List;
@@ -17,6 +20,7 @@ public class ReportManager {
 
     public ReportManager(ReportCreator reportCreator) {
         dataRetriever = new DataRetriever();
+
         this.reportCreator = reportCreator;
     }
 
@@ -27,10 +31,20 @@ public class ReportManager {
      * @param page - page number to display
      * @return Response object encapsulating the report.
      */
-    public StandardResponse processQuery(Query query, int page) {
+    public StandardResponse processQuery(Query query, int page, int limit) {
         // TODO: nejdriv se dotazat do databaze, jestli dotaz uz byl polozen
-        final int limit = 10;
-        List<DbRecord> dbRecordList = dataRetriever.runQuery(query, page, limit);
+
+        List<DbRecord> dbRecordList = null;
+        try {
+            dbRecordList = dataRetriever.runQuery(query, page, limit);
+        } catch (MongoQueryException e) {
+            e.printStackTrace();
+
+            StandardResponse response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
+            response.setSearchedCount(getCountForDataSource(query.getSourceType()));
+            response.setReturnedCount(limit);
+        }
+
         Report report = reportCreator.createReport(dbRecordList);
 
         // TODO: ulozit dotaz s reportem do db
@@ -42,7 +56,6 @@ public class ReportManager {
         return response;
     }
 
-    // TODO: Temporary solution
     private int getCountForDataSource(String source) {
         int count = 0;
         if (source.equals("publication")) {
