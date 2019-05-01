@@ -1,8 +1,10 @@
 package kiv.zcu.knowledgeipr.core;
 
+/**
+ * Represents a single query
+ */
 public class Query {
     private String sourceType;
-    //private Map<String, Integer> filter;
     private String filter;
     private String query;
 

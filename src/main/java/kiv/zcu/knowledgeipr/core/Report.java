@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Contains the returned data ready to be sent to the client.
- * Plus contains summary.....
+ * Plus contains summary etc.
  */
 public class Report {
     private String summary = "Test summary";
@@ -24,13 +24,17 @@ public class Report {
         return summary;
     }
 
+    /**
+     * Returns a JSON representation of the object
+     *
+     * @return - Json element of the object
+     */
     public JsonElement getAsJson() {
         Gson gson = new Gson();
         JsonObject dataRoot = new JsonObject();
 
         JsonArray array = new JsonArray();
         for (DbRecord record : records) {
-            //JsonElement elem = gson.toJsonTree(record.getDocument().toJson());
             JsonObject o = new JsonParser().parse(record.getDocument().toJson()).getAsJsonObject();
             array.add(o);
         }

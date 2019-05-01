@@ -4,17 +4,29 @@ import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.Query;
 import kiv.zcu.knowledgeipr.core.ReportCreator;
 import kiv.zcu.knowledgeipr.core.ReportManager;
-import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
+import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+/**
+ * Service for handling incoming REST requests
+ */
 @Path("/")
 public class QueryRestService {
 
-    private ReportManager reportGenerator = new ReportManager(new ReportCreator()); // TODO: change to concrete impl...
+    private ReportManager reportGenerator = new ReportManager(new ReportCreator());
 
+    /**
+     * Accepts a query, processes it and
+     * returns a set of results as JSON to the caller.
+     *
+     * @param page  - page of results to return
+     * @param query - request query
+     * @return
+     * @throws ApiException
+     */
     @POST
     @Path("/query/{page}")
     @Consumes("application/json")
@@ -26,11 +38,9 @@ public class QueryRestService {
 
         int limit = 30;
 
-        //Query query = new Gson().fromJson(request.body(), Query.class);
         StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
 
         return Response.ok().entity(new Gson().toJson(standardResponse)).build();
-        //return Response.status(200).entity("GOOOOD").build();
     }
 
     @POST
@@ -41,16 +51,8 @@ public class QueryRestService {
         if (limit > 1000) {
             throw new ApiException("Limit cannot exceed 1000");
         }
-        //Query query = new Gson().fromJson(request.body(), Query.class);
         StandardResponse standardResponse = reportGenerator.processQuery(query, 1, limit);
 
         return Response.ok().entity(new Gson().toJson(standardResponse)).build();
-        //return Response.status(200).entity("GOOOOD").build();
-    }
-
-    @GET
-    @Path("/test")
-    public Response test() {
-        return Response.ok().entity("OKOKOKOKOK").build();
     }
 }

@@ -19,6 +19,13 @@ public class DbManager {
 
     private Connection connection;
 
+    /**
+     * Creates connection to the database
+     *
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public Connection createConnection() throws SQLException, ClassNotFoundException {
         String configPath = "mydb.cfg";
         Properties prop = new Properties();

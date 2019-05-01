@@ -96,19 +96,6 @@ public class DataRetriever {
 
         cursor.close();
 
-        /*List<knowledgeipr.DbRecord> filteredDbRecords = new ArrayList<>();
-        for (knowledgeipr.DbRecord record : dbRecords) {
-            for (Map.Entry<String, Integer> entry : query.getFilter().entrySet()) {
-                if (entry.getValue() == 1) {
-                    String val = (String) record.getDocument().get(entry.getKey());
-                    if (val != null && val.contains(query.getQuery())) {
-                        filteredDbRecords.add(new knowledgeipr.DbRecord(record.getDocument()));
-                        break;
-                    }
-                }
-            }
-        }*/
-
         return dbRecords;
     }
 }

@@ -32,8 +32,6 @@ public class ReportManager {
      * @return Response object encapsulating the report.
      */
     public StandardResponse processQuery(Query query, int page, int limit) {
-        // TODO: nejdriv se dotazat do databaze, jestli dotaz uz byl polozen
-
         List<DbRecord> dbRecordList = null;
         try {
             dbRecordList = dataRetriever.runQuery(query, page, limit);
@@ -47,9 +45,7 @@ public class ReportManager {
 
         Report report = reportCreator.createReport(dbRecordList);
 
-        // TODO: ulozit dotaz s reportem do db
-
-        StandardResponse response = new StandardResponse(StatusResponse.SUCCESS, "Everything fine", report.getAsJson());
+        StandardResponse response = new StandardResponse(StatusResponse.SUCCESS, "OK", report.getAsJson());
         response.setSearchedCount(getCountForDataSource(query.getSourceType()));
         response.setReturnedCount(limit);
 
