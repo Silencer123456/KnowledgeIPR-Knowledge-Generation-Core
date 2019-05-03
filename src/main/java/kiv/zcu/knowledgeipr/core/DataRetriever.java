@@ -9,8 +9,8 @@ import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -39,6 +39,7 @@ public class DataRetriever {
 
     private void setup() {
         loadConfig();
+        LOGGER.info("Connecting to the MongoDB database " + dbName);
         MongoClient mongoClient = new MongoClient();
         database = mongoClient.getDatabase(dbName);
     }
@@ -49,7 +50,9 @@ public class DataRetriever {
     private void loadConfig() {
         Properties prop = new Properties();
         try {
-            prop.load(new FileInputStream(MONGO_CONFIG_PATH));
+            InputStream inputStream = getClass()
+                    .getClassLoader().getResourceAsStream(MONGO_CONFIG_PATH);
+            prop.load(inputStream);
             dbName = prop.getProperty("db_name");
         } catch (IOException e) {
             LOGGER.severe("Unable to find " + MONGO_CONFIG_PATH + " file. Using default " +
@@ -67,7 +70,7 @@ public class DataRetriever {
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
     public List<DbRecord> runQuery(Query query, int page, final int limit) throws MongoQueryException {
-
+        LOGGER.info("Running query " + query.getQuery() + ", page: " + page + ", limit: " + limit);
         String sourceType = query.getSourceType();
 
         Bson filter;
