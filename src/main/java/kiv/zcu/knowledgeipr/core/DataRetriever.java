@@ -9,8 +9,12 @@ import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import static com.mongodb.client.model.Projections.fields;
@@ -21,6 +25,11 @@ import static com.mongodb.client.model.Projections.include;
  * a results set back.
  */
 public class DataRetriever {
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
+    private static final String MONGO_CONFIG_PATH = "mongo-config.cfg";
+
+    private String dbName = "diploma";
 
     MongoDatabase database;
 
@@ -29,8 +38,24 @@ public class DataRetriever {
     }
 
     private void setup() {
+        loadConfig();
         MongoClient mongoClient = new MongoClient();
-        database = mongoClient.getDatabase("diploma");
+        database = mongoClient.getDatabase(dbName);
+    }
+
+    /**
+     * Loads configuration of the MongoDB connection
+     */
+    private void loadConfig() {
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream(MONGO_CONFIG_PATH));
+            dbName = prop.getProperty("db_name");
+        } catch (IOException e) {
+            LOGGER.severe("Unable to find " + MONGO_CONFIG_PATH + " file. Using default " +
+                    "database: " + dbName);
+            e.printStackTrace();
+        }
     }
 
     /**
