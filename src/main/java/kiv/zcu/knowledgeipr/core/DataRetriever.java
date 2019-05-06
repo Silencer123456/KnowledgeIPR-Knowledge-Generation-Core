@@ -52,8 +52,13 @@ public class DataRetriever {
         try {
             InputStream inputStream = getClass()
                     .getClassLoader().getResourceAsStream(MONGO_CONFIG_PATH);
-            prop.load(inputStream);
-            dbName = prop.getProperty("db_name");
+            if (inputStream != null) {
+                prop.load(inputStream);
+                dbName = prop.getProperty("db_name");
+                LOGGER.info("MongoDB configuration file loaded.");
+            } else {
+                LOGGER.severe("The MongoDB configuration file not found. Setting database to default: " + dbName);
+            }
         } catch (IOException e) {
             LOGGER.severe("Unable to find " + MONGO_CONFIG_PATH + " file. Using default " +
                     "database: " + dbName);
