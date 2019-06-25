@@ -5,10 +5,10 @@ import kiv.zcu.knowledgeipr.core.Query;
 import kiv.zcu.knowledgeipr.core.ReportCreator;
 import kiv.zcu.knowledgeipr.core.ReportManager;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
+import kiv.zcu.knowledgeipr.rest.response.Response;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 /**
  * Service for handling incoming REST requests
@@ -31,41 +31,46 @@ public class QueryRestService {
     @Path("/query/{page}")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response query(@PathParam("page") int page, Query query) throws ApiException {
+    public javax.ws.rs.core.Response query(@PathParam("page") int page, Query query) throws ApiException {
         if (page <= 0) {
-            throw new ApiException("Page cannot be <= 0");
+            throw new ApiException(new Response(StatusResponse.ERROR, "Page cannot be <= 0"));
+        }
+        if (page > 1000) {
+            throw new ApiException(new Response(StatusResponse.ERROR, "Page cannot be > 1000"));
         }
 
-        int limit = 30;
-
-        StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
-
-        return Response.ok().entity(new Gson().toJson(standardResponse)).build();
+        return processQueryInit(query, page);
     }
 
     @POST
     @Path("/query")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response query(Query query) throws ApiException {
-        int page = 1;
-        int limit = 30;
-
-        StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
-
-        return Response.ok().entity(new Gson().toJson(standardResponse)).build();
+    public javax.ws.rs.core.Response query(Query query) throws ApiException {
+        return processQueryInit(query, 1); // Use default 1
     }
 
     @POST
     @Path("/queryLimit/{limit}")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response queryWithLimit(@PathParam("limit") int limit, Query query) throws ApiException {
+    public javax.ws.rs.core.Response queryWithLimit(@PathParam("limit") int limit, Query query) throws ApiException {
         if (limit > 1000) {
-            throw new ApiException("Limit cannot exceed 1000");
+            throw new ApiException(new Response(StatusResponse.ERROR, "Limit cannot exceed 1000"));
         }
         StandardResponse standardResponse = reportGenerator.processQuery(query, 1, limit);
 
-        return Response.ok().entity(new Gson().toJson(standardResponse)).build();
+        return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
+    }
+
+    private javax.ws.rs.core.Response processQueryInit(Query query, int page) throws ApiException {
+        if (query.getQuery() == null || query.getSourceType() == null) {
+            throw new ApiException(new Response(StatusResponse.ERROR, "Wrong query format."));
+        }
+
+        int limit = 30;
+        StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
+
+        return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }
 }

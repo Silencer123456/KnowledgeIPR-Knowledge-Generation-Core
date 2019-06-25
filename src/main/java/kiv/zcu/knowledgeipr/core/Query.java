@@ -26,6 +26,7 @@ public class Query {
      * @return true, if we want to restrict the search, else false
      */
     public boolean isSelectiveSearch() {
+        if (filter == null) return false;
         return !filter.isEmpty();
     }
 }

@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -74,10 +75,14 @@ public class DataRetriever {
      * @param limit - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    public List<DbRecord> runQuery(Query query, int page, final int limit) throws MongoQueryException {
+    public List<DbRecord> runQuery(Query query, int page, final int limit) throws MongoQueryException, UserQueryException {
         LOGGER.info("Running query " + query.getQuery() + ", page: " + page + ", limit: " + limit);
         String sourceType = query.getSourceType();
+        if (!sourceType.equals("patent") && !sourceType.equals("publication")) {
+            throw new UserQueryException("Unknown data source type: " + sourceType + ". Only 'patent' and 'publication' allowed");
+        }
 
+        //    sourceType = "test";
         Bson filter;
         if (query.isSelectiveSearch()) {
             Pattern regex = Pattern.compile(query.getQuery(), Pattern.CASE_INSENSITIVE);

@@ -1,18 +1,29 @@
 package kiv.zcu.knowledgeipr.rest.exception;
 
+import kiv.zcu.knowledgeipr.rest.response.Response;
+
 import java.io.Serializable;
 
 public class ApiException extends Exception implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    public ApiException() {
-        super();
+    private Response errorResponse;
+
+    public ApiException(Response errorResponse) {
+        super(errorResponse.getMessage());
+
+        this.errorResponse = errorResponse;
     }
-    public ApiException(String msg)   {
-        super(msg);
+
+    public ApiException(Response errorResponse, Exception e) {
+        super(errorResponse.getMessage(), e);
+
+        this.errorResponse = errorResponse;
+
     }
-    public ApiException(String msg, Exception e)  {
-        super(msg, e);
+
+    public Response getErrorResponse() {
+        return errorResponse;
     }
 }

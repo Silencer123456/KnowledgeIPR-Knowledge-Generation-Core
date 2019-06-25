@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core;
 import com.google.gson.JsonObject;
 import com.mongodb.MongoQueryException;
 import kiv.zcu.knowledgeipr.rest.StatusResponse;
+import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 
 import java.util.List;
@@ -32,22 +33,22 @@ public class ReportManager {
      * @return Response object encapsulating the report.
      */
     public StandardResponse processQuery(Query query, int page, int limit) {
+        StandardResponse response;
+
         List<DbRecord> dbRecordList = null;
         try {
             dbRecordList = dataRetriever.runQuery(query, page, limit);
-        } catch (MongoQueryException e) {
-            e.printStackTrace();
 
-            StandardResponse response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
+            Report report = reportCreator.createReport(dbRecordList);
+
+            response = new StandardResponse(StatusResponse.SUCCESS, "OK", report.getAsJson());
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
             response.setReturnedCount(limit);
+
+        } catch (MongoQueryException | UserQueryException e) {
+            e.printStackTrace();
+            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
         }
-
-        Report report = reportCreator.createReport(dbRecordList);
-
-        StandardResponse response = new StandardResponse(StatusResponse.SUCCESS, "OK", report.getAsJson());
-        response.setSearchedCount(getCountForDataSource(query.getSourceType()));
-        response.setReturnedCount(limit);
 
         return response;
     }
