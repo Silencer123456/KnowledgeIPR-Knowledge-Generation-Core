@@ -32,10 +32,23 @@ public class QueryRestService {
     @Consumes("application/json")
     @Produces("application/json")
     public Response query(@PathParam("page") int page, Query query) throws ApiException {
-        if (page == 0) {
-            throw new ApiException("ID cannot be 0");
+        if (page <= 0) {
+            throw new ApiException("Page cannot be <= 0");
         }
 
+        int limit = 30;
+
+        StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
+
+        return Response.ok().entity(new Gson().toJson(standardResponse)).build();
+    }
+
+    @POST
+    @Path("/query")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response query(Query query) throws ApiException {
+        int page = 1;
         int limit = 30;
 
         StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
