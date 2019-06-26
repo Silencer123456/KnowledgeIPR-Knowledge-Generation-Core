@@ -87,38 +87,38 @@ public class DataRetriever {
 
         List<DbRecord> resultRecords = new ArrayList<>();
 
-        Bson tmp;
-
-        for (Map.Entry<String, String> filterEntry : query.getFilters().entrySet()) {
-            tmp = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
-        }
-
-        Bson filter = Filters.and(
-                Filters.text(query.getTextQuery()),
-                Filters.eq("test", "hodnota"),
-                Filters.eq("test2", "hodnota2")
-                );
+//        Bson tmp;
 //
-//        if (query.isSelectiveSearch()) {
-//            LOGGER.info("Running selective search on field " + query.getFilter());
-//            //Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE); // Regex is very slow
-//            //filter = Filters.eq(query.getFilter(), regex);
-//
-//            LOGGER.info("Running regular search");
-//            resultRecords = doRegularSearch(sourceType, query.getFilter(), query.getTextQuery());
-//
-//            /*if (resultRecords.isEmpty()) {
-//                LOGGER.info("No results found by regular seach, trying text and regex search");
-//                Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE);
-//                Bson filter = Filters.and(Filters.text(query.getTextQuery()), Filters.eq(query.getFilter(), regex));
-//                resultRecords = doTextSearch(sourceType, filter, limit, page);
-//            }*/
-//
-//        } else {
-//            LOGGER.info("Running non selective search. Using text index");
-//            Bson filter = Filters.text(query.getTextQuery());
-//            resultRecords = doTextSearch(sourceType, filter, limit, page);
+//        for (Map.Entry<String, String> filterEntry : query.getFilters().entrySet()) {
+//            tmp = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
 //        }
+//
+//        Bson filter = Filters.and(
+//                Filters.text(query.getTextQuery()),
+//                Filters.eq("test", "hodnota"),
+//                Filters.eq("test2", "hodnota2")
+//                );
+
+        if (query.isSelectiveSearch()) {
+            LOGGER.info("Running selective search on field " + query.getFilter());
+            //Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE); // Regex is very slow
+            //filter = Filters.eq(query.getFilter(), regex);
+
+            LOGGER.info("Running regular search");
+            resultRecords = doRegularSearch(sourceType, query.getFilter(), query.getTextQuery());
+
+            /*if (resultRecords.isEmpty()) {
+                LOGGER.info("No results found by regular seach, trying text and regex search");
+                Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE);
+                Bson filter = Filters.and(Filters.text(query.getTextQuery()), Filters.eq(query.getFilter(), regex));
+                resultRecords = doTextSearch(sourceType, filter, limit, page);
+            }*/
+
+        } else {
+            LOGGER.info("Running non selective search. Using text index");
+            Bson filter = Filters.text(query.getTextQuery());
+            resultRecords = doTextSearch(sourceType, filter, limit, page);
+        }
 
         return resultRecords;
     }

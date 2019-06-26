@@ -25,9 +25,15 @@ public class Query {
     }
 
 
-    //    public String getFilter() {
-//        return filter;
-//    }
+    //TODO: TMP
+    public String getFilter() {
+        for (Map.Entry<String, String> entry : filters.entrySet()) {
+            if (!entry.getKey().equals("text")) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
 //
 //    public String getTextQuery() {
 //        return query;
@@ -38,8 +44,9 @@ public class Query {
 //     * the search to specific field)
 //     * @return true, if we want to restrict the search, else false
 //     */
-//    public boolean isSelectiveSearch() {
-//        if (filter == null) return false;
-//        return !filter.isEmpty();
-//    }
+    // TODO temporary
+    public boolean isSelectiveSearch() {
+        if (filters == null) return false;
+        return filters.get("text") == null || filters.size() != 1;
+    }
 }
