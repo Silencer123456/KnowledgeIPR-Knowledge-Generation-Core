@@ -8,7 +8,8 @@ public enum ResponseField {
     AUTHORS("authors"),
     AUTHORS_NAME("authors.name"),
     OWNERS("owners"),
-    DATA_SOURCE("dataSource");
+    DATA_SOURCE("dataSource"),
+    PUBLISHER("publisher");
 
     final String value;
 

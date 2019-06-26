@@ -15,9 +15,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Filter;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
@@ -82,18 +84,47 @@ public class DataRetriever {
             throw new UserQueryException("Unknown data source type: " + sourceType + ". Only 'patent' and 'publication' allowed");
         }
 
-        //    sourceType = "test";
-        Bson filter;
+        //sourceType = "test";
+
+        List<DbRecord> resultRecords;
+
         if (query.isSelectiveSearch()) {
-            Pattern regex = Pattern.compile(query.getQuery(), Pattern.CASE_INSENSITIVE);
-            filter = Filters.eq(query.getFilter(), regex);
+            LOGGER.info("Running selective search on field " + query.getFilter());
+            //Pattern regex = Pattern.compile(query.getQuery(), Pattern.CASE_INSENSITIVE); // Regex is very slow
+            //filter = Filters.eq(query.getFilter(), regex);
+
+            LOGGER.info("Running regular search");
+            resultRecords = doRegularSearch(sourceType, query.getFilter(), query.getQuery());
+
+            /*if (resultRecords.isEmpty()) {
+                LOGGER.info("No results found by regular seach, trying text and regex search");
+                Pattern regex = Pattern.compile(query.getQuery(), Pattern.CASE_INSENSITIVE);
+                Bson filter = Filters.and(Filters.text(query.getQuery()), Filters.eq(query.getFilter(), regex));
+                resultRecords = doTextSearch(sourceType, filter, limit, page);
+            }*/
+
         } else {
-            filter = Filters.text(query.getQuery());
+            LOGGER.info("Running non selective search. Using text index");
+            Bson filter = Filters.text(query.getQuery());
+            resultRecords = doTextSearch(sourceType, filter, limit, page);
         }
 
-        List<DbRecord> resultRecords = doSearch(filter, sourceType, limit, page);
-
         return resultRecords;
+    }
+
+    private List<DbRecord> doRegularSearch(String collectionName, String fieldName, String value) {
+        MongoCollection<Document> collection = database.getCollection(collectionName);
+        List<DbRecord> dbRecords = new ArrayList<>();
+
+        MongoCursor<Document> cursor = collection.find(eq(fieldName, value))
+                .projection(getProjectionFields())
+                .iterator();
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
+            dbRecords.add(new DbRecord(document));
+        }
+
+        return dbRecords;
     }
 
     /**
@@ -106,25 +137,16 @@ public class DataRetriever {
      * @param limit          - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    private List<DbRecord> doSearch(Bson filter, String collectionName, int limit, int page) throws MongoQueryException {
+    private List<DbRecord> doTextSearch(String collectionName, Bson filter, int limit, int page) throws MongoQueryException {
         MongoCollection<Document> collection = database.getCollection(collectionName);
         List<DbRecord> dbRecords = new ArrayList<>();
 
         MongoCursor<Document> cursor;
         cursor = collection
-                //.find(Filters.text(query.getQuery()))
                 .find(filter)
                 .skip(page > 0 ? ((page-1) * limit) : 0)
                 .limit(limit)
-                .projection(fields(//Projections.metaTextScore("score"),
-                        include(
-                        ResponseField.TITLE.toString(),
-                        ResponseField.YEAR.toString(),
-                        ResponseField.ABSTRACT.toString(),
-                        ResponseField.AUTHORS.toString(),
-                        ResponseField.OWNERS.toString(),
-                        ResponseField.DOCUMENT_ID.toString(),
-                        ResponseField.DATA_SOURCE.toString())))
+                .projection(getProjectionFields())
                 //.sort(Sorts.metaTextScore("score"))
                 .iterator();
         while (cursor.hasNext()) {
@@ -135,6 +157,24 @@ public class DataRetriever {
         cursor.close();
 
         return dbRecords;
+    }
+
+    /**
+     * Returns a list of fields to be projected in the Mongo documents
+     * @return - BSON representation of projected fields
+     */
+    private Bson getProjectionFields() {
+        return fields(
+                include(
+                        //Projections.metaTextScore("score"),
+                        ResponseField.TITLE.toString(),
+                        ResponseField.YEAR.toString(),
+                        ResponseField.ABSTRACT.toString(),
+                        ResponseField.AUTHORS.toString(),
+                        ResponseField.OWNERS.toString(),
+                        ResponseField.DOCUMENT_ID.toString(),
+                        ResponseField.PUBLISHER.toString(),
+                        ResponseField.DATA_SOURCE.toString()));
     }
 }
 
