@@ -64,7 +64,7 @@ public class QueryRestService {
     }
 
     private javax.ws.rs.core.Response processQueryInit(Query query, int page) throws ApiException {
-        if (query.getQuery() == null || query.getSourceType() == null) {
+        if (query.getFilters() == null || query.getFilters().isEmpty() || query.getSourceType() == null) {
             throw new ApiException(new Response(StatusResponse.ERROR, "Wrong query format."));
         }
 
