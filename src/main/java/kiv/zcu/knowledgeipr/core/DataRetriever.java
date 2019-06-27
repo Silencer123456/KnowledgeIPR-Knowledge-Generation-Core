@@ -103,6 +103,24 @@ public class DataRetriever {
             }
         }
 
+        for (Map.Entry<String, Map<String, Integer>> optionEntry : query.getConditions().entrySet()) {
+            if (optionEntry.getValue() == null) continue;
+
+            Bson tmp;
+            if (optionEntry.getValue().containsKey("$gt")) {
+                tmp = Filters.gt(optionEntry.getKey(), optionEntry.getValue().get("$gt"));
+            }
+            else if (optionEntry.getValue().containsKey("$lt")) {
+                tmp = Filters.lt(optionEntry.getKey(), optionEntry.getValue().get("$lt"));
+            }
+            else {
+                tmp = Filters.and();
+            }
+
+            BsonDocument docToAppend = tmp.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
+            bsonDocument.append(optionEntry.getKey(), docToAppend.get(optionEntry.getKey()));
+        }
+
         LOGGER.info("Running query: " + bsonDocument);
         if (bsonDocument.isEmpty()) {
             return Collections.emptyList();

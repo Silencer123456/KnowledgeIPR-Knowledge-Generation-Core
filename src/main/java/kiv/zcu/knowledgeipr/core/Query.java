@@ -8,6 +8,7 @@ import java.util.Map;
 public class Query {
     private String sourceType;
     private Map<String, String> filters;
+    private Map<String, Map<String, Integer>> conditions;
 
     public String getSourceType() {
         return sourceType;
@@ -19,5 +20,9 @@ public class Query {
 
     public String getTextQuery() {
         return filters.get("text");
+    }
+
+    public Map<String, Map<String, Integer>> getConditions() {
+        return conditions;
     }
 }
