@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -85,7 +86,31 @@ public class DataRetriever {
 
         //sourceType = "test";
 
-        List<DbRecord> resultRecords = new ArrayList<>();
+        Map<String, String> filters = query.getFilters();
+
+        Bson filter = Filters.and(); // Start with empty and, and append eq in the loop
+        BsonDocument bsonDocument = filter.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
+        for (Map.Entry<String, String> filterEntry : filters.entrySet()) {
+            if (!ResponseField.isValid(filterEntry.getKey())) {
+                LOGGER.warning("Field " + filterEntry.getKey() + "is not valid, skipping.");
+                continue;
+            }
+            Bson tmp;
+            if (filterEntry.getKey().equals("text")) {
+                tmp = Filters.text(filterEntry.getValue());
+            } else {
+                tmp = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
+            }
+
+            BsonDocument docToAppend = tmp.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
+            bsonDocument.append(filterEntry.getKey(), docToAppend.get(filterEntry.getKey()));
+        }
+
+        LOGGER.info("Running query: " + bsonDocument);
+
+        List<DbRecord> resultRecords = doTextSearch(sourceType, bsonDocument, limit, page);
+
+
 
 //        Bson tmp;
 //
@@ -99,26 +124,26 @@ public class DataRetriever {
 //                Filters.eq("test2", "hodnota2")
 //                );
 
-        if (query.isSelectiveSearch()) {
-            LOGGER.info("Running selective search on field " + query.getFilter());
-            //Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE); // Regex is very slow
-            //filter = Filters.eq(query.getFilter(), regex);
-
-            LOGGER.info("Running regular search");
-            resultRecords = doRegularSearch(sourceType, query.getFilter(), query.getTextQuery());
-
-            /*if (resultRecords.isEmpty()) {
-                LOGGER.info("No results found by regular seach, trying text and regex search");
-                Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE);
-                Bson filter = Filters.and(Filters.text(query.getTextQuery()), Filters.eq(query.getFilter(), regex));
-                resultRecords = doTextSearch(sourceType, filter, limit, page);
-            }*/
-
-        } else {
-            LOGGER.info("Running non selective search. Using text index");
-            Bson filter = Filters.text(query.getTextQuery());
-            resultRecords = doTextSearch(sourceType, filter, limit, page);
-        }
+//        if (query.isSelectiveSearch()) {
+//            LOGGER.info("Running selective search on field " + query.getFilter());
+//            //Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE); // Regex is very slow
+//            //filter = Filters.eq(query.getFilter(), regex);
+//
+//            LOGGER.info("Running regular search");
+//            resultRecords = doRegularSearch(sourceType, query.getFilter(), query.getTextQuery());
+//
+//            /*if (resultRecords.isEmpty()) {
+//                LOGGER.info("No results found by regular seach, trying text and regex search");
+//                Pattern regex = Pattern.compile(query.getTextQuery(), Pattern.CASE_INSENSITIVE);
+//                Bson filter = Filters.and(Filters.text(query.getTextQuery()), Filters.eq(query.getFilter(), regex));
+//                resultRecords = doTextSearch(sourceType, filter, limit, page);
+//            }*/
+//
+//        } else {
+//            LOGGER.info("Running non selective search. Using text index");
+//            Bson filter = Filters.text(query.getTextQuery());
+//            resultRecords = doTextSearch(sourceType, filter, limit, page);
+//        }
 
         return resultRecords;
     }

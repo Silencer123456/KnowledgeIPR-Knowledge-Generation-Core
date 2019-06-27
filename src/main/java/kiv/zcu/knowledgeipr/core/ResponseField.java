@@ -25,4 +25,14 @@ public enum ResponseField {
     public String toString() {
         return this.value;
     }
+
+    public static boolean isValid(String s) {
+        for (ResponseField field : ResponseField.values()) {
+            if (field.name().equals(s)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
