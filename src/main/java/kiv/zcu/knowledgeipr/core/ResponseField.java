@@ -28,7 +28,7 @@ public enum ResponseField {
 
     public static boolean isValid(String s) {
         for (ResponseField field : ResponseField.values()) {
-            if (field.name().equals(s)) {
+            if (field.value.equals(s)) {
                 return true;
             }
         }
