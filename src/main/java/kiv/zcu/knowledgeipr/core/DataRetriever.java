@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -204,21 +205,20 @@ public class DataRetriever {
         MongoCollection<Document> collection = database.getCollection(collectionName);
         List<DbRecord> dbRecords = new ArrayList<>();
 
-        MongoCursor<Document> cursor;
-        cursor = collection
+        FindIterable<Document> iterable = collection
                 .find(filter)
                 .skip(page > 0 ? ((page - 1) * limit) : 0)
                 .limit(limit)
                 .projection(getProjectionFields())
-                .maxTime(100, TimeUnit.SECONDS)
+                .maxTime(100, TimeUnit.SECONDS);
                 //.sort(Sorts.metaTextScore("score"))
-                .iterator();
-        while (cursor.hasNext()) {
-            Document document = cursor.next();
-            dbRecords.add(new DbRecord(document));
-        }
 
-        cursor.close();
+        try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
+            while (cursor.hasNext()) {
+                Document document = cursor.next();
+                dbRecords.add(new DbRecord(document));
+            }
+        }
 
         return dbRecords;
     }
