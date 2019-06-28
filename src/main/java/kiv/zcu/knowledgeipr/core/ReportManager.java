@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core;
 
 import com.google.gson.JsonObject;
+import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
@@ -35,7 +36,7 @@ public class ReportManager {
     public StandardResponse processQuery(Query query, int page, int limit) {
         StandardResponse response;
 
-        List<DbRecord> dbRecordList = null;
+        List<DbRecord> dbRecordList;
         try {
             dbRecordList = dataRetriever.runQuery(query, page, limit);
 
@@ -45,7 +46,7 @@ public class ReportManager {
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
             response.setReturnedCount(limit);
 
-        } catch (MongoQueryException | UserQueryException e) {
+        } catch (MongoQueryException | UserQueryException | MongoExecutionTimeoutException e) {
             e.printStackTrace();
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
         }
