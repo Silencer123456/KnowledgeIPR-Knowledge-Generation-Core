@@ -68,21 +68,19 @@ public class DataRetriever {
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
     public List<DbRecord> runQuery(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
-        LOGGER.info("Running query " + query.getTextQuery() + ", page: " + page + ", limit: " + limit);
-
         String sourceType = query.getSourceType();
 
         isValidSourceType(sourceType);
 
-        BsonDocument bsonDocument = new BsonDocument();
+        BsonDocument filter = new BsonDocument();
 
-        addFilters(query.getFilters(), bsonDocument);
+        addConditionsFilters(query.getConditions(), filter);
 
-        addConditionsFilters(query.getConditions(), bsonDocument);
+        addFilters(query.getFilters(), filter, true);
 
-        LOGGER.info("Running query: " + bsonDocument.toJson());
+        LOGGER.info("Running query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
 
-        return bsonDocument.isEmpty() ? Collections.emptyList() : doTextSearch(sourceType, bsonDocument, limit, page);
+        return filter.isEmpty() ? Collections.emptyList() : doSearch(sourceType, filter, limit, page, query.getOptions());
     }
 
     /**
@@ -102,8 +100,10 @@ public class DataRetriever {
      *
      * @param filters      - list of filters from the query, which will be converted to Mongo filters
      * @param bsonDocument - Bson document, to which add the created filters
+     * @param useRegex     - Specifies whether to use regex search. Regex search enables searching parts of words.
+     *                     If the value is false, only exact match search will be performed
      */
-    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument) {
+    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument, boolean useRegex) {
         if (filters == null) return;
         boolean textFilterCreated = false;
 
@@ -111,6 +111,7 @@ public class DataRetriever {
             Bson tmp = Filters.text(filters.get("$text"));
             appendBsonDoc(bsonDocument, tmp, "$text");
             textFilterCreated = true;
+            filters.remove("$text");
         }
 
         for (Map.Entry<String, String> filterEntry : filters.entrySet()) {
@@ -119,9 +120,7 @@ public class DataRetriever {
                 LOGGER.warning("Field " + filterEntry.getKey() + " is not valid, skipping.");
                 continue;
             }
-            // tmp = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
             // TODO: Vyresit pripad duplikace fieldu
-
             Bson tmp;
             // If the text filter was not specified in the query, we create one from the current field
             if (!textFilterCreated && isKeyTextIndexed(filterEntry.getKey())) {
@@ -131,19 +130,28 @@ public class DataRetriever {
             }
 
             Pattern regex = Pattern.compile(filterEntry.getValue(), Pattern.CASE_INSENSITIVE);
-            tmp = Filters.regex(filterEntry.getKey(), regex);
+            Bson r = Filters.regex(filterEntry.getKey(), regex);
+            Bson eq = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
+            tmp = Filters.or(eq, r);
 
-            appendBsonDoc(bsonDocument, tmp, filterEntry.getKey());
+            //appendBsonDoc(bsonDocument, tmp, filterEntry.getKey());
+            appendBsonDoc(bsonDocument, tmp, "$or");
         }
     }
 
+    /**
+     * Returns true if the key is part of the text index
+     * TODO: Dynamically read from Mongo
+     *
+     * @param key - Key to search
+     * @return true if the key is part of text index, false otherwise
+     */
     private boolean isKeyTextIndexed(String key) {
         //TODO: get info directly from Mongo
         return key.equals("title") ||
                 key.equals("authors.name") ||
                 key.equals("owners.name") ||
-                key.equals("abstract") ||
-                key.equals("number");
+                key.equals("abstract");
     }
 
     /**
@@ -190,6 +198,7 @@ public class DataRetriever {
     }
 
     // TODO: parametrize the MAX time of query; Check if throwing an error closes cursor
+
     /**
      * Runs a query on a Mongo collection on the text index.
      * Returns a list of results limited by the specified limit.
@@ -200,8 +209,9 @@ public class DataRetriever {
      * @param limit          - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    private List<DbRecord> doTextSearch(String collectionName, Bson filter, int limit, int page)
+    private List<DbRecord> doSearch(String collectionName, Bson filter, int limit, int page, QueryOptions options)
             throws MongoQueryException, MongoExecutionTimeoutException {
+
         MongoCollection<Document> collection = database.getCollection(collectionName);
         List<DbRecord> dbRecords = new ArrayList<>();
 
@@ -210,8 +220,8 @@ public class DataRetriever {
                 .skip(page > 0 ? ((page - 1) * limit) : 0)
                 .limit(limit)
                 .projection(getProjectionFields())
-                .maxTime(100, TimeUnit.SECONDS);
-                //.sort(Sorts.metaTextScore("score"))
+                .maxTime(options.getTimeout(), TimeUnit.SECONDS);
+        //.sort(Sorts.metaTextScore("score"))
 
         try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
             while (cursor.hasNext()) {

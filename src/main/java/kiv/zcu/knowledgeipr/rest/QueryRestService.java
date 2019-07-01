@@ -5,10 +5,13 @@ import kiv.zcu.knowledgeipr.core.Query;
 import kiv.zcu.knowledgeipr.core.ReportCreator;
 import kiv.zcu.knowledgeipr.core.ReportManager;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
+import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
 import kiv.zcu.knowledgeipr.rest.response.Response;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.ws.rs.*;
+import java.io.IOException;
 
 /**
  * Service for handling incoming REST requests
@@ -23,23 +26,39 @@ public class QueryRestService {
      * returns a set of results as JSON to the caller.
      *
      * @param page  - page of results to return
-     * @param query - request query
-     * @return
+     * @param queryJson - request query json
+     * @return JSON response
      * @throws ApiException
      */
     @POST
     @Path("/query/{page}")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response query(@PathParam("page") int page, Query query) throws ApiException {
+    public javax.ws.rs.core.Response query(@PathParam("page") int page, String queryJson) throws ApiException {
         if (page <= 0) {
             throw new ApiException(new Response(StatusResponse.ERROR, "Page cannot be <= 0"));
         }
         if (page > 1000) {
             throw new ApiException(new Response(StatusResponse.ERROR, "Page cannot be > 1000"));
+
+        }
+        Query query;
+        try {
+            query = deserializeQuery(queryJson);
+
+        } catch (IOException | QueryOptionsValidationException e) {
+            e.printStackTrace();
+            throw new ApiException(new Response(StatusResponse.ERROR, e.getMessage()));
         }
 
         return processQueryInit(query, page);
+    }
+
+    private Query deserializeQuery(String queryJson) throws IOException, QueryOptionsValidationException {
+        Query query = new ObjectMapper().readValue(queryJson, Query.class);
+        query.validate();
+
+        return query;
     }
 
     @POST
@@ -54,10 +73,20 @@ public class QueryRestService {
     @Path("/queryLimit/{limit}")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response queryWithLimit(@PathParam("limit") int limit, Query query) throws ApiException {
+    public javax.ws.rs.core.Response queryWithLimit(@PathParam("limit") int limit, String queryJson) throws ApiException {
         if (limit > 1000) {
             throw new ApiException(new Response(StatusResponse.ERROR, "Limit cannot exceed 1000"));
         }
+
+        Query query;
+        try {
+            query = deserializeQuery(queryJson);
+
+        } catch (IOException | QueryOptionsValidationException e) {
+            e.printStackTrace();
+            throw new ApiException(new Response(StatusResponse.ERROR, e.getMessage()));
+        }
+
         StandardResponse standardResponse = reportGenerator.processQuery(query, 1, limit);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
