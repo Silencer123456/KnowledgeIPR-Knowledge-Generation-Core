@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.query;
 
 import java.util.Map;
 

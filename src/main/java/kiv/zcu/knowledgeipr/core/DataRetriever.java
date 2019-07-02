@@ -8,6 +8,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.query.QueryOptions;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import org.bson.BsonDocument;
 import org.bson.Document;
@@ -29,23 +31,24 @@ import static com.mongodb.client.model.Projections.include;
  */
 public class DataRetriever {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    /**
+     * Default name of the Mongo database, in case the configuration file is not found
+     */
+    private static final String DEFAULT_DB_NAME = "knowingipr";
 
     /**
      * Path to the mongo configuration file
      */
     private static final String MONGO_CONFIG_PATH = "mongo-config.cfg";
 
-    /**
-     * Default name, in case the configuration file is not found
-     */
-    private String dbName = "knowingipr";
+    private String dbName = DEFAULT_DB_NAME;
 
     /**
      * Mongo database access instance
      */
     private MongoDatabase database;
 
-    DataRetriever() {
+    public DataRetriever() {
         setup();
     }
 
@@ -69,14 +72,13 @@ public class DataRetriever {
      */
     public List<DbRecord> runQuery(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
         String sourceType = query.getSourceType();
-
         isValidSourceType(sourceType);
 
         BsonDocument filter = new BsonDocument();
 
-        addConditionsFilters(query.getConditions(), filter);
+        addFilters(query.getFilters(), filter);
 
-        addFilters(query.getFilters(), filter, true);
+        addConditionsFilters(query.getConditions(), filter);
 
         LOGGER.info("Running query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
 
@@ -100,10 +102,8 @@ public class DataRetriever {
      *
      * @param filters      - list of filters from the query, which will be converted to Mongo filters
      * @param bsonDocument - Bson document, to which add the created filters
-     * @param useRegex     - Specifies whether to use regex search. Regex search enables searching parts of words.
-     *                     If the value is false, only exact match search will be performed
      */
-    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument, boolean useRegex) {
+    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument) {
         if (filters == null) return;
         boolean textFilterCreated = false;
 
@@ -120,7 +120,7 @@ public class DataRetriever {
                 LOGGER.warning("Field " + filterEntry.getKey() + " is not valid, skipping.");
                 continue;
             }
-            // TODO: Vyresit pripad duplikace fieldu
+            // TODO: Vyresit pripad duplikace fieldupaTE
             Bson tmp;
             // If the text filter was not specified in the query, we create one from the current field
             if (!textFilterCreated && isKeyTextIndexed(filterEntry.getKey())) {
@@ -165,7 +165,6 @@ public class DataRetriever {
         BsonDocument docToAppend = bson.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
 
         if (docToAppend.get(key) == null) return;
-
         bsonDocument.append(key, docToAppend.get(key));
     }
 

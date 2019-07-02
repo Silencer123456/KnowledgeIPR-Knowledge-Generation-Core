@@ -1,8 +1,9 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.query;
 
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,6 +44,16 @@ public class Query {
     }
 
     public void validate() throws QueryOptionsValidationException {
+        if (sourceType == null) {
+            throw new QueryOptionsValidationException("Missing field sourceType.");
+        }
+        if (filters == null) {
+            throw new QueryOptionsValidationException("Missing filters.");
+        }
+        if (conditions == null) {
+            conditions = new HashMap<>();
+        }
+
         this.options.validate();
     }
 }

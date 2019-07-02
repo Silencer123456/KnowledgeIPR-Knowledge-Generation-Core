@@ -39,7 +39,7 @@ public class MyLogger {
         logger.setLevel(Level.ALL);
 
         setupConsoleHandler(logger);
-        setupFileHandler(logger, fileSuffix);
+        //setupFileHandler(logger, fileSuffix);
     }
 
     private static void setupConsoleHandler(Logger logger) {

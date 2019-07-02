@@ -1,8 +1,11 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.report;
 
 import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
+import kiv.zcu.knowledgeipr.core.DataRetriever;
+import kiv.zcu.knowledgeipr.core.DbRecord;
+import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;

@@ -1,6 +1,7 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.report;
 
 import com.google.gson.*;
+import kiv.zcu.knowledgeipr.core.DbRecord;
 
 import java.util.List;
 

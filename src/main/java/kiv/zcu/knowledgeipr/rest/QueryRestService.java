@@ -1,9 +1,9 @@
 package kiv.zcu.knowledgeipr.rest;
 
 import com.google.gson.Gson;
-import kiv.zcu.knowledgeipr.core.Query;
-import kiv.zcu.knowledgeipr.core.ReportCreator;
-import kiv.zcu.knowledgeipr.core.ReportManager;
+import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.report.ReportCreator;
+import kiv.zcu.knowledgeipr.core.report.ReportManager;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
 import kiv.zcu.knowledgeipr.rest.response.Response;

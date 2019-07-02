@@ -1,5 +1,6 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.query;
 
+//TODO: Probably replace by nested enum inside QueryOptions
 public enum Options {
     /**
      * Specifies if the returned documents should be sorted by their score

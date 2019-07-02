@@ -1,7 +1,8 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.query;
 
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,8 +17,13 @@ public class QueryOptions {
 
     private Map<String, Object> options;
 
+    /**
+     * Default constructor, assigns options map parameter if not null
+     *
+     * @param options
+     */
     public QueryOptions(Map<String, Object> options) {
-        this.options = options;
+        this.options = options == null ? new HashMap<>() : options;
     }
 
     /**

@@ -1,4 +1,6 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.report;
+
+import kiv.zcu.knowledgeipr.core.DbRecord;
 
 import java.util.List;
 
