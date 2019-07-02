@@ -11,6 +11,8 @@ import java.util.Arrays;
 import static com.mongodb.client.model.Aggregates.*;
 
 /**
+ *
+ * TODO: Refactor
  * @author Stepan Baratta
  * created on 7/2/2019
  */
@@ -32,7 +34,8 @@ public class StatsQuery {
                 group(new Document("_id", new Document("$toLower", "$authors.name"))
                         .append("count", new Document("$sum", 1))),
                 project(new Document("_id", 0).append("authors.name", "$_id").append("count", 1)),
-                sort(new Document("count", -1))
+                sort(new Document("count", -1)),
+                limit(20)
         )).allowDiskUse(true);
 
         for (Document doc : output) {

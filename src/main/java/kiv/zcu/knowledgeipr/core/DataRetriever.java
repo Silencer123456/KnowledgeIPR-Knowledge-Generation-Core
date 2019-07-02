@@ -10,7 +10,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import kiv.zcu.knowledgeipr.core.dbconnection.MongoConnection;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.query.QueryOptions;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import org.bson.BsonDocument;
 import org.bson.Document;
@@ -52,15 +51,41 @@ public class DataRetriever {
         String sourceType = query.getSourceType();
         isValidSourceType(sourceType);
 
+        BsonDocument filter = addAllFilters(query, false);
+        if (filter.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+        // TODO: limit timeout to few seconds
+        List<DbRecord> results = doSearch(sourceType, filter, limit, page, 5);
+        // If something was found, we do not need to run the second query
+        if (!results.isEmpty()) {
+            return results;
+        }
+
+        filter = addAllFilters(query, true);
+
+        LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+
+        // Run second query
+        return doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
+    }
+
+    /**
+     * Adds all filters from the query and creates a bson document from them
+     *
+     * @param query
+     * @return Bson document containing all the filters
+     */
+    private BsonDocument addAllFilters(Query query, boolean useRegex) {
         BsonDocument filter = new BsonDocument();
 
-        addFilters(query.getFilters(), filter);
+        addFilters(query.getFilters(), filter, useRegex);
 
         addConditionsFilters(query.getConditions(), filter);
 
-        LOGGER.info("Running query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
-
-        return filter.isEmpty() ? Collections.emptyList() : doSearch(sourceType, filter, limit, page, query.getOptions());
+        return filter;
     }
 
     /**
@@ -81,7 +106,7 @@ public class DataRetriever {
      * @param filters      - list of filters from the query, which will be converted to Mongo filters
      * @param bsonDocument - Bson document, to which add the created filters
      */
-    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument) {
+    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument, boolean useRegex) {
         if (filters == null) return;
         boolean textFilterCreated = false;
 
@@ -98,7 +123,7 @@ public class DataRetriever {
                 LOGGER.warning("Field " + filterEntry.getKey() + " is not valid, skipping.");
                 continue;
             }
-            // TODO: Vyresit pripad duplikace fieldupaTE
+
             Bson tmp;
             // If the text filter was not specified in the query, we create one from the current field
             if (!textFilterCreated && isKeyTextIndexed(filterEntry.getKey())) {
@@ -107,13 +132,20 @@ public class DataRetriever {
                 textFilterCreated = true;
             }
 
-            Pattern regex = Pattern.compile(filterEntry.getValue(), Pattern.CASE_INSENSITIVE);
-            Bson r = Filters.regex(filterEntry.getKey(), regex);
-            Bson eq = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
-            tmp = Filters.or(eq, r);
+            if (useRegex) {
+                Pattern regex = Pattern.compile(filterEntry.getValue(), Pattern.CASE_INSENSITIVE);
+                tmp = Filters.regex(filterEntry.getKey(), regex);
+            } else {
+                tmp = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
+            }
 
-            //appendBsonDoc(bsonDocument, tmp, filterEntry.getKey());
-            appendBsonDoc(bsonDocument, tmp, "$or");
+//            Pattern regex = Pattern.compile(filterEntry.getValue(), Pattern.CASE_INSENSITIVE);
+//            Bson r = Filters.regex(filterEntry.getKey(), regex);
+//            Bson eq = Filters.eq(filterEntry.getKey(), filterEntry.getValue());
+//            tmp = Filters.or(eq, r);
+
+            appendBsonDoc(bsonDocument, tmp, filterEntry.getKey());
+            //appendBsonDoc(bsonDocument, tmp, "$or");
         }
     }
 
@@ -186,7 +218,7 @@ public class DataRetriever {
      * @param limit          - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    private List<DbRecord> doSearch(String collectionName, Bson filter, int limit, int page, QueryOptions options)
+    private List<DbRecord> doSearch(String collectionName, Bson filter, int limit, int page, int timeout)
             throws MongoQueryException, MongoExecutionTimeoutException {
 
         MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -197,7 +229,7 @@ public class DataRetriever {
                 .skip(page > 0 ? ((page - 1) * limit) : 0)
                 .limit(limit)
                 .projection(getProjectionFields())
-                .maxTime(options.getTimeout(), TimeUnit.SECONDS);
+                .maxTime(timeout, TimeUnit.SECONDS);
         //.sort(Sorts.metaTextScore("score"))
 
         try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
