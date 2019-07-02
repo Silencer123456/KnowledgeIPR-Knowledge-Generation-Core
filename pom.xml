@@ -55,7 +55,6 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>5.2.12.Final</version>
         </dependency>
-
     </dependencies>
 
     <build>

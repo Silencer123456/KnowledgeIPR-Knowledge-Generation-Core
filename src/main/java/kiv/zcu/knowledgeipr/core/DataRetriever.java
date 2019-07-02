@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import kiv.zcu.knowledgeipr.core.dbconnection.MongoConnection;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.QueryOptions;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
@@ -15,9 +16,10 @@ import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -31,35 +33,11 @@ import static com.mongodb.client.model.Projections.include;
  */
 public class DataRetriever {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    /**
-     * Default name of the Mongo database, in case the configuration file is not found
-     */
-    private static final String DEFAULT_DB_NAME = "knowingipr";
 
-    /**
-     * Path to the mongo configuration file
-     */
-    private static final String MONGO_CONFIG_PATH = "mongo-config.cfg";
-
-    private String dbName = DEFAULT_DB_NAME;
-
-    /**
-     * Mongo database access instance
-     */
     private MongoDatabase database;
 
-    public DataRetriever() {
-        setup();
-    }
-
-    /**
-     * Sets up the connection to the Mongo database
-     */
-    private void setup() {
-        loadConfig();
-        LOGGER.info("Connecting to the MongoDB database " + dbName);
-        MongoClient mongoClient = new MongoClient();
-        database = mongoClient.getDatabase(dbName);
+    public DataRetriever(MongoConnection mongoConnection) {
+        database = mongoConnection.getConnectionInstance();
     }
 
     /**
@@ -249,28 +227,6 @@ public class DataRetriever {
                         ResponseField.DOCUMENT_ID.toString(),
                         ResponseField.PUBLISHER.toString(),
                         ResponseField.DATA_SOURCE.toString()));
-    }
-
-    /**
-     * Loads configuration of the MongoDB connection
-     */
-    private void loadConfig() {
-        Properties prop = new Properties();
-        try {
-            InputStream inputStream = getClass()
-                    .getClassLoader().getResourceAsStream(MONGO_CONFIG_PATH);
-            if (inputStream != null) {
-                prop.load(inputStream);
-                dbName = prop.getProperty("db_name");
-                LOGGER.info("MongoDB configuration file loaded.");
-            } else {
-                LOGGER.severe("The MongoDB configuration file not found. Setting database to default: " + dbName);
-            }
-        } catch (IOException e) {
-            LOGGER.severe("Unable to find " + MONGO_CONFIG_PATH + " file. Using default " +
-                    "database: " + dbName);
-            e.printStackTrace();
-        }
     }
 }
 

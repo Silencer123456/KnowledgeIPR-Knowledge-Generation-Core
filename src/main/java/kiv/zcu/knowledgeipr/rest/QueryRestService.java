@@ -54,19 +54,20 @@ public class QueryRestService {
         return processQueryInit(query, page);
     }
 
-    private Query deserializeQuery(String queryJson) throws IOException, QueryOptionsValidationException {
-        Query query = new ObjectMapper().readValue(queryJson, Query.class);
-        query.validate();
-
-        return query;
-    }
-
     @POST
     @Path("/query")
     @Consumes("application/json")
     @Produces("application/json")
     public javax.ws.rs.core.Response query(Query query) throws ApiException {
         return processQueryInit(query, 1); // Use default 1
+    }
+
+    @GET
+    @Path("/activeAuthors")
+    public javax.ws.rs.core.Response getStatistics(Query query) throws ApiException {
+        reportGenerator.test();
+
+        return javax.ws.rs.core.Response.ok().build();
     }
 
     @POST
@@ -92,6 +93,14 @@ public class QueryRestService {
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }
 
+    /**
+     * Initiates the processing of the query
+     *
+     * @param query - Query to process
+     * @param page  - Tha page to return
+     * @return Formatted response containing the serialized report as json
+     * @throws ApiException
+     */
     private javax.ws.rs.core.Response processQueryInit(Query query, int page) throws ApiException {
         if (query.getFilters() == null || query.getFilters().isEmpty() || query.getSourceType() == null) {
             throw new ApiException(new Response(StatusResponse.ERROR, "Wrong query format."));
@@ -101,5 +110,20 @@ public class QueryRestService {
         StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
+    }
+
+    /**
+     * Creates a <code>Query</code> instance by deserializing the JSON string
+     *
+     * @param queryJson- JSON to deserialize into <code>Query</code> instance
+     * @return Deserialized <codeQuery</code> instance
+     * @throws IOException
+     * @throws QueryOptionsValidationException
+     */
+    private Query deserializeQuery(String queryJson) throws IOException, QueryOptionsValidationException {
+        Query query = new ObjectMapper().readValue(queryJson, Query.class);
+        query.validate();
+
+        return query;
     }
 }

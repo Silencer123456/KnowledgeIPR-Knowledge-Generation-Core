@@ -5,6 +5,8 @@ import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import kiv.zcu.knowledgeipr.core.DataRetriever;
 import kiv.zcu.knowledgeipr.core.DbRecord;
+import kiv.zcu.knowledgeipr.core.StatsQuery;
+import kiv.zcu.knowledgeipr.core.dbconnection.MongoConnection;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
@@ -24,7 +26,8 @@ public class ReportManager {
     private DataRetriever dataRetriever;
 
     public ReportManager(ReportCreator reportCreator) {
-        dataRetriever = new DataRetriever();
+        MongoConnection mongoConnection = MongoConnection.getInstance();
+        dataRetriever = new DataRetriever(mongoConnection);
 
         this.reportCreator = reportCreator;
     }
@@ -55,6 +58,12 @@ public class ReportManager {
         }
 
         return response;
+    }
+
+    public void test() {
+        StatsQuery statsQuery = new StatsQuery(MongoConnection.getInstance());
+
+        statsQuery.createQuery();
     }
 
     private int getCountForDataSource(String source) {
