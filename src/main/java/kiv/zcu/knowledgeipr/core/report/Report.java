@@ -1,6 +1,9 @@
 package kiv.zcu.knowledgeipr.core.report;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import kiv.zcu.knowledgeipr.core.DbRecord;
 
 import java.util.List;
@@ -31,7 +34,6 @@ public class Report {
      * @return - Json element of the object
      */
     public JsonElement getAsJson() {
-        Gson gson = new Gson();
         JsonObject dataRoot = new JsonObject();
 
         JsonArray array = new JsonArray();

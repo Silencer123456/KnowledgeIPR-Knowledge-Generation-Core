@@ -4,22 +4,24 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Accumulators;
+import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbconnection.MongoConnection;
 import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Aggregates.*;
 
 /**
- *
- * TODO: Refactor
  * @author Stepan Baratta
  * created on 7/2/2019
  */
 public class StatsQuery {
+
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private MongoDatabase database;
 
@@ -27,8 +29,9 @@ public class StatsQuery {
         database = connection.getConnectionInstance();
     }
 
-    public void createQuery() {
-        Map<String, Long> activeAuthors = new HashMap<>();
+    public List<Pair<String, Integer>> activeAuthors() {
+        LOGGER.info("Running 'getActiveAuthors' method on database.");
+        List<Pair<String, Integer>> activeAuthors = new ArrayList<>();
 
         MongoCollection<Document> collection = database.getCollection("patent");
 
@@ -44,8 +47,10 @@ public class StatsQuery {
         )).allowDiskUse(true);
 
         for (Document doc : output) {
-            activeAuthors.put((String) doc.get("authors.name"), (Long) doc.get("count"));
-            System.out.println(doc);
+            String author = doc.get("authors", Document.class).getString("name");
+            activeAuthors.add(new Pair<>(author, (Integer) doc.get("count")));
         }
+
+        return activeAuthors;
     }
 }

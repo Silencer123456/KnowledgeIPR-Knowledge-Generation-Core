@@ -1,14 +1,17 @@
 package kiv.zcu.knowledgeipr.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
-import kiv.zcu.knowledgeipr.core.report.ReportManager;
+import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
+import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
+import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.Response;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -19,7 +22,7 @@ import java.io.IOException;
 @Path("/")
 public class QueryRestService {
 
-    private ReportManager reportGenerator = new ReportManager(new ReportCreator());
+    private ReportController reportGenerator = new ReportController(new ReportCreator());
 
     /**
      * Accepts a query, processes it and
@@ -64,10 +67,10 @@ public class QueryRestService {
 
     @GET
     @Path("/activeAuthors")
-    public javax.ws.rs.core.Response getStatistics(Query query) throws ApiException {
-        reportGenerator.test();
+    public javax.ws.rs.core.Response getActiveAuthors() throws ApiException, ResponseSerializationException {
+        ChartResponse response = reportGenerator.getActiveAuthors();
 
-        return javax.ws.rs.core.Response.ok().build();
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
 
     @POST

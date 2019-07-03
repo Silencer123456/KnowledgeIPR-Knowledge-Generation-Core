@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.core.query;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import java.util.HashMap;
 import java.util.Map;

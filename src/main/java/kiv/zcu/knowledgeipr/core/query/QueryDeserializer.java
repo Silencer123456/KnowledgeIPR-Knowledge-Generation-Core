@@ -1,12 +1,12 @@
 package kiv.zcu.knowledgeipr.core.query;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.deser.std.StdDeserializer;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,26 +34,26 @@ public class QueryDeserializer extends StdDeserializer<Query> {
 
         // Source type
         JsonNode sourceTypeNode = node.get("sourceType");
-        String sourceType = sourceTypeNode == null ? "" : sourceTypeNode.getTextValue();
+        String sourceType = sourceTypeNode == null ? "" : sourceTypeNode.textValue();
 
         // Filters map
         TypeReference<Map<String, String>> filterRef = new TypeReference<Map<String, String>>() {
         };
         JsonNode filtersNode = node.get("filters");
-        Map<String, String> filters = filtersNode == null ? new HashMap<>() : mapper.readValue(filtersNode, filterRef);
+        Map<String, String> filters = filtersNode == null ? new HashMap<>() : mapper.readValue(mapper.treeAsTokens(filtersNode), filterRef);
 
         // Conditions map
         TypeReference<Map<String, Map<String, Integer>>> conditionsRef = new TypeReference<Map<String, Map<String, Integer>>>() {
         };
         JsonNode conditionsNode = node.get("conditions");
         Map<String, Map<String, Integer>> conditions = conditionsNode == null ? new HashMap<>()
-                : mapper.readValue(conditionsNode, conditionsRef);
+                : mapper.readValue(mapper.treeAsTokens(conditionsNode), conditionsRef);
 
         // Options map
         TypeReference<Map<String, Object>> optionsRef = new TypeReference<Map<String, Object>>() {
         };
         JsonNode optionsNode = node.get("options");
-        Map<String, Object> options = optionsNode == null ? new HashMap<>() : mapper.readValue(optionsNode, optionsRef);
+        Map<String, Object> options = optionsNode == null ? new HashMap<>() : mapper.readValue(mapper.treeAsTokens(optionsNode), optionsRef);
 
         return new Query(sourceType, filters, conditions, options);
     }

@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core.report;
 import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
+import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.DataRetriever;
 import kiv.zcu.knowledgeipr.core.DbRecord;
 import kiv.zcu.knowledgeipr.core.StatsQuery;
@@ -10,9 +11,11 @@ import kiv.zcu.knowledgeipr.core.dbconnection.MongoConnection;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
+import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Handles incoming queries from the REST API.
@@ -20,12 +23,14 @@ import java.util.List;
  * Invokes report creator to generate a report from the result set.
  * Sends response back to the REST API.
  */
-public class ReportManager {
+public class ReportController {
+
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private ReportCreator reportCreator;
     private DataRetriever dataRetriever;
 
-    public ReportManager(ReportCreator reportCreator) {
+    public ReportController(ReportCreator reportCreator) {
         MongoConnection mongoConnection = MongoConnection.getInstance();
         dataRetriever = new DataRetriever(mongoConnection);
 
@@ -60,10 +65,18 @@ public class ReportManager {
         return response;
     }
 
-    public void test() {
+    public ChartResponse getActiveAuthors() {
         StatsQuery statsQuery = new StatsQuery(MongoConnection.getInstance());
 
-        statsQuery.createQuery();
+        // TODO: before querying mongo, get results from cache (filesystem...)
+        List<Pair<String, Integer>> activeAuthors = statsQuery.activeAuthors();
+        GraphReport<String, Integer> report = reportCreator.createChartReport("Active Authors", "Authors", "Number of publications", activeAuthors);
+
+        // TODO: Save serialized report to cache(filesystem...)
+
+        ChartResponse response = new ChartResponse(StatusResponse.SUCCESS, "OK", report.getAsJson());
+
+        return response;
     }
 
     private int getCountForDataSource(String source) {

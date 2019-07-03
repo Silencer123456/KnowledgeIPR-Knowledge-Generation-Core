@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.app;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 import kiv.zcu.knowledgeipr.rest.QueryRestService;
 import kiv.zcu.knowledgeipr.rest.exception.ApiExceptionHandler;
+import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationExceptionHandler;
 
 import javax.ws.rs.core.Application;
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class AppRunner extends Application {
     public AppRunner() {
         singletons.add(new QueryRestService());
         singletons.add(new ApiExceptionHandler());
+        singletons.add(new ResponseSerializationExceptionHandler());
 
         try {
             MyLogger.setup("restServer");
