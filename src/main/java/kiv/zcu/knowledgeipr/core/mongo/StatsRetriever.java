@@ -15,19 +15,27 @@ import java.util.logging.Logger;
 import static com.mongodb.client.model.Aggregates.*;
 
 /**
+ * Serves for executing various queries gathering statistical information
  * @author Stepan Baratta
  * created on 7/2/2019
  */
-public class StatsQuery {
+public class StatsRetriever {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private MongoDatabase database;
 
-    public StatsQuery(MongoConnection connection) {
+    public StatsRetriever(MongoConnection connection) {
         database = connection.getConnectionInstance();
     }
 
+    /**
+     * Queries Mongo database for most active authors.
+     * Query selects 20 most active authors along with the number of their publications/patents
+     * and sorts them in descending order.
+     *
+     * @return - List of 'author name, count' pairs
+     */
     public List<Pair<String, Integer>> activeAuthors() {
         LOGGER.info("Running 'getActiveAuthors' method on database.");
         List<Pair<String, Integer>> activeAuthors = new ArrayList<>();

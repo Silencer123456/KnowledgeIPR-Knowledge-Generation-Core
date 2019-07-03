@@ -6,6 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Gets called at the start of the application.
+ * Preloads properties files and makes them accessible
+ */
 public class AppServletContextListener implements ServletContextListener {
     private static Properties properties = new Properties();
 

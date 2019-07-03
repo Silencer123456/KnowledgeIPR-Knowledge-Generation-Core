@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Report holding data for statistical queries
- * TODO: implement generic interface with method getAsJson...
+ * Report holding chart data
+ * TODO: implement generic interface for all reports
  */
 public class GraphReport<X, Y> {
 

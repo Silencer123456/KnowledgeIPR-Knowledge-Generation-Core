@@ -1,27 +1,21 @@
 package kiv.zcu.knowledgeipr.core.report;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.mongo.DataRetriever;
 import kiv.zcu.knowledgeipr.core.mongo.DbRecord;
 import kiv.zcu.knowledgeipr.core.mongo.MongoConnection;
-import kiv.zcu.knowledgeipr.core.mongo.StatsQuery;
+import kiv.zcu.knowledgeipr.core.mongo.StatsRetriever;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -72,19 +66,17 @@ public class ReportController {
         return response;
     }
 
+    /**
+     * Returns the most active authors
+     *
+     * @return Response containing chart data for visualization
+     */
     public ChartResponse getActiveAuthors() {
         String reportName = "test.json";
 
-        StatsQuery statsQuery = new StatsQuery(MongoConnection.getInstance());
+        StatsRetriever statsQuery = new StatsRetriever(MongoConnection.getInstance());
 
-//        List<Pair<String, Integer>> activeAuthors = new ArrayList<>();
-//        activeAuthors.add(new Pair<>("Test1", 123));
-//        activeAuthors.add(new Pair<>("Test2", 324));
-//        activeAuthors.add(new Pair<>("Test3", 1324));
-//        activeAuthors.add(new Pair<>("Test4", 12234));
-
-        // TODO: Move somewhere else
-        JsonNode cachedReport = loadReportToJson(reportName);
+        JsonNode cachedReport = reportCreator.loadReportToJson(reportName);
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
@@ -95,24 +87,7 @@ public class ReportController {
             cachedReport = report.getAsJson();
         }
 
-        ChartResponse response = new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-
-        return response;
-    }
-
-    // TODO: Refactor
-    private JsonNode loadReportToJson(String filename) {
-        try {
-            Properties properties = AppServletContextListener.getProperties();
-            String basePath = properties.getProperty("reports");
-
-            String content = new String(Files.readAllBytes(Paths.get(basePath + filename)));
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(content);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
     private int getCountForDataSource(String source) {
