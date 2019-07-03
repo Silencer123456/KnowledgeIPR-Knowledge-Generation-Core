@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.DataRetriever;
 import kiv.zcu.knowledgeipr.core.DbRecord;
 import kiv.zcu.knowledgeipr.core.StatsQuery;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -71,6 +73,8 @@ public class ReportController {
     }
 
     public ChartResponse getActiveAuthors() {
+        String reportName = "test.json";
+
         StatsQuery statsQuery = new StatsQuery(MongoConnection.getInstance());
 
 //        List<Pair<String, Integer>> activeAuthors = new ArrayList<>();
@@ -80,12 +84,14 @@ public class ReportController {
 //        activeAuthors.add(new Pair<>("Test4", 12234));
 
         // TODO: Move somewhere else
-        JsonNode cachedReport = loadActiveAuthors();
+        JsonNode cachedReport = loadReportToJson(reportName);
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
             List<Pair<String, Integer>> activeAuthors = statsQuery.activeAuthors();
             GraphReport<String, Integer> report = reportCreator.createChartReport("Active Authors", "Authors", "Number of publications", activeAuthors);
+            report.save(reportName);
+
             cachedReport = report.getAsJson();
         }
 
@@ -95,9 +101,12 @@ public class ReportController {
     }
 
     // TODO: Refactor
-    private JsonNode loadActiveAuthors() {
+    private JsonNode loadReportToJson(String filename) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get("C:\\Users\\UWB-Dalibor\\Desktop\\tmp\\test.json")));
+            Properties properties = AppServletContextListener.getProperties();
+            String basePath = properties.getProperty("reports");
+
+            String content = new String(Files.readAllBytes(Paths.get(basePath + filename)));
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(content);
         } catch (IOException e) {

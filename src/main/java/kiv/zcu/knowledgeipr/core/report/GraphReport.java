@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Report holding data for statistical queries
@@ -68,11 +70,14 @@ public class GraphReport<X, Y> {
     /**
      * Saves the json to the filesystem, so it can be retrieved later
      */
-    public boolean save() {
+    public boolean save(String filename) {
         try {
             String json = SerializationUtils.serializeObject(this);
-            // TODO: Read path from property file
-            Files.write(Paths.get("C:\\Users\\UWB-Dalibor\\Desktop\\tmp\\test.json"), json.getBytes());
+
+            Properties properties = AppServletContextListener.getProperties();
+            String basePath = properties.getProperty("reports");
+
+            Files.write(Paths.get(basePath + filename), json.getBytes());
             return true;
         } catch (IOException | ResponseSerializationException e) {
             e.printStackTrace();

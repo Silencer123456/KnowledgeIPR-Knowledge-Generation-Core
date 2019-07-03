@@ -26,4 +26,13 @@
         <!--Prefix for endpoint-->
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>kiv.zcu.knowledgeipr.app.AppServletContextListener</listener-class>
+    </listener>
+
+    <context-param>
+        <param-name>config_file</param-name>
+        <param-value>C:\Users\UWB-Dalibor\Documents\properties\config.properties</param-value>
+    </context-param>
 </web-app>

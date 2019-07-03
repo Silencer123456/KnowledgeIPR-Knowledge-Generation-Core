@@ -24,7 +24,6 @@ public class ReportCreator {
 
     public <X, Y> GraphReport<X, Y> createChartReport(String title, String xLabel, String yLabel, List<Pair<X, Y>> data) {
         GraphReport<X, Y> report = new GraphReport<>(title, xLabel, yLabel, data);
-        report.save();
         return report;
     }
 }
