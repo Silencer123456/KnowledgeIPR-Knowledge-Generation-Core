@@ -67,6 +67,7 @@ public class QueryRestService {
 
     @GET
     @Path("/activeAuthors")
+    @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthors() throws ApiException, ResponseSerializationException {
         ChartResponse response = reportGenerator.getActiveAuthors();
 

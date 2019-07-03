@@ -2,14 +2,15 @@ package kiv.zcu.knowledgeipr.core.report;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -42,24 +43,24 @@ public class GraphReport<X, Y> {
         titleNode.put("text", title);
         rootNode.set("title", titleNode);
 
-        ObjectNode xAxisNode = mapper.createObjectNode();
         titleNode = mapper.createObjectNode();
         titleNode.put("text", xLabel);
-        xAxisNode.set("xAxis", titleNode);
+        rootNode.set("xAxis", titleNode);
 
-        ObjectNode yAxisNode = mapper.createObjectNode();
         titleNode = mapper.createObjectNode();
         titleNode.put("text", yLabel);
-        yAxisNode.set("xAxis", titleNode);
+        rootNode.set("yAxis", titleNode);
 
-        ObjectNode dataNode = mapper.createObjectNode();
+        ArrayNode dataNode = mapper.createArrayNode();
         for (Pair<X, Y> dataPair : data) {
             ObjectNode pairNode = mapper.createObjectNode();
             // TODO: check the type of the pairs!!!
             pairNode.put("x", (String) dataPair.getKey());
             pairNode.put("y", (Integer) dataPair.getValue());
-            dataNode.set("data", pairNode);
+            dataNode.add(pairNode);
         }
+
+        rootNode.putArray("data").addAll(dataNode);
 
         return rootNode;
     }
@@ -68,11 +69,12 @@ public class GraphReport<X, Y> {
      * Saves the json to the filesystem, so it can be retrieved later
      */
     public boolean save() {
-        try (PrintWriter out = new PrintWriter(new File("").getAbsolutePath())) {
+        try {
             String json = SerializationUtils.serializeObject(this);
-            out.println(json);
+            // TODO: Read path from property file
+            Files.write(Paths.get("C:\\Users\\UWB-Dalibor\\Desktop\\tmp\\test.json"), json.getBytes());
             return true;
-        } catch (FileNotFoundException | ResponseSerializationException e) {
+        } catch (IOException | ResponseSerializationException e) {
             e.printStackTrace();
         }
 

@@ -1,5 +1,7 @@
 package kiv.zcu.knowledgeipr.core.report;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
@@ -14,6 +16,9 @@ import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -68,15 +73,37 @@ public class ReportController {
     public ChartResponse getActiveAuthors() {
         StatsQuery statsQuery = new StatsQuery(MongoConnection.getInstance());
 
-        // TODO: before querying mongo, get results from cache (filesystem...)
-        List<Pair<String, Integer>> activeAuthors = statsQuery.activeAuthors();
-        GraphReport<String, Integer> report = reportCreator.createChartReport("Active Authors", "Authors", "Number of publications", activeAuthors);
+//        List<Pair<String, Integer>> activeAuthors = new ArrayList<>();
+//        activeAuthors.add(new Pair<>("Test1", 123));
+//        activeAuthors.add(new Pair<>("Test2", 324));
+//        activeAuthors.add(new Pair<>("Test3", 1324));
+//        activeAuthors.add(new Pair<>("Test4", 12234));
 
-        // TODO: Save serialized report to cache(filesystem...)
+        // TODO: Move somewhere else
+        JsonNode cachedReport = loadActiveAuthors();
+        if (cachedReport == null) {
+            LOGGER.info("Cached report could not be found, querying database");
+            // The cached file could not be loaded, we need to fetch new results from the database
+            List<Pair<String, Integer>> activeAuthors = statsQuery.activeAuthors();
+            GraphReport<String, Integer> report = reportCreator.createChartReport("Active Authors", "Authors", "Number of publications", activeAuthors);
+            cachedReport = report.getAsJson();
+        }
 
-        ChartResponse response = new ChartResponse(StatusResponse.SUCCESS, "OK", report.getAsJson());
+        ChartResponse response = new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
 
         return response;
+    }
+
+    // TODO: Refactor
+    private JsonNode loadActiveAuthors() {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get("C:\\Users\\UWB-Dalibor\\Desktop\\tmp\\test.json")));
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private int getCountForDataSource(String source) {
