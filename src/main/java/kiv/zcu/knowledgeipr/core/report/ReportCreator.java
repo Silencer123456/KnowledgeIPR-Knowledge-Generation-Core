@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.core.report;
 
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.core.DbRecord;
+import kiv.zcu.knowledgeipr.core.mongo.DbRecord;
 
 import java.util.List;
 

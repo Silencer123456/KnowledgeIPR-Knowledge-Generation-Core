@@ -1,11 +1,10 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.mongo;
 
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Accumulators;
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.core.dbconnection.MongoConnection;
 import org.bson.Document;
 
 import java.util.ArrayList;

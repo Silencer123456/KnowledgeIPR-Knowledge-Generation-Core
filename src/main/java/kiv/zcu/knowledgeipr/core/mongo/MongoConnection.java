@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.dbconnection;
+package kiv.zcu.knowledgeipr.core.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
