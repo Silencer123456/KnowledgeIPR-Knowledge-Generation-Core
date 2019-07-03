@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.rest.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.JsonElement;
 import kiv.zcu.knowledgeipr.rest.StatusResponse;
 
@@ -16,6 +17,7 @@ public class StandardResponse {
     private int searchedCount;
     private int returnedCount;
 
+    @JsonProperty("report")
     private JsonElement reportJson;
 
     public StandardResponse(StatusResponse status, String msg, JsonElement reportJson) {

@@ -42,7 +42,7 @@ public class ReportCreator {
 
             String content = new String(Files.readAllBytes(Paths.get(basePath + filename)));
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(content);
+            return mapper.readTree(content).get("asJson");
         } catch (IOException e) {
             e.printStackTrace();
             return null;
