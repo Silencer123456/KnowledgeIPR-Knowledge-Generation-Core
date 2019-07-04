@@ -34,13 +34,14 @@ public class StatsRetriever {
      * Query selects 20 most active authors along with the number of their publications/patents
      * and sorts them in descending order.
      *
+     * @param collectionName - Collection in which to search
      * @return - List of 'author name, count' pairs
      */
-    public List<Pair<String, Integer>> activeAuthors() {
-        LOGGER.info("Running 'getActiveAuthors' method on database.");
+    public List<Pair<String, Integer>> activeAuthors(String collectionName) {
+        LOGGER.info("Running 'activeAuthors' method on " + collectionName + " collection.");
         List<Pair<String, Integer>> activeAuthors = new ArrayList<>();
 
-        MongoCollection<Document> collection = database.getCollection("patent");
+        MongoCollection<Document> collection = database.getCollection(collectionName);
 
         AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
                 project(new Document("_id", 0)
@@ -59,5 +60,36 @@ public class StatsRetriever {
         }
 
         return activeAuthors;
+    }
+
+    /**
+     * Queries Mongo database and aggregates fields of study counts
+     *
+     * @param collectionName - Collection in which to search
+     * @return List of 'Field of study, count' pairs
+     */
+    public List<Pair<String, Integer>> countByFos(String collectionName) {
+        LOGGER.info("Running 'countByFos' method on " + collectionName + " collection.");
+        List<Pair<String, Integer>> fosCounts = new ArrayList<>();
+
+        MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
+                project(new Document("_id", 0)
+                        .append("authors.name", 1)),
+                unwind("$authors"),
+                group(new Document("$toLower", "$authors.name"),
+                        Accumulators.sum("count", 1)),
+                project(new Document("_id", 0).append("authors.name", "$_id").append("count", 1)),
+                sort(new Document("count", -1)),
+                limit(20)
+        )).allowDiskUse(true);
+
+        for (Document doc : output) {
+            String author = doc.get("authors", Document.class).getString("name");
+            fosCounts.add(new Pair<>(author, (Integer) doc.get("count")));
+        }
+
+        return fosCounts;
     }
 }

@@ -8,7 +8,7 @@ public enum DataSourceType {
     PUBLICATION("publication"),
     PATENT("patent");
 
-    final String value;
+    public final String value;
 
     DataSourceType(String value) {
         this.value = value;

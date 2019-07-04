@@ -9,6 +9,7 @@ import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -76,6 +77,8 @@ public class GraphReport<X, Y> {
 
             Properties properties = AppServletContextListener.getProperties();
             String basePath = properties.getProperty("reports");
+
+            new File(basePath + filename).getParentFile().mkdirs();
 
             Files.write(Paths.get(basePath + filename), json.getBytes());
             return true;

@@ -69,20 +69,22 @@ public class ReportController {
     /**
      * Returns the most active authors
      *
+     * @param collectionName Name of the collection in which to search
      * @return Response containing chart data for visualization
      */
-    public ChartResponse getActiveAuthors() {
-        String reportName = "test.json";
+    public ChartResponse getActiveAuthors(String collectionName) {
+        String reportName = "activeAuthors.json";
 
         StatsRetriever statsQuery = new StatsRetriever(MongoConnection.getInstance());
 
-        JsonNode cachedReport = reportCreator.loadReportToJson(reportName);
+        JsonNode cachedReport = reportCreator.loadReportToJson(collectionName + "\\" + reportName);
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
-            List<Pair<String, Integer>> activeAuthors = statsQuery.activeAuthors();
-            GraphReport<String, Integer> report = reportCreator.createChartReport("Active Authors", "Authors", "Number of publications", activeAuthors);
-            report.save(reportName);
+            List<Pair<String, Integer>> activeAuthors = statsQuery.activeAuthors(collectionName);
+
+            GraphReport<String, Integer> report = reportCreator.createChartReport("Active Authors", "Authors", "Number of published works", activeAuthors);
+            report.save(collectionName + "\\" + reportName);
 
             cachedReport = report.getAsJson();
         }

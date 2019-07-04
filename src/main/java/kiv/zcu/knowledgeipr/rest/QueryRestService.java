@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import kiv.zcu.knowledgeipr.core.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
@@ -66,10 +67,19 @@ public class QueryRestService {
     }
 
     @GET
-    @Path("/activeAuthors")
+    @Path("/activeAuthorsPatents")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getActiveAuthors() throws ApiException, ResponseSerializationException {
-        ChartResponse response = reportGenerator.getActiveAuthors();
+    public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ApiException, ResponseSerializationException {
+        ChartResponse response = reportGenerator.getActiveAuthors(DataSourceType.PATENT.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Path("/activeAuthorsPublications")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ApiException, ResponseSerializationException {
+        ChartResponse response = reportGenerator.getActiveAuthors(DataSourceType.PUBLICATION.value);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
