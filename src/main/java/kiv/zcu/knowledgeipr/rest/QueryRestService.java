@@ -84,6 +84,16 @@ public class QueryRestService {
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
 
+    @GET
+    @Path("/countsByFosPublications")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getCountsByFosPublications() throws ApiException, ResponseSerializationException {
+        ChartResponse response = reportGenerator.getCountByFos(DataSourceType.PUBLICATION.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+
     @POST
     @Path("/queryLimit/{limit}")
     @Consumes("application/json")

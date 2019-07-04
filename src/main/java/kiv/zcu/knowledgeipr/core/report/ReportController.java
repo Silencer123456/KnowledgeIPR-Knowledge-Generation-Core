@@ -92,6 +92,32 @@ public class ReportController {
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
+    /**
+     * TODO: Refactor, make common method for all chart queries
+     *
+     * @param collectionName
+     * @return
+     */
+    public ChartResponse getCountByFos(String collectionName) {
+        String reportName = "countByFos.json";
+
+        StatsRetriever statsQuery = new StatsRetriever(MongoConnection.getInstance());
+
+        JsonNode cachedReport = reportCreator.loadReportToJson(collectionName + "\\" + reportName);
+        if (cachedReport == null) {
+            LOGGER.info("Cached report could not be found, querying database");
+            // The cached file could not be loaded, we need to fetch new results from the database
+            List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
+
+            GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
+            report.save(collectionName + "\\" + reportName);
+
+            cachedReport = report.getAsJson();
+        }
+
+        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+    }
+
     private int getCountForDataSource(String source) {
         int count = 0;
         if (source.equals("publication")) {
