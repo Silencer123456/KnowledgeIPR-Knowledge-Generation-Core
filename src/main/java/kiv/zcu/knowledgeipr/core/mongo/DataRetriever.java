@@ -42,6 +42,10 @@ public class DataRetriever {
 
     /**
      * Runs the query on the source database and returns a result set.
+     * First a quick query is run, performing an exact match search, which should be very fast when using index.
+     * This query is limited to just few seconds of execution.
+     * If no results are returned by that time, the second main query is run with user
+     * specified timeout.
      *
      * @param query - knowledgeipr.Query to be run
      * @param page  - Page to return
@@ -57,18 +61,22 @@ public class DataRetriever {
             return Collections.emptyList();
         }
 
-        LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
-        // TODO: limit timeout to few seconds
-        List<DbRecord> results = doSearch(sourceType, filter, limit, page, 5);
-        // If something was found, we do not need to run the second query
-        if (!results.isEmpty()) {
-            return results;
+        if (filterContainsIndex(query.getFilters())) {
+            LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+            try {
+                List<DbRecord> results = doSearch(sourceType, filter, limit, page, 10);
+                // If something was found, we do not need to run the second query
+                if (!results.isEmpty()) {
+                    return results;
+                }
+            } catch (MongoExecutionTimeoutException e) {
+                LOGGER.info("Nothing found during quick query");
+            }
         }
 
         filter = addAllFilters(query, true);
 
         LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
-
         // Run second query
         return doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }
@@ -115,7 +123,6 @@ public class DataRetriever {
             Bson tmp = Filters.text(filters.get("$text"));
             appendBsonDoc(bsonDocument, tmp, "$text");
             textFilterCreated = true;
-            filters.remove("$text");
         }
 
         for (Map.Entry<String, String> filterEntry : filters.entrySet()) {
@@ -165,6 +172,11 @@ public class DataRetriever {
                 key.equals("abstract");
     }
 
+    private boolean filterContainsIndex(Map<String, String> filters) {
+        return filters.containsKey(ResponseField.DOCUMENT_ID.value) ||
+                filters.containsKey(ResponseField.TITLE.value);
+    }
+
     /**
      * Appends bson to input Bson document
      *
@@ -206,8 +218,6 @@ public class DataRetriever {
             appendBsonDoc(bsonDocument, tmp, optionEntry.getKey());
         }
     }
-
-    // TODO: parametrize the MAX time of query; Check if throwing an error closes cursor
 
     /**
      * Runs a query on a Mongo collection on the text index.

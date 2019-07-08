@@ -58,8 +58,10 @@ public class ReportController {
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
             response.setReturnedCount(limit);
 
-        } catch (MongoQueryException | UserQueryException | MongoExecutionTimeoutException e) {
+        } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
+            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
+        } catch (MongoExecutionTimeoutException e) {
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
         }
 

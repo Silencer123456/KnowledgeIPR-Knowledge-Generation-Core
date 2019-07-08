@@ -11,7 +11,7 @@ public enum ResponseField {
     DATA_SOURCE("dataSource"),
     PUBLISHER("publisher");
 
-    final String value;
+    public final String value;
 
     ResponseField(String value) {
         this.value = value;
