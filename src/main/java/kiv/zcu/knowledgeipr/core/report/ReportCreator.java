@@ -44,7 +44,8 @@ public class ReportCreator {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(content).get("asJson");
         } catch (IOException e) {
-            e.printStackTrace();
+
+            //e.printStackTrace();
             return null;
         }
     }

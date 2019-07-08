@@ -171,7 +171,15 @@ public class DataRetriever {
                 key.equals("owners.name") ||
                 key.equals("abstract");
     }
+    // TODO: Dynamically read from Mongo
 
+    /**
+     * Checks if the provided filters map contains field, which is a part of
+     * an index in Mongo
+     *
+     * @param filters
+     * @return
+     */
     private boolean filterContainsIndex(Map<String, String> filters) {
         return filters.containsKey(ResponseField.DOCUMENT_ID.value) ||
                 filters.containsKey(ResponseField.TITLE.value);
@@ -255,7 +263,7 @@ public class DataRetriever {
 
     /**
      * Returns a list of fields to be projected in the Mongo documents
-     *
+     * TODO: get different projection fields for each data source type
      * @return - BSON representation of projected fields
      */
     private Bson getProjectionFields() {
@@ -269,7 +277,8 @@ public class DataRetriever {
                         ResponseField.OWNERS.toString(),
                         ResponseField.DOCUMENT_ID.toString(),
                         ResponseField.PUBLISHER.toString(),
-                        ResponseField.DATA_SOURCE.toString()));
+                        ResponseField.DATA_SOURCE.toString(),
+                        ResponseField.FOS.toString()));
     }
 }
 

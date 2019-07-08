@@ -76,6 +76,15 @@ public class QueryRestService {
     }
 
     @GET
+    @Path("/activeOwnersPatents")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getActiveOwnersPatents() throws ApiException, ResponseSerializationException {
+        ChartResponse response = reportGenerator.getActiveOwners(DataSourceType.PATENT.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
     @Path("/activeAuthorsPublications")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ApiException, ResponseSerializationException {
@@ -93,6 +102,14 @@ public class QueryRestService {
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
 
+    @GET
+    @Path("/countsByYearPublications")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getCountsByYearPublications() throws ApiException, ResponseSerializationException {
+        ChartResponse response = reportGenerator.getCountByYear(DataSourceType.PUBLICATION.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
 
     @POST
     @Path("/queryLimit/{limit}")
@@ -130,7 +147,7 @@ public class QueryRestService {
             throw new ApiException(new Response(StatusResponse.ERROR, "Wrong query format."));
         }
 
-        int limit = 30;
+        int limit = 20;
         StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();

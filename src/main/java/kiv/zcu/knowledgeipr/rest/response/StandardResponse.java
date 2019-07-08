@@ -16,6 +16,7 @@ public class StandardResponse {
     private int requestTime;
     private int searchedCount;
     private int returnedCount;
+    private int page;
 
     @JsonProperty("report")
     private JsonElement reportJson;
@@ -48,5 +49,9 @@ public class StandardResponse {
 
     public void setReturnedCount(int returnedCount) {
         this.returnedCount = returnedCount;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 }
