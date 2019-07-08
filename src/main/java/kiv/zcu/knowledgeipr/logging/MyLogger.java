@@ -1,8 +1,11 @@
 package kiv.zcu.knowledgeipr.logging;
 
+import kiv.zcu.knowledgeipr.app.AppServletContextListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.*;
 
 /**
@@ -39,7 +42,7 @@ public class MyLogger {
         logger.setLevel(Level.ALL);
 
         setupConsoleHandler(logger);
-        //setupFileHandler(logger, fileSuffix);
+        setupFileHandler(logger, fileSuffix);
     }
 
     private static void setupConsoleHandler(Logger logger) {
@@ -51,16 +54,16 @@ public class MyLogger {
 
     private static void setupFileHandler(Logger logger, String fileSuffix) {
         try {
-            String logsDir = "logs";
-            File directory = new File(logsDir);
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
+            Properties properties = AppServletContextListener.getProperties();
+            String basePath = properties.getProperty("logs");
 
-            Long timeStamp = System.currentTimeMillis();
+            long timeStamp = System.currentTimeMillis();
 
+            String fullPath = basePath + "log-" + timeStamp + "-" + fileSuffix + ".log";
+            new File(fullPath).getParentFile().mkdirs();
             FileHandler fhandler = new FileHandler(
-                    logsDir + "//log-" + timeStamp + "-" + fileSuffix + ".log");
+                    basePath + "log-" + timeStamp + "-" + fileSuffix + ".log");
+
             fhandler.setFormatter(formatterTxt);
             logger.addHandler(fhandler);
 
