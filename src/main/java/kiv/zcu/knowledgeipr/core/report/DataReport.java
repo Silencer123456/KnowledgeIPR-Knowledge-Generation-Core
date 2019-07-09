@@ -12,11 +12,11 @@ import java.util.List;
  * Contains the returned data ready to be sent to the client.
  * Plus contains summary etc.
  */
-public class Report {
+public class DataReport {
     private String summary = "Test summary";
     private List<DbRecord> records;
 
-    public Report(List<DbRecord> records) {
+    public DataReport(List<DbRecord> records) {
         this.records = records;
     }
 

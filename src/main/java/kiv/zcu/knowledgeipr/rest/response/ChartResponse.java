@@ -2,7 +2,6 @@ package kiv.zcu.knowledgeipr.rest.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import kiv.zcu.knowledgeipr.rest.StatusResponse;
 
 //TODO: Refactor: make abstract class for reports
 public class ChartResponse {

@@ -10,10 +10,7 @@ import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
 import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
-import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
-import kiv.zcu.knowledgeipr.rest.response.Response;
-import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
-import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
+import kiv.zcu.knowledgeipr.rest.response.*;
 
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -30,7 +27,7 @@ public class QueryRestService {
      * Accepts a query, processes it and
      * returns a set of results as JSON to the caller.
      *
-     * @param page  - page of results to return
+     * @param page      - page of results to return
      * @param queryJson - request query json
      * @return JSON response
      * @throws ApiException
@@ -110,6 +107,38 @@ public class QueryRestService {
         ChartResponse response = reportGenerator.getCountByYear(DataSourceType.PUBLICATION.value);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Path("/countAuthorsPatents")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getCountAuthorsPatents() throws ApiException, ResponseSerializationException {
+        SimpleResponse response = reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Path("/countsAuthorsPublications")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getCountAuthorsPublications() throws ApiException, ResponseSerializationException {
+        SimpleResponse response = reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @POST
+    @Path("/generateStats")
+    public javax.ws.rs.core.Response generateStats() throws ApiException, ResponseSerializationException {
+        reportGenerator.getActiveAuthors(DataSourceType.PATENT.value);
+        reportGenerator.getActiveOwners(DataSourceType.PATENT.value);
+        reportGenerator.getActiveAuthors(DataSourceType.PUBLICATION.value);
+        reportGenerator.getCountByFos(DataSourceType.PUBLICATION.value);
+        reportGenerator.getCountByYear(DataSourceType.PUBLICATION.value);
+        reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
+        reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
+
+        return javax.ws.rs.core.Response.ok().build();
     }
 
     @GET

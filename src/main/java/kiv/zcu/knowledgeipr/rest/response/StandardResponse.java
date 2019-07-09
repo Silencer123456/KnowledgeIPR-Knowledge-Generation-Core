@@ -2,7 +2,6 @@ package kiv.zcu.knowledgeipr.rest.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.JsonElement;
-import kiv.zcu.knowledgeipr.rest.StatusResponse;
 
 /**
  * Holds the data for the response

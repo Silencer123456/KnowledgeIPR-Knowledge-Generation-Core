@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.rest;
+package kiv.zcu.knowledgeipr.rest.response;
 
 public enum StatusResponse {
     SUCCESS, ERROR

@@ -1,7 +1,5 @@
 package kiv.zcu.knowledgeipr.rest.response;
 
-import kiv.zcu.knowledgeipr.rest.StatusResponse;
-
 public class Response {
 
     private StatusResponse statusResponse;

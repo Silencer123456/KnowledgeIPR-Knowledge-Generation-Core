@@ -9,6 +9,7 @@ import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -152,5 +153,9 @@ public class StatsRetriever {
         }
 
         return 0;
+    }
+
+    public List<Pair<String, Integer>> createTagCloud(String collectionName, String textSearch) {
+        return Collections.emptyList();
     }
 }

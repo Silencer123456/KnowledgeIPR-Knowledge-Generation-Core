@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.mongo.DbRecord;
+import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
+import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,9 +26,9 @@ public class ReportCreator {
      * @param recordList
      * @return - The generated report
      */
-    public Report createReport(List<DbRecord> recordList) {
+    public DataReport createReport(List<DbRecord> recordList) {
 
-        return new Report(recordList);
+        return new DataReport(recordList);
     }
 
     public <X, Y> GraphReport<X, Y> createChartReport(String title, String xLabel, String yLabel, List<Pair<X, Y>> data) {
@@ -35,7 +37,7 @@ public class ReportCreator {
     }
 
     //TODO: refactor
-    public JsonNode loadReportToJson(String filename) {
+    public JsonNode loadReportToJsonFromFile(String filename) {
         try {
             Properties properties = AppServletContextListener.getProperties();
             String basePath = properties.getProperty("reports");
@@ -44,6 +46,18 @@ public class ReportCreator {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(content).get("asJson");
         } catch (IOException e) {
+
+            //e.printStackTrace();
+            return null;
+        }
+    }
+
+    public JsonNode loadReportToJson(Object report) {
+        try {
+            String content = SerializationUtils.serializeObject(report);
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(content);
+        } catch (IOException | ResponseSerializationException e) {
 
             //e.printStackTrace();
             return null;

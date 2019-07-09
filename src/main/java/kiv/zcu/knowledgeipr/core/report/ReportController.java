@@ -11,11 +11,8 @@ import kiv.zcu.knowledgeipr.core.mongo.DbRecord;
 import kiv.zcu.knowledgeipr.core.mongo.MongoConnection;
 import kiv.zcu.knowledgeipr.core.mongo.StatsRetriever;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
-import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
-import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
-import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
+import kiv.zcu.knowledgeipr.rest.response.*;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -33,6 +30,8 @@ public class ReportController {
     private ReportCreator reportCreator;
     private DataRetriever dataRetriever;
 
+    private StatsRetriever statsQuery;
+
     private WordNet wordNet;
 
     public ReportController(ReportCreator reportCreator) {
@@ -40,6 +39,8 @@ public class ReportController {
         dataRetriever = new DataRetriever(mongoConnection);
 
         this.reportCreator = reportCreator;
+
+        statsQuery = new StatsRetriever(MongoConnection.getInstance());
         wordNet = new WordNet();
     }
 
@@ -57,7 +58,7 @@ public class ReportController {
         try {
             dbRecordList = dataRetriever.runQuery(query, page, limit);
 
-            Report report = reportCreator.createReport(dbRecordList);
+            DataReport report = reportCreator.createReport(dbRecordList);
 
             response = new StandardResponse(StatusResponse.SUCCESS, "OK", report.getAsJson());
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
@@ -101,9 +102,7 @@ public class ReportController {
     private ChartResponse getActivePeople(String collectionName, String peopleType) {
         String reportName = "active" + peopleType + ".json";
 
-        StatsRetriever statsQuery = new StatsRetriever(MongoConnection.getInstance());
-
-        JsonNode cachedReport = reportCreator.loadReportToJson(collectionName + "\\" + reportName);
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
@@ -112,7 +111,7 @@ public class ReportController {
             GraphReport<String, Integer> report = reportCreator.createChartReport("Active " + peopleType, peopleType, "Number of published works", activePeople);
             report.save(collectionName + "\\" + reportName);
 
-            cachedReport = report.getAsJson();
+            cachedReport = reportCreator.loadReportToJson(report);
         }
 
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
@@ -127,18 +126,21 @@ public class ReportController {
     public ChartResponse getCountByFos(String collectionName) {
         String reportName = "countByFos.json";
 
-        StatsRetriever statsQuery = new StatsRetriever(MongoConnection.getInstance());
-
-        JsonNode cachedReport = reportCreator.loadReportToJson(collectionName + "\\" + reportName);
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
             List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
+//            List<Pair<String, Integer>> countByFos = new ArrayList<>();
+//            countByFos.add(new Pair<>("Asd", 122));
+//            countByFos.add(new Pair<>("Asd", 122));
+//            countByFos.add(new Pair<>("Asd", 122));
+//            countByFos.add(new Pair<>("Asd", 122));
 
             GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
             report.save(collectionName + "\\" + reportName);
 
-            cachedReport = report.getAsJson();
+            cachedReport = reportCreator.loadReportToJson(report);
         }
 
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
@@ -147,9 +149,7 @@ public class ReportController {
     public ChartResponse getCountByYear(String collectionName) {
         String reportName = "countByYear.json";
 
-        StatsRetriever statsQuery = new StatsRetriever(MongoConnection.getInstance());
-
-        JsonNode cachedReport = reportCreator.loadReportToJson(collectionName + "\\" + reportName);
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
@@ -161,14 +161,33 @@ public class ReportController {
 //            countByFos.add(new Pair<>(2011, 2121213));
 //            countByFos.add(new Pair<>(2011, 2121213));
 
-
             GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
             report.save(collectionName + "\\" + reportName);
 
-            cachedReport = report.getAsJson();
+            cachedReport = reportCreator.loadReportToJson(report);
         }
 
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+    }
+
+    public SimpleResponse getCountAuthors(String collectionName) {
+        String reportName = "countOfAuthors.json";
+
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
+        if (cachedReport == null) {
+            LOGGER.info("Cached report could not be found, querying database");
+            // The cached file could not be loaded, we need to fetch new results from the database
+            //int authorCount = statsQuery.getPeopleCount(collectionName, "authors");
+
+            int authorCount = 2;
+
+            SimpleReport simpleReport = new SimpleReport(authorCount);
+            simpleReport.save(collectionName + "\\" + reportName);
+
+            cachedReport = reportCreator.loadReportToJson(simpleReport);
+        }
+
+        return new SimpleResponse(cachedReport);
     }
 
     public WordNetResponse getSynonyms(String word) {
