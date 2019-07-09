@@ -1,16 +1,23 @@
 package kiv.zcu.knowledgeipr.core;
 
+// TODO: Separate fields for patents and publications into its own enums
 public enum ResponseField {
     DOCUMENT_ID("number"),
     TITLE("title"),
     ABSTRACT("abstract"),
     YEAR("year"),
+    DATE("date"),
     AUTHORS("authors"),
     AUTHORS_NAME("authors.name"),
     OWNERS("owners"),
     DATA_SOURCE("dataSource"),
     PUBLISHER("publisher"),
-    FOS("fos");
+    FOS("fos"),
+    ISSUE("issue"),
+    URL("url"),
+    KEYWORDS("keywords"),
+    VENUE("venue"),
+    LANG("lang");
 
     public final String value;
 

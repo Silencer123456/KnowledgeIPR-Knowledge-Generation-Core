@@ -72,11 +72,50 @@ public class ReportController {
         } catch (MongoExecutionTimeoutException e) {
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
             LOGGER.info(e.getMessage());
-
         }
 
         return response;
     }
+
+//    public ChartResponse chartQuery(String collectionName, String reportName) {
+//        IResponse response = null;
+//
+//        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
+//        if (cachedReport != null) {
+//            return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//        }
+//
+//        switch (reportName) {
+//            case "countByYear.json": // TODO: change to enum
+//                List<Pair<Integer, Integer>> countByYear = statsQuery.countByYear(collectionName);
+//                GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
+//                report.save(collectionName + "\\" + reportName);
+//
+//                cachedReport = reportCreator.loadReportToJson(report);
+//
+//                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//            break;
+//            case "countByFos.json":
+//                List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
+//
+//                GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
+//                report.save(collectionName + "\\" + reportName);
+//
+//                cachedReport = reportCreator.loadReportToJson(report);
+//                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//            break;
+//            case "activeowners.json" :
+//                List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, peopleType);
+//
+//                GraphReport<String, Integer> report = reportCreator.createChartReport("Active " + peopleType, peopleType, "Number of published works", activePeople);
+//                report.save(collectionName + "\\" + reportName);
+//
+//                cachedReport = reportCreator.loadReportToJson(report);
+//
+//                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//                break;
+//        }
+//    }
 
     /**
      * Returns the most active authors
@@ -108,7 +147,7 @@ public class ReportController {
             // The cached file could not be loaded, we need to fetch new results from the database
             List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, peopleType);
 
-            GraphReport<String, Integer> report = reportCreator.createChartReport("Active " + peopleType, peopleType, "Number of published works", activePeople);
+            GraphReport<String, Integer> report = reportCreator.createChartReport("The most active " + collectionName + " " + peopleType, peopleType, "Number of published works", activePeople);
             report.save(collectionName + "\\" + reportName);
 
             cachedReport = reportCreator.loadReportToJson(report);
@@ -177,9 +216,9 @@ public class ReportController {
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
-            //int authorCount = statsQuery.getPeopleCount(collectionName, "authors");
+            int authorCount = statsQuery.getPeopleCount(collectionName, "authors");
 
-            int authorCount = 2;
+            //int authorCount = 2;
 
             SimpleReport simpleReport = new SimpleReport(authorCount);
             simpleReport.save(collectionName + "\\" + reportName);

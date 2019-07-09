@@ -247,7 +247,7 @@ public class DataRetriever {
                 .find(filter)
                 .skip(page > 0 ? ((page - 1) * limit) : 0)
                 .limit(limit)
-                .projection(getProjectionFields())
+                .projection(getProjectionFields(collectionName))
                 .maxTime(timeout, TimeUnit.SECONDS);
         //.sort(Sorts.metaTextScore("score"))
 
@@ -263,22 +263,40 @@ public class DataRetriever {
 
     /**
      * Returns a list of fields to be projected in the Mongo documents
-     * TODO: get different projection fields for each data source type
      * @return - BSON representation of projected fields
      */
-    private Bson getProjectionFields() {
-        return fields(
-                include(
-                        //Projections.metaTextScore("score"),
-                        ResponseField.TITLE.toString(),
-                        ResponseField.YEAR.toString(),
-                        ResponseField.ABSTRACT.toString(),
-                        ResponseField.AUTHORS.toString(),
-                        ResponseField.OWNERS.toString(),
-                        ResponseField.DOCUMENT_ID.toString(),
-                        ResponseField.PUBLISHER.toString(),
-                        ResponseField.DATA_SOURCE.toString(),
-                        ResponseField.FOS.toString()));
+    private Bson getProjectionFields(String collectionName) {
+        if (collectionName.equals(DataSourceType.PATENT.value)) {
+            return fields(
+                    include(
+                            //Projections.metaTextScore("score"),
+                            ResponseField.TITLE.toString(),
+                            ResponseField.YEAR.toString(),
+                            ResponseField.DATE.toString(),
+                            ResponseField.ABSTRACT.toString(),
+                            ResponseField.AUTHORS.toString(),
+                            ResponseField.OWNERS.toString(),
+                            ResponseField.DOCUMENT_ID.toString(),
+                            ResponseField.DATA_SOURCE.toString()
+                    ));
+        } else {
+            return fields(
+                    include(
+                            //Projections.metaTextScore("score"),
+                            ResponseField.TITLE.toString(),
+                            ResponseField.YEAR.toString(),
+                            ResponseField.ABSTRACT.toString(),
+                            ResponseField.AUTHORS.toString(),
+                            ResponseField.PUBLISHER.toString(),
+                            ResponseField.DATA_SOURCE.toString(),
+                            ResponseField.FOS.toString(),
+                            ResponseField.ISSUE.toString(),
+                            ResponseField.URL.toString(),
+                            ResponseField.KEYWORDS.toString(),
+                            ResponseField.VENUE.toString(),
+                            ResponseField.LANG.toString()
+                    ));
+        }
     }
 }
 
