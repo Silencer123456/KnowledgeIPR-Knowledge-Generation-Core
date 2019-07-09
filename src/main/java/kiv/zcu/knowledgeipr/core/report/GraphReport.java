@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
+import kiv.zcu.knowledgeipr.core.utils.Constants;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 
@@ -57,8 +58,11 @@ public class GraphReport<X, Y> {
         ArrayNode dataNode = mapper.createArrayNode();
         for (Pair<X, Y> dataPair : data) {
             ObjectNode pairNode = mapper.createObjectNode();
-            // TODO: check the type of the pairs!!!
-            pairNode.put("x", (String) dataPair.getKey());
+            if (dataPair.getKey() instanceof Integer) {
+                pairNode.put("x", (Integer) dataPair.getKey());
+            } else {
+                pairNode.put("x", (String) dataPair.getKey());
+            }
             pairNode.put("y", (Integer) dataPair.getValue());
             dataNode.add(pairNode);
         }
@@ -76,7 +80,7 @@ public class GraphReport<X, Y> {
             String json = SerializationUtils.serializeObject(this);
 
             Properties properties = AppServletContextListener.getProperties();
-            String basePath = properties.getProperty("reports");
+            String basePath = properties.getProperty(Constants.REPORTS_RESOURCE_NAME);
 
             new File(basePath + filename).getParentFile().mkdirs();
 

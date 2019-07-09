@@ -13,6 +13,7 @@ import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.Response;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
 
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -107,6 +108,15 @@ public class QueryRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByYearPublications() throws ApiException, ResponseSerializationException {
         ChartResponse response = reportGenerator.getCountByYear(DataSourceType.PUBLICATION.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Path("/synonyms/{word}")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ApiException, ResponseSerializationException {
+        WordNetResponse response = reportGenerator.getSynonyms(word);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }

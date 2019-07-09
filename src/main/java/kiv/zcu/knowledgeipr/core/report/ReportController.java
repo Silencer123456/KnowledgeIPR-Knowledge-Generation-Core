@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.mongo.DataRetriever;
 import kiv.zcu.knowledgeipr.core.mongo.DbRecord;
 import kiv.zcu.knowledgeipr.core.mongo.MongoConnection;
@@ -14,6 +15,7 @@ import kiv.zcu.knowledgeipr.rest.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -31,11 +33,14 @@ public class ReportController {
     private ReportCreator reportCreator;
     private DataRetriever dataRetriever;
 
+    private WordNet wordNet;
+
     public ReportController(ReportCreator reportCreator) {
         MongoConnection mongoConnection = MongoConnection.getInstance();
         dataRetriever = new DataRetriever(mongoConnection);
 
         this.reportCreator = reportCreator;
+        wordNet = new WordNet();
     }
 
     /**
@@ -149,6 +154,13 @@ public class ReportController {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
             List<Pair<Integer, Integer>> countByFos = statsQuery.countByYear(collectionName);
+//            List<Pair<Integer, Integer>> countByFos = new ArrayList<>();
+//            countByFos.add(new Pair<>(2011, 2121213));
+//            countByFos.add(new Pair<>(2011, 2121213));
+//            countByFos.add(new Pair<>(2011, 2121213));
+//            countByFos.add(new Pair<>(2011, 2121213));
+//            countByFos.add(new Pair<>(2011, 2121213));
+
 
             GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
             report.save(collectionName + "\\" + reportName);
@@ -157,6 +169,12 @@ public class ReportController {
         }
 
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+    }
+
+    public WordNetResponse getSynonyms(String word) {
+        List<String> synonyms = wordNet.getSynonymsForWord(word);
+        List<String> hypernyms = wordNet.getHypernymsForWord(word);
+        return new WordNetResponse(synonyms, hypernyms);
     }
 
     private int getCountForDataSource(String source) {
