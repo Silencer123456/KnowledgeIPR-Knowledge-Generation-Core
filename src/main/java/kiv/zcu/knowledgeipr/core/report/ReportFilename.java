@@ -8,7 +8,8 @@ public enum ReportFilename {
     COUNT_BY_YEAR("countByYear.json"),
     COUNT_BY_FOS("countByFos.json"),
     ACTIVE_AUTHORS("activeauthors.json"),
-    ACTIVE_OWNERS("activeowners.json");
+    ACTIVE_OWNERS("activeowners.json"),
+    COUNT_BY_PUBLISHER("prolificPublishers.json");
 
     public final String value;
 

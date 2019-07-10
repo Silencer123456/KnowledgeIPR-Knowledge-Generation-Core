@@ -11,6 +11,7 @@ import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -31,15 +32,14 @@ public class ReportController {
 
     private WordNet wordNet;
 
-    private MongoRunner mongoRunner;
-
     public ReportController(ReportCreator reportCreator) {
-        mongoRunner = new MongoRunner(MongoConnection.getInstance());
-        dataRetriever = new DataRetriever(mongoRunner);
-
         this.reportCreator = reportCreator;
 
+        MongoRunner mongoRunner = new MongoRunner(MongoConnection.getInstance());
+
+        dataRetriever = new DataRetriever(mongoRunner);
         statsQuery = new StatsRetriever(mongoRunner);
+
         wordNet = new WordNet();
     }
 
@@ -86,56 +86,45 @@ public class ReportController {
      * @return
      */
     public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) {
-        IResponse response = null;
-
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportFilename.value);
         if (cachedReport != null) {
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
         }
 
+        GraphReport<String, Integer> report;
+
         switch (reportFilename) {
-            case COUNT_BY_YEAR: {
-                List<Pair<Integer, Integer>> countByYear = statsQuery.countByYear(collectionName);
-                GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
-                report.save(collectionName + "\\" + reportFilename.value);
-
-                cachedReport = reportCreator.loadReportToJson(report);
-
-                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-            }
-            case COUNT_BY_FOS: {
+            case COUNT_BY_YEAR:
+                List<Pair<String, Integer>> countByYear = statsQuery.countByYear(collectionName);
+                report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
+                break;
+            case COUNT_BY_FOS:
                 List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
+                report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
+                break;
+            case ACTIVE_OWNERS:
+                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, "owners");
+                report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activeOwners);
+                break;
+            case ACTIVE_AUTHORS:
+                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, "authors");
 
-                GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
-                report.save(collectionName + "\\" + reportFilename.value);
+                report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activeAuthors);
+                break;
+            case COUNT_BY_PUBLISHER:
+                List<Pair<String, Integer>> prolificPublishers = statsQuery.prolificPublishers(collectionName);
 
-                cachedReport = reportCreator.loadReportToJson(report);
-                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-
-            }
-            case ACTIVE_OWNERS: {
-                List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, "owners");
-
-                GraphReport<String, Integer> report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activePeople);
-                report.save(collectionName + "\\" + reportFilename.value);
-
-                cachedReport = reportCreator.loadReportToJson(report);
-
-                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-            }
-            case ACTIVE_AUTHORS: {
-                List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, "authors");
-
-                GraphReport<String, Integer> report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activePeople);
-                report.save(collectionName + "\\" + reportFilename.value);
-
-                cachedReport = reportCreator.loadReportToJson(report);
-
-                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-            }
+                report = reportCreator.createChartReport("Prolific publishers", "Publisher name", "Number of publications", prolificPublishers);
+                break;
+            default:
+                report = new GraphReport<>("", "", "", new ArrayList<>());
         }
 
-        return null; // TODO: change
+        report.save(collectionName + "\\" + reportFilename.value);
+
+        cachedReport = reportCreator.loadReportToJson(report);
+
+        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
 //    /**

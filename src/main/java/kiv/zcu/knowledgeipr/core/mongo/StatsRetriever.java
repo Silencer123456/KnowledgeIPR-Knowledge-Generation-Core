@@ -84,18 +84,34 @@ public class StatsRetriever {
         return fosCounts;
     }
 
-    public List<Pair<Integer, Integer>> countByYear(String collectionName) {
+    public List<Pair<String, Integer>> countByYear(String collectionName) {
         LOGGER.info("Running 'countByYear' method on " + collectionName + " collection.");
-        List<Pair<Integer, Integer>> yearCounts = new ArrayList<>();
+        List<Pair<String, Integer>> yearCounts = new ArrayList<>();
 
         AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, "year", 20);
 
         for (Document doc : output) {
-            int author = (Integer) doc.get("year");
+            String author = (String) doc.get("year");
             yearCounts.add(new Pair<>(author, (Integer) doc.get("count")));
         }
 
         return yearCounts;
+    }
+
+    public List<Pair<String, Integer>> prolificPublishers(String collectionName) {
+        LOGGER.info("Running 'prolificPublishers' method on " + collectionName + " collection.");
+        String fieldName = "publisher";
+
+        List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
+
+        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, fieldName, 30);
+
+        for (Document doc : output) {
+            String author = (String) doc.get(fieldName);
+            prolificPublishers.add(new Pair<>(author, (Integer) doc.get("count")));
+        }
+
+        return prolificPublishers;
     }
 
     public int getPeopleCount(String collectionName, String type) {

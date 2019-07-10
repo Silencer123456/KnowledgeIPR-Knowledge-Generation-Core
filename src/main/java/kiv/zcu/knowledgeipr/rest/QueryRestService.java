@@ -102,6 +102,15 @@ public class QueryRestService {
     }
 
     @GET
+    @Path("/prolificPublishers")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getProlificPublishers() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_PUBLISHER);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
     @Path("/countsByYearPublications")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByYearPublications() throws ResponseSerializationException {
@@ -136,8 +145,9 @@ public class QueryRestService {
         reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.ACTIVE_AUTHORS);
         reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_FOS);
         reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_YEAR);
-        reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
-        reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_PUBLISHER);
+        //reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
+        //reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
 
         return javax.ws.rs.core.Response.ok().build();
     }
