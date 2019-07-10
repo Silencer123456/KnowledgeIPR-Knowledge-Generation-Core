@@ -6,6 +6,7 @@ import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
+import kiv.zcu.knowledgeipr.core.ResponseField;
 import kiv.zcu.knowledgeipr.core.mongo.*;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
@@ -95,36 +96,36 @@ public class ReportController {
 
         switch (reportFilename) {
             case COUNT_BY_YEAR:
-                List<Pair<String, Integer>> countByYear = statsQuery.countByYear(collectionName);
+                List<Pair<String, Integer>> countByYear = statsQuery.countByField(collectionName, ResponseField.YEAR);
                 report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
                 break;
             case COUNT_BY_FOS:
-                List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
+                List<Pair<String, Integer>> countByFos = statsQuery.countByField(collectionName, ResponseField.FOS);
                 report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
                 break;
             case ACTIVE_OWNERS:
-                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, "owners");
+                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, ResponseField.OWNERS.value);
                 report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activeOwners);
                 break;
             case ACTIVE_AUTHORS:
-                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, "authors");
-
+                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, ResponseField.AUTHORS.value);
                 report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activeAuthors);
                 break;
             case COUNT_BY_PUBLISHER:
-                List<Pair<String, Integer>> prolificPublishers = statsQuery.prolificPublishers(collectionName);
-
+                List<Pair<String, Integer>> prolificPublishers = statsQuery.countByField(collectionName, ResponseField.PUBLISHER);
                 report = reportCreator.createChartReport("Prolific publishers", "Publisher name", "Number of publications", prolificPublishers);
                 break;
             case COUNT_BY_KEYWORD:
-                List<Pair<String, Integer>> keywords = statsQuery.countByKeyword(collectionName);
-
+                List<Pair<String, Integer>> keywords = statsQuery.countByField(collectionName, ResponseField.KEYWORDS);
                 report = reportCreator.createChartReport("Number of documents by keywords", "Keyword", "Number of documents", keywords);
                 break;
             case COUNT_BY_VENUES:
-                List<Pair<String, Integer>> venues = statsQuery.countByVenue(collectionName);
-
+                List<Pair<String, Integer>> venues = statsQuery.countByField(collectionName, ResponseField.VENUE);
                 report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", venues);
+                break;
+            case COUNT_BY_LANG:
+                List<Pair<String, Integer>> countByLang = statsQuery.countByField(collectionName, ResponseField.LANG);
+                report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", countByLang);
                 break;
             default:
                 report = new GraphReport<>("", "", "", new ArrayList<>());

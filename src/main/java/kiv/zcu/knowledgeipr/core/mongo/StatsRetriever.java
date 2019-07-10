@@ -54,81 +54,86 @@ public class StatsRetriever {
             String author = doc.get(type, Document.class).getString("name");
             activeAuthors.add(new Pair<>(author, (Integer) doc.get("count")));
         }
+//        activeAuthors.add(new Pair<>("test", 20154623));
+//        activeAuthors.add(new Pair<>("test", 456));
+//        activeAuthors.add(new Pair<>("test", 20146523));
+//        activeAuthors.add(new Pair<>("test", 20154623));
+//        activeAuthors.add(new Pair<>("test", 20654123));
+//        activeAuthors.add(new Pair<>("test", 54));
+//        activeAuthors.add(new Pair<>("test", 20123));
 
         return activeAuthors;
     }
 
-    /**
-     * Queries Mongo database and aggregates fields of study counts
-     *
-     * db.publication.aggregate([
-     *   {$project: { _id: 0, fos: 1 } },
-     *   {$unwind: "$fos" },
-     *   {$group: { _id: "$fos", tags: { $sum: 1 } }},
-     *   {$project: { _id: 0, fos: "$_id", tags: 1 } },
-     *   {$sort: { tags: -1 } }
-     * ])
-     *
-     * @param collectionName - Collection in which to search
-     * @return List of 'Field of study, count' pairs
-     */
-    public List<Pair<String, Integer>> countByFos(String collectionName) {
-        LOGGER.info("Running 'countByFos' method on " + collectionName + " collection.");
-        List<Pair<String, Integer>> fosCounts = new ArrayList<>();
+//    public List<Pair<String, Integer>> countByYear(String collectionName) {
+//        LOGGER.info("Running 'countByYear' method on " + collectionName + " collection.");
+//        List<Pair<String, Integer>> yearCounts = new ArrayList<>();
+//
+//        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, ResponseField.YEAR.value, 20);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get(ResponseField.YEAR.value);
+//            yearCounts.add(new Pair<>(author, (Integer) doc.get("count")));
+//        }
+//
+//        return yearCounts;
+//    }
+//    public List<Pair<String, Integer>> prolificPublishers(String collectionName) {
+//        LOGGER.info("Running 'prolificPublishers' method on " + collectionName + " collection.");
+//        String fieldName = ResponseField.PUBLISHER.value;
+//
+//        List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
+//
+//        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, fieldName, 30);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get(fieldName);
+//            prolificPublishers.add(new Pair<>(author, (Integer) doc.get("count")));
+//        }
+//
+//        return prolificPublishers;
+//    }
+//    /**
+//     * Queries Mongo database and aggregates fields of study counts
+//     *
+//     * db.publication.aggregate([
+//     *   {$project: { _id: 0, fos: 1 } },
+//     *   {$unwind: "$fos" },
+//     *   {$group: { _id: "$fos", tags: { $sum: 1 } }},
+//     *   {$project: { _id: 0, fos: "$_id", tags: 1 } },
+//     *   {$sort: { tags: -1 } }
+//     * ])
+//     *
+//     * @param collectionName - Collection in which to search
+//     * @return List of 'Field of study, count' pairs
+//     */
+//    public List<Pair<String, Integer>> countByFos(String collectionName) {
+//        LOGGER.info("Running 'countByFos' method on " + collectionName + " collection.");
+//        List<Pair<String, Integer>> fosCounts = new ArrayList<>();
+//
+//        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, ResponseField.FOS.value, ResponseField.FOS.value, 30);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get(ResponseField.FOS.value);
+//            fosCounts.add(new Pair<>(author, (Integer) doc.get("count")));
+//        }
+//
+//        return fosCounts;
+//    }
 
-        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, ResponseField.FOS.value, ResponseField.FOS.value, 30);
-
-        for (Document doc : output) {
-            String author = (String) doc.get(ResponseField.FOS.value);
-            fosCounts.add(new Pair<>(author, (Integer) doc.get("count")));
-        }
-
-        return fosCounts;
-    }
-
-    public List<Pair<String, Integer>> countByKeyword(String collectionName) {
-        LOGGER.info("Running 'countByKeyword' method on " + collectionName + " collection.");
-        List<Pair<String, Integer>> keywordsCount = new ArrayList<>();
-
-        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, ResponseField.KEYWORDS.value, ResponseField.KEYWORDS.value, 30);
-
-        for (Document doc : output) {
-            String author = (String) doc.get(ResponseField.KEYWORDS.value);
-            keywordsCount.add(new Pair<>(author, (Integer) doc.get("count")));
-        }
-
-        return keywordsCount;
-    }
-
-    public List<Pair<String, Integer>> countByYear(String collectionName) {
-        LOGGER.info("Running 'countByYear' method on " + collectionName + " collection.");
-        List<Pair<String, Integer>> yearCounts = new ArrayList<>();
-
-        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, ResponseField.YEAR.value, 20);
-
-        for (Document doc : output) {
-            String author = (String) doc.get(ResponseField.YEAR.value);
-            yearCounts.add(new Pair<>(author, (Integer) doc.get("count")));
-        }
-
-        return yearCounts;
-    }
-
-    public List<Pair<String, Integer>> prolificPublishers(String collectionName) {
-        LOGGER.info("Running 'prolificPublishers' method on " + collectionName + " collection.");
-        String fieldName = ResponseField.PUBLISHER.value;
-
-        List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
-
-        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, fieldName, 30);
-
-        for (Document doc : output) {
-            String author = (String) doc.get(fieldName);
-            prolificPublishers.add(new Pair<>(author, (Integer) doc.get("count")));
-        }
-
-        return prolificPublishers;
-    }
+//    public List<Pair<String, Integer>> countByKeyword(String collectionName) {
+//        LOGGER.info("Running 'countByKeyword' method on " + collectionName + " collection.");
+//        List<Pair<String, Integer>> keywordsCount = new ArrayList<>();
+//
+//        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, ResponseField.KEYWORDS.value, ResponseField.KEYWORDS.value, 30);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get(ResponseField.KEYWORDS.value);
+//            keywordsCount.add(new Pair<>(author, (Integer) doc.get("count")));
+//        }
+//
+//        return keywordsCount;
+//    }
 
     public int getPeopleCount(String collectionName, String type) {
 //        MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -154,19 +159,58 @@ public class StatsRetriever {
         return Collections.emptyList();
     }
 
-    public List<Pair<String, Integer>> countByVenue(String collectionName) {
-        LOGGER.info("Running 'prolificVenues' method on " + collectionName + " collection.");
-        String fieldName = ResponseField.VENUE.value;
+//    public List<Pair<String, Integer>> countByVenue(String collectionName) {
+//        LOGGER.info("Running 'prolificVenues' method on " + collectionName + " collection.");
+//        String fieldName = ResponseField.VENUE.value;
+//
+//        List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
+//
+//        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, fieldName, 30);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get(fieldName);
+//            prolificPublishers.add(new Pair<>(author, (Integer) doc.get("count")));
+//        }
+//
+//        return prolificPublishers;
+//    }
+//
+//    public List<Pair<String, Integer>> countByLang(String collectionName) {
+//        LOGGER.info("Running 'prolificVenues' method on " + collectionName + " collection.");
+//        String fieldName = ResponseField.VENUE.value;
+//
+//        List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
+//
+//        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, fieldName, 30);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get(fieldName);
+//            prolificPublishers.add(new Pair<>(author, (Integer) doc.get("count")));
+//        }
+//
+//        return prolificPublishers;
+//    }
 
-        List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
+    public List<Pair<String, Integer>> countByField(String collectionName, ResponseField field) {
+        LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
 
-        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, fieldName, 30);
+        List<Pair<String, Integer>> fieldToCounts = new ArrayList<>();
+
+        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, field.value, 30);
 
         for (Document doc : output) {
-            String author = (String) doc.get(fieldName);
-            prolificPublishers.add(new Pair<>(author, (Integer) doc.get("count")));
+            String author = (String) doc.get(field.value);
+            fieldToCounts.add(new Pair<>(author, (Integer) doc.get("count")));
         }
 
-        return prolificPublishers;
+//        fieldToCounts.add(new Pair<>("test", 20123));
+//        fieldToCounts.add(new Pair<>("test", 20123));
+//        fieldToCounts.add(new Pair<>("test", 20123));
+//        fieldToCounts.add(new Pair<>("test", 20123));
+//        fieldToCounts.add(new Pair<>("test", 20123));
+
+        return fieldToCounts;
     }
+
+
 }

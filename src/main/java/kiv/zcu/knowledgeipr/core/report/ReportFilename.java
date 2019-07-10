@@ -11,7 +11,8 @@ public enum ReportFilename {
     ACTIVE_AUTHORS("activeauthors.json"),
     ACTIVE_OWNERS("activeowners.json"),
     COUNT_BY_PUBLISHER("prolificPublishers.json"),
-    COUNT_BY_VENUES("prolificVenues.json");
+    COUNT_BY_VENUES("prolificVenues.json"),
+    COUNT_BY_LANG("countByLang.json");
 
     public final String value;
 
