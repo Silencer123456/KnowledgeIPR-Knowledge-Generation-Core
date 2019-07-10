@@ -3,29 +3,19 @@ package kiv.zcu.knowledgeipr.core.mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import kiv.zcu.knowledgeipr.core.DataSourceType;
 import kiv.zcu.knowledgeipr.core.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import org.bson.BsonDocument;
-import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import static com.mongodb.client.model.Projections.fields;
-import static com.mongodb.client.model.Projections.include;
 
 /**
  * Accesses the source database, runs queries on it and gets
@@ -34,10 +24,10 @@ import static com.mongodb.client.model.Projections.include;
 public class DataRetriever {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-    private MongoDatabase database;
+    private MongoRunner mongoRunner;
 
-    public DataRetriever(MongoConnection mongoConnection) {
-        database = mongoConnection.getConnectionInstance();
+    public DataRetriever(MongoRunner mongoRunner) {
+        this.mongoRunner = mongoRunner;
     }
 
     /**
@@ -64,7 +54,7 @@ public class DataRetriever {
         if (filterContainsIndex(query.getFilters())) {
             LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
             try {
-                List<DbRecord> results = doSearch(sourceType, filter, limit, page, 10);
+                List<DbRecord> results = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
                 // If something was found, we do not need to run the second query
                 if (!results.isEmpty()) {
                     return results;
@@ -78,13 +68,13 @@ public class DataRetriever {
 
         LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
         // Run second query
-        return doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
+        return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }
 
     /**
      * Adds all filters from the query and creates a bson document from them
      *
-     * @param query
+     * @param query - Query instance from which to extract the filters
      * @return Bson document containing all the filters
      */
     private BsonDocument addAllFilters(Query query, boolean useRegex) {
@@ -177,8 +167,8 @@ public class DataRetriever {
      * Checks if the provided filters map contains field, which is a part of
      * an index in Mongo
      *
-     * @param filters
-     * @return
+     * @param filters Map of filters
+     * @return true if the filters contain any of the indexed fields
      */
     private boolean filterContainsIndex(Map<String, String> filters) {
         return filters.containsKey(ResponseField.DOCUMENT_ID.value) ||
@@ -224,78 +214,6 @@ public class DataRetriever {
             }
 
             appendBsonDoc(bsonDocument, tmp, optionEntry.getKey());
-        }
-    }
-
-    /**
-     * Runs a query on a Mongo collection on the text index.
-     * Returns a list of results limited by the specified limit.
-     * The returned result list contains only projected fields relevant to the response.
-     *
-     * @param filter         - The search parameter filter
-     * @param collectionName - Name of the Mongo collection in which to run the search
-     * @param limit          - Limit of the returned results
-     * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
-     */
-    private List<DbRecord> doSearch(String collectionName, Bson filter, int limit, int page, int timeout)
-            throws MongoQueryException, MongoExecutionTimeoutException {
-
-        MongoCollection<Document> collection = database.getCollection(collectionName);
-        List<DbRecord> dbRecords = new ArrayList<>();
-
-        FindIterable<Document> iterable = collection
-                .find(filter)
-                .skip(page > 0 ? ((page - 1) * limit) : 0)
-                .limit(limit)
-                .projection(getProjectionFields(collectionName))
-                .maxTime(timeout, TimeUnit.SECONDS);
-        //.sort(Sorts.metaTextScore("score"))
-
-        try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
-                dbRecords.add(new DbRecord(document));
-            }
-        }
-
-        return dbRecords;
-    }
-
-    /**
-     * Returns a list of fields to be projected in the Mongo documents
-     * @return - BSON representation of projected fields
-     */
-    private Bson getProjectionFields(String collectionName) {
-        if (collectionName.equals(DataSourceType.PATENT.value)) {
-            return fields(
-                    include(
-                            //Projections.metaTextScore("score"),
-                            ResponseField.TITLE.toString(),
-                            ResponseField.YEAR.toString(),
-                            ResponseField.DATE.toString(),
-                            ResponseField.ABSTRACT.toString(),
-                            ResponseField.AUTHORS.toString(),
-                            ResponseField.OWNERS.toString(),
-                            ResponseField.DOCUMENT_ID.toString(),
-                            ResponseField.DATA_SOURCE.toString()
-                    ));
-        } else {
-            return fields(
-                    include(
-                            //Projections.metaTextScore("score"),
-                            ResponseField.TITLE.toString(),
-                            ResponseField.YEAR.toString(),
-                            ResponseField.ABSTRACT.toString(),
-                            ResponseField.AUTHORS.toString(),
-                            ResponseField.PUBLISHER.toString(),
-                            ResponseField.DATA_SOURCE.toString(),
-                            ResponseField.FOS.toString(),
-                            ResponseField.ISSUE.toString(),
-                            ResponseField.URL.toString(),
-                            ResponseField.KEYWORDS.toString(),
-                            ResponseField.VENUE.toString(),
-                            ResponseField.LANG.toString()
-                    ));
         }
     }
 }

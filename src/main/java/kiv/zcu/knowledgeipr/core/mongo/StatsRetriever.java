@@ -1,20 +1,13 @@
 package kiv.zcu.knowledgeipr.core.mongo;
 
 import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Accumulators;
 import javafx.util.Pair;
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Filters.gt;
 
 /**
  * Serves for executing various queries gathering statistical information
@@ -25,10 +18,10 @@ public class StatsRetriever {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-    private MongoDatabase database;
+    private MongoRunner mongoRunner;
 
-    public StatsRetriever(MongoConnection connection) {
-        database = connection.getConnectionInstance();
+    public StatsRetriever(MongoRunner mongoRunner) {
+        this.mongoRunner = mongoRunner;
     }
 
     /**
@@ -51,20 +44,9 @@ public class StatsRetriever {
     public List<Pair<String, Integer>> activePeople(String collectionName, String type) {
         LOGGER.info("Running 'active " + type + "' method on " + collectionName + " collection.");
 
-        MongoCollection<Document> collection = database.getCollection(collectionName);
-
         List<Pair<String, Integer>> activeAuthors = new ArrayList<>();
 
-        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
-                project(new Document("_id", 0)
-                        .append(type + ".name", 1)),
-                unwind("$" + type),
-                group(new Document("$toLower", "$" + type + ".name"),
-                        Accumulators.sum("count", 1)),
-                project(new Document("_id", 0).append(type + ".name", "$_id").append("count", 1)),
-                sort(new Document("count", -1)),
-                limit(20)
-        )).allowDiskUse(true);
+        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, type, type + ".name", 20);
 
         for (Document doc : output) {
             String author = doc.get(type, Document.class).getString("name");
@@ -92,17 +74,7 @@ public class StatsRetriever {
         LOGGER.info("Running 'countByFos' method on " + collectionName + " collection.");
         List<Pair<String, Integer>> fosCounts = new ArrayList<>();
 
-        MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
-                project(new Document("_id", 0)
-                        .append("fos", 1)),
-                unwind("$fos"),
-                group("$fos", Accumulators.sum("count", 1)),
-                project(new Document("_id", 0).append("fos", "$_id").append("count", 1)),
-                sort(new Document("count", -1)),
-                limit(20)
-        )).allowDiskUse(true);
+        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, "fos", "fos", 20);
 
         for (Document doc : output) {
             String author = (String) doc.get("fos");
@@ -116,16 +88,7 @@ public class StatsRetriever {
         LOGGER.info("Running 'countByYear' method on " + collectionName + " collection.");
         List<Pair<Integer, Integer>> yearCounts = new ArrayList<>();
 
-        MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
-                project(new Document("_id", 0)
-                        .append("year", 1)),
-                group("$year", Accumulators.sum("count", 1)),
-                project(new Document("_id", 0).append("year", "$_id").append("count", 1)),
-                sort(new Document("count", -1)),
-                limit(20)
-        )).allowDiskUse(true);
+        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, "year", 20);
 
         for (Document doc : output) {
             int author = (Integer) doc.get("year");
@@ -136,21 +99,21 @@ public class StatsRetriever {
     }
 
     public int getPeopleCount(String collectionName, String type) {
-        MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
-                project(new Document("_id", 0)
-                        .append(type + ".name", 1)),
-                unwind("$" + type),
-                group("$ " + type + ".name", Accumulators.sum("count", 1)),
-                match(gt("count", 1)),
-                count("count"),
-                limit(20)
-        )).allowDiskUse(true);
-
-        for (Document doc : output) {
-            String author = (String) doc.get("fos"); // TODO: change
-        }
+//        MongoCollection<Document> collection = database.getCollection(collectionName);
+//
+//        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
+//                project(new Document("_id", 0)
+//                        .append(type + ".name", 1)),
+//                unwind("$" + type),
+//                group("$ " + type + ".name", Accumulators.sum("count", 1)),
+//                match(gt("count", 1)),
+//                count("count"),
+//                limit(20)
+//        )).allowDiskUse(true);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get("fos"); // TODO: change
+//        }
 
         return 0;
     }

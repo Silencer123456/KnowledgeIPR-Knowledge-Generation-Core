@@ -6,10 +6,7 @@ import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
-import kiv.zcu.knowledgeipr.core.mongo.DataRetriever;
-import kiv.zcu.knowledgeipr.core.mongo.DbRecord;
-import kiv.zcu.knowledgeipr.core.mongo.MongoConnection;
-import kiv.zcu.knowledgeipr.core.mongo.StatsRetriever;
+import kiv.zcu.knowledgeipr.core.mongo.*;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
@@ -34,13 +31,16 @@ public class ReportController {
 
     private WordNet wordNet;
 
+    private MongoRunner mongoRunner;
+
     public ReportController(ReportCreator reportCreator) {
         MongoConnection mongoConnection = MongoConnection.getInstance();
+        mongoRunner = new MongoRunner(MongoConnection.getInstance());
         dataRetriever = new DataRetriever(mongoConnection);
 
         this.reportCreator = reportCreator;
 
-        statsQuery = new StatsRetriever(MongoConnection.getInstance());
+        statsQuery = new StatsRetriever(mongoRunner);
         wordNet = new WordNet();
     }
 
