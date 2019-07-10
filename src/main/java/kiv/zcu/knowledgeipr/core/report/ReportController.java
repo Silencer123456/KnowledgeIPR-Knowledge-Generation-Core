@@ -34,9 +34,8 @@ public class ReportController {
     private MongoRunner mongoRunner;
 
     public ReportController(ReportCreator reportCreator) {
-        MongoConnection mongoConnection = MongoConnection.getInstance();
         mongoRunner = new MongoRunner(MongoConnection.getInstance());
-        dataRetriever = new DataRetriever(mongoConnection);
+        dataRetriever = new DataRetriever(mongoRunner);
 
         this.reportCreator = reportCreator;
 
@@ -47,8 +46,9 @@ public class ReportController {
     /**
      * Gets the result list from the data retriever and
      * generates a report object from the returned results.
+     *
      * @param query - query to process
-     * @param page - page number to display
+     * @param page  - page number to display
      * @return Response object encapsulating the report.
      */
     public StandardResponse processQuery(Query query, int page, int limit) {
@@ -77,138 +77,158 @@ public class ReportController {
         return response;
     }
 
-//    public ChartResponse chartQuery(String collectionName, String reportName) {
-//        IResponse response = null;
-//
-//        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
-//        if (cachedReport != null) {
-//            return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-//        }
-//
-//        switch (reportName) {
-//            case "countByYear.json": // TODO: change to enum
-//                List<Pair<Integer, Integer>> countByYear = statsQuery.countByYear(collectionName);
-//                GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
-//                report.save(collectionName + "\\" + reportName);
-//
-//                cachedReport = reportCreator.loadReportToJson(report);
-//
-//                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-//            break;
-//            case "countByFos.json":
-//                List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
-//
-//                GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
-//                report.save(collectionName + "\\" + reportName);
-//
-//                cachedReport = reportCreator.loadReportToJson(report);
-//                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-//            break;
-//            case "activeowners.json" :
-//                List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, peopleType);
-//
-//                GraphReport<String, Integer> report = reportCreator.createChartReport("Active " + peopleType, peopleType, "Number of published works", activePeople);
-//                report.save(collectionName + "\\" + reportName);
-//
-//                cachedReport = reportCreator.loadReportToJson(report);
-//
-//                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-//                break;
-//        }
-//    }
-
     /**
-     * Returns the most active authors
+     * TODO: Refactor further
+     * Creates a report from a chart query
      *
-     * @param collectionName Name of the collection in which to search
-     * @return Response containing chart data for visualization
-     */
-    public ChartResponse getActiveAuthors(String collectionName) {
-        return getActivePeople(collectionName, "authors");
-    }
-
-    public ChartResponse getActiveOwners(String collectionName) {
-        return getActivePeople(collectionName, "owners");
-    }
-
-    /**
-     * Creates a report of the most active people (authors or owners)
-     *
-     * @param collectionName - Collection in which to search
-     * @param peopleType     - authors or owners, specifies the name of the array
-     * @return Created response with graph data
-     */
-    private ChartResponse getActivePeople(String collectionName, String peopleType) {
-        String reportName = "active" + peopleType + ".json";
-
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
-        if (cachedReport == null) {
-            LOGGER.info("Cached report could not be found, querying database");
-            // The cached file could not be loaded, we need to fetch new results from the database
-            List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, peopleType);
-
-            GraphReport<String, Integer> report = reportCreator.createChartReport("The most active " + collectionName + " " + peopleType, peopleType, "Number of published works", activePeople);
-            report.save(collectionName + "\\" + reportName);
-
-            cachedReport = reportCreator.loadReportToJson(report);
-        }
-
-        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-    }
-
-    /**
-     * TODO: Refactor, make common method for all chart queries
-     *
-     * @param collectionName - Name of the collection
+     * @param collectionName
+     * @param reportFilename
      * @return
      */
-    public ChartResponse getCountByFos(String collectionName) {
-        String reportName = "countByFos.json";
+    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) {
+        IResponse response = null;
 
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
-        if (cachedReport == null) {
-            LOGGER.info("Cached report could not be found, querying database");
-            // The cached file could not be loaded, we need to fetch new results from the database
-            List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
-//            List<Pair<String, Integer>> countByFos = new ArrayList<>();
-//            countByFos.add(new Pair<>("Asd", 122));
-//            countByFos.add(new Pair<>("Asd", 122));
-//            countByFos.add(new Pair<>("Asd", 122));
-//            countByFos.add(new Pair<>("Asd", 122));
-
-            GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
-            report.save(collectionName + "\\" + reportName);
-
-            cachedReport = reportCreator.loadReportToJson(report);
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportFilename.value);
+        if (cachedReport != null) {
+            return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
         }
 
-        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-    }
+        switch (reportFilename) {
+            case COUNT_BY_YEAR: {
+                List<Pair<Integer, Integer>> countByYear = statsQuery.countByYear(collectionName);
+                GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
+                report.save(collectionName + "\\" + reportFilename.value);
 
-    public ChartResponse getCountByYear(String collectionName) {
-        String reportName = "countByYear.json";
+                cachedReport = reportCreator.loadReportToJson(report);
 
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
-        if (cachedReport == null) {
-            LOGGER.info("Cached report could not be found, querying database");
-            // The cached file could not be loaded, we need to fetch new results from the database
-            List<Pair<Integer, Integer>> countByFos = statsQuery.countByYear(collectionName);
-//            List<Pair<Integer, Integer>> countByFos = new ArrayList<>();
-//            countByFos.add(new Pair<>(2011, 2121213));
-//            countByFos.add(new Pair<>(2011, 2121213));
-//            countByFos.add(new Pair<>(2011, 2121213));
-//            countByFos.add(new Pair<>(2011, 2121213));
-//            countByFos.add(new Pair<>(2011, 2121213));
+                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+            }
+            case COUNT_BY_FOS: {
+                List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
 
-            GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
-            report.save(collectionName + "\\" + reportName);
+                GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
+                report.save(collectionName + "\\" + reportFilename.value);
 
-            cachedReport = reportCreator.loadReportToJson(report);
+                cachedReport = reportCreator.loadReportToJson(report);
+                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+
+            }
+            case ACTIVE_OWNERS: {
+                List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, "owners");
+
+                GraphReport<String, Integer> report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activePeople);
+                report.save(collectionName + "\\" + reportFilename.value);
+
+                cachedReport = reportCreator.loadReportToJson(report);
+
+                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+            }
+            case ACTIVE_AUTHORS: {
+                List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, "authors");
+
+                GraphReport<String, Integer> report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activePeople);
+                report.save(collectionName + "\\" + reportFilename.value);
+
+                cachedReport = reportCreator.loadReportToJson(report);
+
+                return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+            }
         }
 
-        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+        return null; // TODO: change
     }
 
+//    /**
+//     * Returns the most active authors
+//     *
+//     * @param collectionName Name of the collection in which to search
+//     * @return Response containing chart data for visualization
+//     */
+//    public ChartResponse getActiveAuthors(String collectionName) {
+//        return getActivePeople(collectionName, "authors");
+//    }
+//
+//    public ChartResponse getActiveOwners(String collectionName) {
+//        return getActivePeople(collectionName, "owners");
+//    }
+//
+//    /**
+//     * Creates a report of the most active people (authors or owners)
+//     *
+//     * @param collectionName - Collection in which to search
+//     * @param peopleType     - authors or owners, specifies the name of the array
+//     * @return Created response with graph data
+//     */
+//    private ChartResponse getActivePeople(String collectionName, String peopleType) {
+//        String reportName = "active" + peopleType + ".json";
+//
+//        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
+//        if (cachedReport == null) {
+//            LOGGER.info("Cached report could not be found, querying database");
+//            // The cached file could not be loaded, we need to fetch new results from the database
+//            List<Pair<String, Integer>> activePeople = statsQuery.activePeople(collectionName, peopleType);
+//
+//            GraphReport<String, Integer> report = reportCreator.createChartReport("The most active " + collectionName + " " + peopleType, peopleType, "Number of published works", activePeople);
+//            report.save(collectionName + "\\" + reportName);
+//
+//            cachedReport = reportCreator.loadReportToJson(report);
+//        }
+//
+//        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//    }
+//
+//    /**
+//     * @param collectionName - Name of the collection
+//     * @return
+//     */
+//    public ChartResponse getCountByFos(String collectionName) {
+//        String reportName = "countByFos.json";
+//
+//        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
+//        if (cachedReport == null) {
+//            LOGGER.info("Cached report could not be found, querying database");
+//            // The cached file could not be loaded, we need to fetch new results from the database
+//            List<Pair<String, Integer>> countByFos = statsQuery.countByFos(collectionName);
+////            List<Pair<String, Integer>> countByFos = new ArrayList<>();
+////            countByFos.add(new Pair<>("Asd", 122));
+////            countByFos.add(new Pair<>("Asd", 122));
+////            countByFos.add(new Pair<>("Asd", 122));
+////            countByFos.add(new Pair<>("Asd", 122));
+//
+//            GraphReport<String, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
+//            report.save(collectionName + "\\" + reportName);
+//
+//            cachedReport = reportCreator.loadReportToJson(report);
+//        }
+//
+//        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//    }
+//
+//    public ChartResponse getCountByYear(String collectionName) {
+//        String reportName = "countByYear.json";
+//
+//        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
+//        if (cachedReport == null) {
+//            LOGGER.info("Cached report could not be found, querying database");
+//            // The cached file could not be loaded, we need to fetch new results from the database
+//            List<Pair<Integer, Integer>> countByFos = statsQuery.countByYear(collectionName);
+////            List<Pair<Integer, Integer>> countByFos = new ArrayList<>();
+////            countByFos.add(new Pair<>(2011, 2121213));
+////            countByFos.add(new Pair<>(2011, 2121213));
+////            countByFos.add(new Pair<>(2011, 2121213));
+////            countByFos.add(new Pair<>(2011, 2121213));
+////            countByFos.add(new Pair<>(2011, 2121213));
+//
+//            GraphReport<Integer, Integer> report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
+//            report.save(collectionName + "\\" + reportName);
+//
+//            cachedReport = reportCreator.loadReportToJson(report);
+//        }
+//
+//        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//    }
+
+    // TODO: probably delete or hardcode
     public SimpleResponse getCountAuthors(String collectionName) {
         String reportName = "countOfAuthors.json";
 

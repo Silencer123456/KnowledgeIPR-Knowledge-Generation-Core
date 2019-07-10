@@ -6,6 +6,7 @@ import kiv.zcu.knowledgeipr.core.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
+import kiv.zcu.knowledgeipr.core.report.ReportFilename;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
@@ -67,8 +68,8 @@ public class QueryRestService {
     @GET
     @Path("/activeAuthorsPatents")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ApiException, ResponseSerializationException {
-        ChartResponse response = reportGenerator.getActiveAuthors(DataSourceType.PATENT.value);
+    public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_AUTHORS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -76,8 +77,8 @@ public class QueryRestService {
     @GET
     @Path("/activeOwnersPatents")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getActiveOwnersPatents() throws ApiException, ResponseSerializationException {
-        ChartResponse response = reportGenerator.getActiveOwners(DataSourceType.PATENT.value);
+    public javax.ws.rs.core.Response getActiveOwnersPatents() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_OWNERS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -85,8 +86,8 @@ public class QueryRestService {
     @GET
     @Path("/activeAuthorsPublications")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ApiException, ResponseSerializationException {
-        ChartResponse response = reportGenerator.getActiveAuthors(DataSourceType.PUBLICATION.value);
+    public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.ACTIVE_AUTHORS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -94,8 +95,8 @@ public class QueryRestService {
     @GET
     @Path("/countsByFosPublications")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountsByFosPublications() throws ApiException, ResponseSerializationException {
-        ChartResponse response = reportGenerator.getCountByFos(DataSourceType.PUBLICATION.value);
+    public javax.ws.rs.core.Response getCountsByFosPublications() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_FOS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -103,8 +104,8 @@ public class QueryRestService {
     @GET
     @Path("/countsByYearPublications")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountsByYearPublications() throws ApiException, ResponseSerializationException {
-        ChartResponse response = reportGenerator.getCountByYear(DataSourceType.PUBLICATION.value);
+    public javax.ws.rs.core.Response getCountsByYearPublications() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_YEAR);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -112,7 +113,7 @@ public class QueryRestService {
     @GET
     @Path("/countAuthorsPatents")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountAuthorsPatents() throws ApiException, ResponseSerializationException {
+    public javax.ws.rs.core.Response getCountAuthorsPatents() throws ResponseSerializationException {
         SimpleResponse response = reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -121,7 +122,7 @@ public class QueryRestService {
     @GET
     @Path("/countsAuthorsPublications")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountAuthorsPublications() throws ApiException, ResponseSerializationException {
+    public javax.ws.rs.core.Response getCountAuthorsPublications() throws ResponseSerializationException {
         SimpleResponse response = reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -129,12 +130,12 @@ public class QueryRestService {
 
     @POST
     @Path("/generateStats")
-    public javax.ws.rs.core.Response generateStats() throws ApiException, ResponseSerializationException {
-        reportGenerator.getActiveAuthors(DataSourceType.PATENT.value);
-        reportGenerator.getActiveOwners(DataSourceType.PATENT.value);
-        reportGenerator.getActiveAuthors(DataSourceType.PUBLICATION.value);
-        reportGenerator.getCountByFos(DataSourceType.PUBLICATION.value);
-        reportGenerator.getCountByYear(DataSourceType.PUBLICATION.value);
+    public javax.ws.rs.core.Response generateStats() {
+        reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_AUTHORS);
+        reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_OWNERS);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.ACTIVE_AUTHORS);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_FOS);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_YEAR);
         reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
         reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
 
@@ -144,7 +145,7 @@ public class QueryRestService {
     @GET
     @Path("/synonyms/{word}")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ApiException, ResponseSerializationException {
+    public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ResponseSerializationException {
         WordNetResponse response = reportGenerator.getSynonyms(word);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
