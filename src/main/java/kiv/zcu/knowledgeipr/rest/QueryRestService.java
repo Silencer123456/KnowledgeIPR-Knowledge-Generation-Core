@@ -93,7 +93,7 @@ public class QueryRestService {
     }
 
     @GET
-    @Path("/countsByFosPublications")
+    @Path("/countsByFos")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByFosPublications() throws ResponseSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_FOS);
@@ -106,6 +106,24 @@ public class QueryRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getProlificPublishers() throws ResponseSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_PUBLISHER);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Path("/prolificVenues")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getProlificVenues() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_VENUES);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Path("/countsByKeywords")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getCountByKeywords() throws ResponseSerializationException {
+        ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_KEYWORD);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }

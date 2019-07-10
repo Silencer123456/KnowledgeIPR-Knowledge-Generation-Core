@@ -7,9 +7,11 @@ package kiv.zcu.knowledgeipr.core.report;
 public enum ReportFilename {
     COUNT_BY_YEAR("countByYear.json"),
     COUNT_BY_FOS("countByFos.json"),
+    COUNT_BY_KEYWORD("countByKeyword.json"),
     ACTIVE_AUTHORS("activeauthors.json"),
     ACTIVE_OWNERS("activeowners.json"),
-    COUNT_BY_PUBLISHER("prolificPublishers.json");
+    COUNT_BY_PUBLISHER("prolificPublishers.json"),
+    COUNT_BY_VENUES("prolificVenues.json");
 
     public final String value;
 

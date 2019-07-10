@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.core.mongo;
 
 import com.mongodb.client.AggregateIterable;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.core.ResponseField;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
  * Serves for executing various queries gathering statistical information
  * @author Stepan Baratta
  * created on 7/2/2019
+ * TODO: Refactor methods into one
  */
 public class StatsRetriever {
 
@@ -74,24 +76,38 @@ public class StatsRetriever {
         LOGGER.info("Running 'countByFos' method on " + collectionName + " collection.");
         List<Pair<String, Integer>> fosCounts = new ArrayList<>();
 
-        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, "fos", "fos", 20);
+        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, ResponseField.FOS.value, ResponseField.FOS.value, 30);
 
         for (Document doc : output) {
-            String author = (String) doc.get("fos");
+            String author = (String) doc.get(ResponseField.FOS.value);
             fosCounts.add(new Pair<>(author, (Integer) doc.get("count")));
         }
 
         return fosCounts;
     }
 
+    public List<Pair<String, Integer>> countByKeyword(String collectionName) {
+        LOGGER.info("Running 'countByKeyword' method on " + collectionName + " collection.");
+        List<Pair<String, Integer>> keywordsCount = new ArrayList<>();
+
+        AggregateIterable<Document> output = mongoRunner.runUnwindAggregation(collectionName, ResponseField.KEYWORDS.value, ResponseField.KEYWORDS.value, 30);
+
+        for (Document doc : output) {
+            String author = (String) doc.get(ResponseField.KEYWORDS.value);
+            keywordsCount.add(new Pair<>(author, (Integer) doc.get("count")));
+        }
+
+        return keywordsCount;
+    }
+
     public List<Pair<String, Integer>> countByYear(String collectionName) {
         LOGGER.info("Running 'countByYear' method on " + collectionName + " collection.");
         List<Pair<String, Integer>> yearCounts = new ArrayList<>();
 
-        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, "year", 20);
+        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, ResponseField.YEAR.value, 20);
 
         for (Document doc : output) {
-            String author = (String) doc.get("year");
+            String author = (String) doc.get(ResponseField.YEAR.value);
             yearCounts.add(new Pair<>(author, (Integer) doc.get("count")));
         }
 
@@ -100,7 +116,7 @@ public class StatsRetriever {
 
     public List<Pair<String, Integer>> prolificPublishers(String collectionName) {
         LOGGER.info("Running 'prolificPublishers' method on " + collectionName + " collection.");
-        String fieldName = "publisher";
+        String fieldName = ResponseField.PUBLISHER.value;
 
         List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
 
@@ -136,5 +152,21 @@ public class StatsRetriever {
 
     public List<Pair<String, Integer>> createTagCloud(String collectionName, String textSearch) {
         return Collections.emptyList();
+    }
+
+    public List<Pair<String, Integer>> countByVenue(String collectionName) {
+        LOGGER.info("Running 'prolificVenues' method on " + collectionName + " collection.");
+        String fieldName = ResponseField.VENUE.value;
+
+        List<Pair<String, Integer>> prolificPublishers = new ArrayList<>();
+
+        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, fieldName, 30);
+
+        for (Document doc : output) {
+            String author = (String) doc.get(fieldName);
+            prolificPublishers.add(new Pair<>(author, (Integer) doc.get("count")));
+        }
+
+        return prolificPublishers;
     }
 }

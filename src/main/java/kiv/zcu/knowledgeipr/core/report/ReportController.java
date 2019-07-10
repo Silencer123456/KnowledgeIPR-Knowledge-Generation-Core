@@ -116,6 +116,16 @@ public class ReportController {
 
                 report = reportCreator.createChartReport("Prolific publishers", "Publisher name", "Number of publications", prolificPublishers);
                 break;
+            case COUNT_BY_KEYWORD:
+                List<Pair<String, Integer>> keywords = statsQuery.countByKeyword(collectionName);
+
+                report = reportCreator.createChartReport("Number of documents by keywords", "Keyword", "Number of documents", keywords);
+                break;
+            case COUNT_BY_VENUES:
+                List<Pair<String, Integer>> venues = statsQuery.countByVenue(collectionName);
+
+                report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", venues);
+                break;
             default:
                 report = new GraphReport<>("", "", "", new ArrayList<>());
         }
