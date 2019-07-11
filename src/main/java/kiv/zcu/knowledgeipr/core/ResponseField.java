@@ -18,7 +18,9 @@ public enum ResponseField {
     KEYWORDS("keywords"),
     VENUE("venue"),
     LANG("lang"),
-    DOI("doi");
+    DOI("doi"),
+    STATUS("status"),
+    COUNTRY("country");
 
     public final String value;
 

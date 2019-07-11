@@ -130,7 +130,11 @@ public class MongoRunner {
                             ResponseField.AUTHORS.toString(),
                             ResponseField.OWNERS.toString(),
                             ResponseField.DOCUMENT_ID.toString(),
-                            ResponseField.DATA_SOURCE.toString()
+                            ResponseField.DATA_SOURCE.toString(),
+                            ResponseField.LANG.toString(),
+                            ResponseField.STATUS.toString(),
+                            ResponseField.COUNTRY.toString()
+
                     ));
         } else {
             return fields(
