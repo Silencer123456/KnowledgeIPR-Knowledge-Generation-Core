@@ -17,6 +17,8 @@ public class StandardResponse {
     private int returnedCount;
     private int page;
 
+    private String summary;
+
     @JsonProperty("report")
     private JsonElement reportJson;
 
@@ -52,5 +54,9 @@ public class StandardResponse {
 
     public void setPage(int page) {
         this.page = page;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }

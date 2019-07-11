@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
-import kiv.zcu.knowledgeipr.rest.response.Response;
+import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 
 public class SerializationUtils {
@@ -17,7 +17,7 @@ public class SerializationUtils {
             return mapper.writeValueAsString(o);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            throw new ResponseSerializationException(new Response(StatusResponse.ERROR, "Could not serialize the response"));
+            throw new ResponseSerializationException(new BaseResponse(StatusResponse.ERROR, "Could not serialize the response"));
         }
     }
 }

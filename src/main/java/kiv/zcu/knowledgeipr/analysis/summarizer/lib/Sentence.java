@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.analysis.summarizer;
+package kiv.zcu.knowledgeipr.analysis.summarizer.lib;
 
 public class Sentence {
     private static int nextN = 0;

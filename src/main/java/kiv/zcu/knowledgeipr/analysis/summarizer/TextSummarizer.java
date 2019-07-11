@@ -1,9 +1,24 @@
 package kiv.zcu.knowledgeipr.analysis.summarizer;
 
+import kiv.zcu.knowledgeipr.analysis.summarizer.lib.SentenceBuilder;
+import kiv.zcu.knowledgeipr.analysis.summarizer.lib.Summarizer;
+import kiv.zcu.knowledgeipr.analysis.summarizer.lib.WordBuilder;
+import kiv.zcu.knowledgeipr.core.mongo.DbRecord;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class TextSummarizer {
     private final String LANGCODE = "EN";
+
+    public StringBuilder summarizeTextMongo(List<DbRecord> records) {
+        List<String> input = new ArrayList<>();
+        for (DbRecord record : records) {
+            input.add((String) record.getDocument().get("abstract"));
+        }
+
+        return summarizeText(input);
+    }
 
     public StringBuilder summarizeText(List<String> inputFiles) {
 //        String summary = null;
@@ -17,9 +32,8 @@ public class TextSummarizer {
         wb.getWords(LANGCODE, joinedFiles);
 
         wb.removeStopWords(LANGCODE);
-        wb.doCount(wb.getCleanWordObjects());
+        wb.doCount(WordBuilder.getCleanWordObjects());
         wb.findTopNWords(5);
-
 
 //        System.out.println(wb.getfreqMap());
         Summarizer summm = new Summarizer();

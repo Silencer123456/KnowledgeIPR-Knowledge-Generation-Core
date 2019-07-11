@@ -39,10 +39,10 @@ public class QueryRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response query(@PathParam("page") int page, String queryJson) throws ApiException {
         if (page <= 0) {
-            throw new ApiException(new Response(StatusResponse.ERROR, "Page cannot be <= 0"));
+            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Page cannot be <= 0"));
         }
         if (page > 1000) {
-            throw new ApiException(new Response(StatusResponse.ERROR, "Page cannot be > 1000"));
+            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Page cannot be > 1000"));
 
         }
         Query query;
@@ -51,7 +51,7 @@ public class QueryRestService {
 
         } catch (IOException | QueryOptionsValidationException e) {
             e.printStackTrace();
-            throw new ApiException(new Response(StatusResponse.ERROR, e.getMessage()));
+            throw new ApiException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
         }
 
         return processQueryInit(query, page);
@@ -156,17 +156,17 @@ public class QueryRestService {
     }
 
     @POST
-    @Path("/generateStats")
-    public javax.ws.rs.core.Response generateStats() {
-        reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_AUTHORS);
-        reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_OWNERS);
-        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.ACTIVE_AUTHORS);
-        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_FOS);
-        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_YEAR);
-        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_PUBLISHER);
-        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_KEYWORD);
-        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_VENUES);
-        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_LANG);
+    @Path("/generateStats/{overwrite}")
+    public javax.ws.rs.core.Response generateStats(@PathParam("overwrite") boolean overwrite) {
+        reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_AUTHORS, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_OWNERS, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.ACTIVE_AUTHORS, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_KEYWORD, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_VENUES, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_LANG, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_PUBLISHER, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_YEAR, overwrite);
+        reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_FOS, overwrite);
         //reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
         //reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
 
@@ -188,7 +188,7 @@ public class QueryRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response queryWithLimit(@PathParam("limit") int limit, String queryJson) throws ApiException {
         if (limit > 1000) {
-            throw new ApiException(new Response(StatusResponse.ERROR, "Limit cannot exceed 1000"));
+            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Limit cannot exceed 1000"));
         }
 
         Query query;
@@ -197,7 +197,7 @@ public class QueryRestService {
 
         } catch (IOException | QueryOptionsValidationException e) {
             e.printStackTrace();
-            throw new ApiException(new Response(StatusResponse.ERROR, e.getMessage()));
+            throw new ApiException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
         }
 
         StandardResponse standardResponse = reportGenerator.processQuery(query, 1, limit);
@@ -215,7 +215,7 @@ public class QueryRestService {
      */
     private javax.ws.rs.core.Response processQueryInit(Query query, int page) throws ApiException {
         if (query.getFilters() == null || query.getFilters().isEmpty() || query.getSourceType() == null) {
-            throw new ApiException(new Response(StatusResponse.ERROR, "Wrong query format."));
+            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Wrong query format."));
         }
 
         int limit = 20;

@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.analysis.summarizer;
+package kiv.zcu.knowledgeipr.analysis.summarizer.lib;
 
 import java.util.ArrayList;
 
@@ -47,7 +47,7 @@ public class Word {
             return false;
 
         //NOTE: '==' doesn't to the comparing properly. We have to use 'equals'.
-        return this.wordText.equals(((Word) obj).wordText) ? true : false;
+        return this.wordText.equals(((Word) obj).wordText);
     }
 
 

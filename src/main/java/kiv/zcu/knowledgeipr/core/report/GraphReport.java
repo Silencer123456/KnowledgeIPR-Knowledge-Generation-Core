@@ -11,6 +11,7 @@ import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -88,7 +89,7 @@ public class GraphReport<X, Y> implements IReport {
 
             new File(basePath + filename).getParentFile().mkdirs();
 
-            Files.write(Paths.get(basePath + filename), json.getBytes());
+            Files.write(Paths.get(basePath + filename), json.getBytes(StandardCharsets.UTF_8));
             return true;
         } catch (IOException | ResponseSerializationException e) {
             e.printStackTrace();

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.ResponseField;
 import kiv.zcu.knowledgeipr.core.mongo.*;
@@ -32,6 +33,7 @@ public class ReportController {
     private StatsRetriever statsQuery;
 
     private WordNet wordNet;
+    private TextSummarizer summarizer;
 
     public ReportController(ReportCreator reportCreator) {
         this.reportCreator = reportCreator;
@@ -42,6 +44,7 @@ public class ReportController {
         statsQuery = new StatsRetriever(mongoRunner);
 
         wordNet = new WordNet();
+        summarizer = new TextSummarizer();
     }
 
     /**
@@ -50,7 +53,7 @@ public class ReportController {
      *
      * @param query - query to process
      * @param page  - page number to display
-     * @return Response object encapsulating the report.
+     * @return BaseResponse object encapsulating the report.
      */
     public StandardResponse processQuery(Query query, int page, int limit) {
         StandardResponse response;
@@ -66,6 +69,9 @@ public class ReportController {
             response.setReturnedCount(limit);
             response.setPage(page);
 
+            response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
+
+
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
@@ -78,6 +84,10 @@ public class ReportController {
         return response;
     }
 
+    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) {
+        return chartQuery(collectionName, reportFilename, false);
+    }
+
     /**
      * TODO: Refactor further
      * Creates a report from a chart query
@@ -86,9 +96,9 @@ public class ReportController {
      * @param reportFilename
      * @return
      */
-    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) {
+    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename, boolean overwrite) {
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportFilename.value);
-        if (cachedReport != null) {
+        if (cachedReport != null && !overwrite) {
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
         }
 
@@ -142,7 +152,7 @@ public class ReportController {
 //     * Returns the most active authors
 //     *
 //     * @param collectionName Name of the collection in which to search
-//     * @return Response containing chart data for visualization
+//     * @return BaseResponse containing chart data for visualization
 //     */
 //    public ChartResponse getActiveAuthors(String collectionName) {
 //        return getActivePeople(collectionName, "authors");

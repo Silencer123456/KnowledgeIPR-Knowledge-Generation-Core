@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.analysis.summarizer;
+package kiv.zcu.knowledgeipr.analysis.summarizer.lib;
 
 import java.util.Comparator;
 
