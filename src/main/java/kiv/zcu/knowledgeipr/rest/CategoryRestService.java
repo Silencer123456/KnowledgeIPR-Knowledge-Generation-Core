@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.mongo.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.category.data.Category;
-import kiv.zcu.knowledgeipr.core.query.category.tree.SampleCategories;
+import kiv.zcu.knowledgeipr.core.query.category.data.SampleCategories;
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
@@ -15,10 +15,7 @@ import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +37,9 @@ public class CategoryRestService {
      * @throws ApiException If the category name is not valid, an exception is thrown
      */
     @GET
-    @Path("/get/{categoryName}")
+    @Path("/get/{categoryName}/{page}")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName) throws ApiException {
+    public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName, @PathParam("page") int page) throws ApiException {
         if (!categories.containsCategory(categoryName)) {
             throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Wrong category name."));
         }
@@ -54,7 +51,7 @@ public class CategoryRestService {
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
-        StandardResponse standardResponse = reportGenerator.processQuery(query, 1, 20);
+        StandardResponse standardResponse = reportGenerator.processQuery(query, page, 20);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }
@@ -69,7 +66,7 @@ public class CategoryRestService {
     @GET
     @Path("/tree/{level}")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCategoryTree(@PathParam("level") int treeLevel) throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getCategoryTree(@QueryParam("level") int treeLevel) throws ResponseSerializationException {
         List<String> tree = categories.getNodesAtLevel(treeLevel);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -90,8 +87,14 @@ public class CategoryRestService {
      */
     @GET
     @Path("/tree")
-    public javax.ws.rs.core.Response getCategoryTree() throws ResponseSerializationException {
-        String treeString = categories.getTreeAsString();
+    public javax.ws.rs.core.Response getCategoryTreeFromName(@QueryParam("name") String categoryName) {
+        String treeString;
+        if (categoryName == null) {
+            treeString = categories.getTreeAsString();
+        } else {
+            treeString = categories.getSubtreeAsString(categoryName);
+        }
+
         return javax.ws.rs.core.Response.ok().entity(treeString).build();
     }
 }

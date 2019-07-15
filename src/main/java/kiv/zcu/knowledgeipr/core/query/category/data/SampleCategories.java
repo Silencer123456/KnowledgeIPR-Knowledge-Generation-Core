@@ -1,6 +1,6 @@
-package kiv.zcu.knowledgeipr.core.query.category.tree;
+package kiv.zcu.knowledgeipr.core.query.category.data;
 
-import kiv.zcu.knowledgeipr.core.query.category.data.Category;
+import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,12 @@ public class SampleCategories {
         {
             TreeNode<Category> node0 = root.addChild(new Category("Vehicles"));
             {
-                TreeNode<Category> node00 = node0.addChild(new Category("Wheels"));
+                TreeNode<Category> node00 = node0.addChild(new Category("Wheels", new ArrayList<String>() {{
+                    add("rims");
+                    add("discs");
+                    add("hubs");
+                    add("axles");
+                }}));
                 TreeNode<Category> node01 = node0.addChild(new Category("Tyres"));
                 TreeNode<Category> node02 = node0.addChild(new Category("Suspension"));
                 TreeNode<Category> node03 = node0.addChild(new Category("Windows"));
@@ -77,10 +82,21 @@ public class SampleCategories {
     }
 
     public String getTreeAsString() {
+        return getSubtreeAsString(root);
+    }
+
+    public String getSubtreeAsString(String categoryName) {
+        return getSubtreeAsString(getCategory(categoryName));
+    }
+
+    private String getSubtreeAsString(TreeNode<Category> topNode) {
         StringBuilder sb = new StringBuilder();
-        for (TreeNode<Category> node : root) {
+        if (topNode == null) {
+            return "";
+        }
+        for (TreeNode<Category> node : topNode) {
             String indent = createIndent(node.getLevel());
-            sb.append(indent).append(node.data).append("\n");
+            sb.append(indent).append(node.data.getName()).append("\n");
         }
 
         return sb.toString();

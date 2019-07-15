@@ -68,7 +68,7 @@ public class ReportController {
             response.setReturnedCount(limit);
             response.setPage(page);
 
-            response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
+            //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
 
 
         } catch (MongoQueryException | UserQueryException e) {
