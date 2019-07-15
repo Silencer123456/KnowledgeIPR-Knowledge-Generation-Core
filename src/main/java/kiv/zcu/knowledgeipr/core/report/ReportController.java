@@ -70,7 +70,6 @@ public class ReportController {
 
             //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
 
-
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());

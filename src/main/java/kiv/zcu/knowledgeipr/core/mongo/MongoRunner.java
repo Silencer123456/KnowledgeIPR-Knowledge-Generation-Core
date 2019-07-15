@@ -98,8 +98,8 @@ public class MongoRunner {
                 .skip(page > 0 ? ((page - 1) * limit) : 0)
                 .limit(limit)
                 .projection(getProjectionFields(collectionName))
+                //.sort(Sorts.metaTextScore("score"))
                 .maxTime(timeout, TimeUnit.SECONDS);
-        //.sort(Sorts.metaTextScore("score"))
 
         try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
             while (cursor.hasNext()) {
@@ -119,8 +119,8 @@ public class MongoRunner {
     private Bson getProjectionFields(String collectionName) {
         if (collectionName.equals(DataSourceType.PATENT.value)) {
             return fields(
+                    //Projections.metaTextScore("score"),
                     include(
-                            //Projections.metaTextScore("score"),
                             ResponseField.TITLE.toString(),
                             ResponseField.YEAR.toString(),
                             ResponseField.DATE.toString(),
