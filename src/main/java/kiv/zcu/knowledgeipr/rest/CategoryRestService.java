@@ -2,9 +2,11 @@ package kiv.zcu.knowledgeipr.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import kiv.zcu.knowledgeipr.core.DataSourceType;
+import kiv.zcu.knowledgeipr.core.mongo.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.query.category.datastructure.SampleCategories;
+import kiv.zcu.knowledgeipr.core.query.category.data.Category;
+import kiv.zcu.knowledgeipr.core.query.category.tree.SampleCategories;
+import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
@@ -45,8 +47,10 @@ public class CategoryRestService {
             throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Wrong category name."));
         }
 
+        TreeNode<Category> category = categories.getCategory(categoryName);
+
         Map<String, String> filters = new HashMap<>();
-        filters.put("$text", categoryName);
+        filters.put("$text", category.data.getKeywordsSeparatedBy(" "));
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 

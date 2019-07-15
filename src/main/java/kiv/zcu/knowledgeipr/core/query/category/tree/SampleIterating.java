@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query.category.datastructure;
+package kiv.zcu.knowledgeipr.core.query.category.tree;
 
 class SampleIterating {
 

@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.rest;
 
-import kiv.zcu.knowledgeipr.core.DataSourceType;
+import kiv.zcu.knowledgeipr.core.mongo.DataSourceType;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.core.report.ReportFilename;

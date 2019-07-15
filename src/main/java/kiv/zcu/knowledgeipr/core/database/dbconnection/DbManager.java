@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.dbconnection;
+package kiv.zcu.knowledgeipr.core.database.dbconnection;
 
 import java.io.FileInputStream;
 import java.io.IOException;

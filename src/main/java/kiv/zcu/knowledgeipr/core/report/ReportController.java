@@ -7,7 +7,6 @@ import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
-import kiv.zcu.knowledgeipr.core.ResponseField;
 import kiv.zcu.knowledgeipr.core.mongo.*;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;

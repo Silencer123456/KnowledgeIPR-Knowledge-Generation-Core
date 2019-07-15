@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core;
+package kiv.zcu.knowledgeipr.core.mongo;
 
 /**
  * Enumeration specifying the types of data stored

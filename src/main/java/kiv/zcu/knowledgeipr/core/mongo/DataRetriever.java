@@ -4,8 +4,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.client.model.Filters;
-import kiv.zcu.knowledgeipr.core.DataSourceType;
-import kiv.zcu.knowledgeipr.core.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import org.bson.BsonDocument;

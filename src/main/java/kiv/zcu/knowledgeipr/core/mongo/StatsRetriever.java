@@ -2,7 +2,6 @@ package kiv.zcu.knowledgeipr.core.mongo;
 
 import com.mongodb.client.AggregateIterable;
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.core.ResponseField;
 import org.bson.Document;
 
 import java.util.ArrayList;

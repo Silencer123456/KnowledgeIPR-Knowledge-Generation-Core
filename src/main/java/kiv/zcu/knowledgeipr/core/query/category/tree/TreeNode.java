@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query.category.datastructure;
+package kiv.zcu.knowledgeipr.core.query.category.tree;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -30,7 +30,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
     }
 
     public TreeNode<T> addChild(T child) {
-        TreeNode<T> childNode = new TreeNode<T>(child);
+        TreeNode<T> childNode = new TreeNode<>(child);
         childNode.parent = this;
         this.children.add(childNode);
         this.registerChildForSearch(childNode);
