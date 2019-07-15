@@ -1,7 +1,9 @@
 package kiv.zcu.knowledgeipr.app;
 
 import kiv.zcu.knowledgeipr.logging.MyLogger;
+import kiv.zcu.knowledgeipr.rest.CategoryRestService;
 import kiv.zcu.knowledgeipr.rest.QueryRestService;
+import kiv.zcu.knowledgeipr.rest.StatsRestService;
 import kiv.zcu.knowledgeipr.rest.exception.ApiExceptionHandler;
 import kiv.zcu.knowledgeipr.rest.exception.MongoExceptionHandler;
 import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationExceptionHandler;
@@ -20,6 +22,8 @@ public class AppRunner extends Application {
      */
     public AppRunner() {
         singletons.add(new QueryRestService());
+        singletons.add(new StatsRestService());
+        singletons.add(new CategoryRestService());
         singletons.add(new ApiExceptionHandler());
         singletons.add(new ResponseSerializationExceptionHandler());
         singletons.add(new MongoExceptionHandler());
