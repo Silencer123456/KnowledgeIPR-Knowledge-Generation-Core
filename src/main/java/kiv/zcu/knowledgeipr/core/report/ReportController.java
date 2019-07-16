@@ -7,7 +7,14 @@ import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
-import kiv.zcu.knowledgeipr.core.mongo.*;
+import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dbaccess.IChartQuery;
+import kiv.zcu.knowledgeipr.core.dbaccess.IQueryCreator;
+import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dbaccess.mongo.CommonMongoRunner;
+import kiv.zcu.knowledgeipr.core.dbaccess.mongo.DataRetriever;
+import kiv.zcu.knowledgeipr.core.dbaccess.mongo.MongoConnection;
+import kiv.zcu.knowledgeipr.core.dbaccess.mongo.MongoQueryCreator;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
@@ -29,7 +36,7 @@ public class ReportController {
     private ReportCreator reportCreator;
     private DataRetriever dataRetriever;
 
-    private StatsRetriever statsQuery;
+    private IQueryCreator statsQuery;
 
     private WordNet wordNet;
     private TextSummarizer summarizer;
@@ -37,10 +44,10 @@ public class ReportController {
     public ReportController(ReportCreator reportCreator) {
         this.reportCreator = reportCreator;
 
-        MongoRunner mongoRunner = new MongoRunner(MongoConnection.getInstance());
+        CommonMongoRunner mongoRunner = new CommonMongoRunner(MongoConnection.getInstance());
 
         dataRetriever = new DataRetriever(mongoRunner);
-        statsQuery = new StatsRetriever(mongoRunner);
+        statsQuery = new MongoQueryCreator(mongoRunner);
 
         wordNet = new WordNet();
         summarizer = new TextSummarizer();
@@ -86,8 +93,18 @@ public class ReportController {
         return chartQuery(collectionName, reportFilename, false);
     }
 
+
+    public <T, V> ChartResponse chartQuery(IChartQuery<T, V> chartQuery, String title, String x, String y, String filename) {
+        List<Pair<T, V>> list = chartQuery.get();
+        GraphReport<T, V> report = reportCreator.createChartReport(title, x, y, list);
+        report.save(filename);
+        JsonNode cachedReport = reportCreator.loadReportToJson(report);
+
+        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+    }
+
     /**
-     * TODO: Refactor further
+     * TODO: Refactor
      * Creates a report from a chart query
      *
      * @param collectionName
@@ -154,9 +171,10 @@ public class ReportController {
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
-            int authorCount = statsQuery.getPeopleCount(collectionName, "authors");
+            //int authorCount = statsQuery.getPeopleCount(collectionName, "authors");
 
             //int authorCount = 2;
+            int authorCount = 120000;
 
             SimpleReport simpleReport = new SimpleReport(authorCount);
             simpleReport.save(collectionName + "\\" + reportName);
@@ -182,5 +200,9 @@ public class ReportController {
         }
 
         return count;
+    }
+
+    public IQueryCreator getStatsQuery() {
+        return statsQuery;
     }
 }

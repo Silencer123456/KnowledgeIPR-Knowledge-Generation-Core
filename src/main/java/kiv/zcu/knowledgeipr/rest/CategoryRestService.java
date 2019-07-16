@@ -2,7 +2,7 @@ package kiv.zcu.knowledgeipr.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import kiv.zcu.knowledgeipr.core.mongo.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.category.data.Category;
 import kiv.zcu.knowledgeipr.core.query.category.data.SampleCategories;

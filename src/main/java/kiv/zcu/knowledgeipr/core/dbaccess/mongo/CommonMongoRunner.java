@@ -1,9 +1,12 @@
-package kiv.zcu.knowledgeipr.core.mongo;
+package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
 
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
+import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -17,14 +20,16 @@ import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
 /**
+ * Runs common Mongo queries
+ *
  * @author Stepan Baratta
  * created on 7/10/2019
  */
-public class MongoRunner {
+public class CommonMongoRunner {
 
     private MongoDatabase database;
 
-    public MongoRunner(MongoConnection connection) {
+    public CommonMongoRunner(MongoConnection connection) {
         database = connection.getConnectionInstance();
     }
 
@@ -39,7 +44,7 @@ public class MongoRunner {
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    public AggregateIterable<Document> runUnwindAggregation(String collectionName, String arrayName, String fieldName, int limit) {
+    public AggregateIterable<Document> runCountUnwindAggregation(String collectionName, String arrayName, String fieldName, int limit) {
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
         return collection.aggregate(Arrays.asList(
@@ -56,7 +61,7 @@ public class MongoRunner {
 
     /**
      * Runs a query performing a sum accumulation.
-     * From the <code>runUnwindAggregation</code> method, this method should
+     * From the <code>runCountUnwindAggregation</code> method, this method should
      * be used on a regular field without an array
      *
      * @param collectionName - Collection name to be queried
@@ -64,7 +69,7 @@ public class MongoRunner {
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    public AggregateIterable<Document> runAggregation(String collectionName, String fieldName, int limit) {
+    public AggregateIterable<Document> runCountAggregation(String collectionName, String fieldName, int limit) {
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
         return collection.aggregate(Arrays.asList(
@@ -116,7 +121,7 @@ public class MongoRunner {
      *
      * @return - BSON representation of projected fields
      */
-    private Bson getProjectionFields(String collectionName) {
+    public Bson getProjectionFields(String collectionName) {
         if (collectionName.equals(DataSourceType.PATENT.value)) {
             return fields(
                     //Projections.metaTextScore("score"),
@@ -152,5 +157,9 @@ public class MongoRunner {
                             ResponseField.LANG.toString()
                     ));
         }
+    }
+
+    public MongoCollection<Document> getCollection(String name) {
+        return database.getCollection(name);
     }
 }

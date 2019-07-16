@@ -25,12 +25,19 @@ public class SampleCategories {
                     add("hubs");
                     add("axles");
                 }}));
+                {
+                    node00.addChild(new Category("rims"));
+                    node00.addChild(new Category("discs"));
+                    node00.addChild(new Category("hubs"));
+                    node00.addChild(new Category("axles"));
+                }
                 TreeNode<Category> node01 = node0.addChild(new Category("Tyres"));
                 TreeNode<Category> node02 = node0.addChild(new Category("Suspension"));
                 TreeNode<Category> node03 = node0.addChild(new Category("Windows"));
                 TreeNode<Category> node04 = node0.addChild(new Category("Brakes"));
                 TreeNode<Category> node05 = node0.addChild(new Category("Land vehicles"));
             }
+            TreeNode<Category> node1 = root.addChild(new Category("Agriculture"));
         }
 
         return root;
@@ -105,7 +112,10 @@ public class SampleCategories {
     private String createIndent(int depth) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < depth; i++) {
-            sb.append(' ');
+            sb.append("\t");
+            if (i == depth - 1) {
+                sb.append("-");
+            }
         }
         return sb.toString();
     }

@@ -1,9 +1,12 @@
-package kiv.zcu.knowledgeipr.core.mongo;
+package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.client.model.Filters;
+import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import org.bson.BsonDocument;
@@ -22,9 +25,9 @@ import java.util.regex.Pattern;
 public class DataRetriever {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-    private MongoRunner mongoRunner;
+    private CommonMongoRunner mongoRunner;
 
-    public DataRetriever(MongoRunner mongoRunner) {
+    public DataRetriever(CommonMongoRunner mongoRunner) {
         this.mongoRunner = mongoRunner;
     }
 
@@ -44,7 +47,7 @@ public class DataRetriever {
         String sourceType = query.getSourceType();
         isValidSourceType(sourceType);
 
-        BsonDocument filter = addAllFilters(query, false);
+        BsonDocument filter = addAllFilters(query, false, false);
         if (filter.isEmpty()) {
             return Collections.emptyList();
         }
@@ -62,7 +65,7 @@ public class DataRetriever {
             }
         }
 
-        filter = addAllFilters(query, true);
+        filter = addAllFilters(query, true, true);
 
         LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
         // Run second query
@@ -75,10 +78,10 @@ public class DataRetriever {
      * @param query - Query instance from which to extract the filters
      * @return Bson document containing all the filters
      */
-    private BsonDocument addAllFilters(Query query, boolean useRegex) {
+    private BsonDocument addAllFilters(Query query, boolean useRegex, boolean useFullText) {
         BsonDocument filter = new BsonDocument();
 
-        addFilters(query.getFilters(), filter, useRegex);
+        addFilters(query.getFilters(), filter, useRegex, useFullText);
 
         addConditionsFilters(query.getConditions(), filter);
 
@@ -103,7 +106,7 @@ public class DataRetriever {
      * @param filters      - list of filters from the query, which will be converted to Mongo filters
      * @param bsonDocument - Bson document, to which add the created filters
      */
-    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument, boolean useRegex) {
+    private void addFilters(Map<String, String> filters, BsonDocument bsonDocument, boolean useRegex, boolean useFullText) {
         if (filters == null) return;
         boolean textFilterCreated = false;
 
@@ -122,7 +125,7 @@ public class DataRetriever {
 
             Bson tmp;
             // If the text filter was not specified in the query, we create one from the current field
-            if (!textFilterCreated && isKeyTextIndexed(filterEntry.getKey())) {
+            if (useFullText && !textFilterCreated && isKeyTextIndexed(filterEntry.getKey())) {
                 tmp = Filters.text(filterEntry.getValue());
                 appendBsonDoc(bsonDocument, tmp, "$text");
                 textFilterCreated = true;
@@ -170,7 +173,8 @@ public class DataRetriever {
      */
     private boolean filterContainsIndex(Map<String, String> filters) {
         return filters.containsKey(ResponseField.DOCUMENT_ID.value) ||
-                filters.containsKey(ResponseField.TITLE.value);
+                filters.containsKey(ResponseField.TITLE.value) ||
+                filters.containsKey(ResponseField.OWNERS_NAME.value);
     }
 
     /**
@@ -191,7 +195,7 @@ public class DataRetriever {
      * Creates condition filters from the query.
      * Like gt, lt
      *
-     * @param conditions   - List of conditions to be converted to the mongo filters
+     * @param conditions   - List of conditions to be converted to the dbaccess filters
      * @param bsonDocument - Bson document, to which add the option filters
      */
     private void addConditionsFilters(Map<String, Map<String, Integer>> conditions, BsonDocument bsonDocument) {

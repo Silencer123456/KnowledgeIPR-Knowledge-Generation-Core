@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.mongo;
+package kiv.zcu.knowledgeipr.core.dbaccess;
 
 import org.bson.Document;
 

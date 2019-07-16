@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.rest;
 
-import kiv.zcu.knowledgeipr.core.mongo.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.query.queries.PatentOwnershipEvolutionQuery;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.core.report.ReportFilename;
@@ -102,6 +103,23 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountAuthorsPublications() throws ResponseSerializationException {
         SimpleResponse response = reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Path("/patentOwnershipEvolution/{owner}/{category}")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getPatentOwnershipEvolution(@PathParam("owner") String ownersName,
+                                                                 @PathParam("category") String category)
+            throws ResponseSerializationException {
+
+        // check category valid
+
+        ChartResponse response = reportGenerator.chartQuery(
+                new PatentOwnershipEvolutionQuery(reportGenerator.getStatsQuery(), ownersName, category),
+                PatentOwnershipEvolutionQuery.NAME, PatentOwnershipEvolutionQuery.X_AXIS,
+                PatentOwnershipEvolutionQuery.Y_AXIS, "patentOwnershipEvolution.json");
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
