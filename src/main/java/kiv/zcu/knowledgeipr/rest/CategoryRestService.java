@@ -10,7 +10,7 @@ import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
-import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
+import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
@@ -61,12 +61,12 @@ public class CategoryRestService {
      *
      * @param treeLevel - Level of the tree from which to return the categories
      * @return
-     * @throws ResponseSerializationException If the response cannot be serialized
+     * @throws ObjectSerializationException If the response cannot be serialized
      */
     @GET
-    @Path("/tree/{level}")
+    @Path("/tree")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCategoryTree(@QueryParam("level") int treeLevel) throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getCategoryTree(@QueryParam("level") int treeLevel) throws ObjectSerializationException {
         List<String> tree = categories.getNodesAtLevel(treeLevel);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -75,7 +75,7 @@ public class CategoryRestService {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new ResponseSerializationException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
+            throw new ObjectSerializationException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
         }
     }
 
@@ -83,18 +83,21 @@ public class CategoryRestService {
      * Returns the whole category tree as string
      *
      * @return
-     * @throws ResponseSerializationException If the response cannot be serialized
+     * @throws ObjectSerializationException If the response cannot be serialized
      */
     @GET
-    @Path("/tree")
-    public javax.ws.rs.core.Response getCategoryTreeFromName(@QueryParam("name") String categoryName) {
-        String treeString;
-        if (categoryName == null) {
-            treeString = categories.getTreeAsString();
-        } else {
-            treeString = categories.getSubtreeAsString(categoryName);
-        }
+    @Path("/tree/plaintext")
+    public javax.ws.rs.core.Response getCategoryTreeFromNameAsPlaintext(@QueryParam("name") String categoryName) {
+        String treeString = categories.getSubtreeAsString(categoryName);
 
         return javax.ws.rs.core.Response.ok().entity(treeString).build();
+    }
+
+    @GET
+    @Path("/tree/json")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getCategoryTreeFromNameAsJson(@QueryParam("name") String categoryName) throws ObjectSerializationException {
+        String json = categories.getTreeAsJson(categoryName);
+        return javax.ws.rs.core.Response.ok().entity(json).build();
     }
 }

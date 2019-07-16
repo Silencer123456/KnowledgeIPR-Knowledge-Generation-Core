@@ -6,7 +6,7 @@ import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.core.report.ReportFilename;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
+import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.SimpleResponse;
 
@@ -20,7 +20,7 @@ public class StatsRestService {
     @GET
     @Path("/activeAuthorsPatents")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_AUTHORS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -29,7 +29,7 @@ public class StatsRestService {
     @GET
     @Path("/activeOwnersPatents")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getActiveOwnersPatents() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getActiveOwnersPatents() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_OWNERS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -38,7 +38,7 @@ public class StatsRestService {
     @GET
     @Path("/activeAuthorsPublications")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.ACTIVE_AUTHORS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -47,7 +47,7 @@ public class StatsRestService {
     @GET
     @Path("/countsByFos")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountsByFosPublications() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getCountsByFosPublications() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_FOS);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -56,7 +56,7 @@ public class StatsRestService {
     @GET
     @Path("/prolificPublishers")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getProlificPublishers() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getProlificPublishers() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_PUBLISHER);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -65,7 +65,7 @@ public class StatsRestService {
     @GET
     @Path("/prolificVenues")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getProlificVenues() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getProlificVenues() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_VENUES);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -74,7 +74,7 @@ public class StatsRestService {
     @GET
     @Path("/countsByKeywords")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountByKeywords() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getCountByKeywords() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_KEYWORD);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -83,7 +83,7 @@ public class StatsRestService {
     @GET
     @Path("/countsByYearPublications")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountsByYearPublications() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getCountsByYearPublications() throws ObjectSerializationException {
         ChartResponse response = reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.COUNT_BY_YEAR);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -92,7 +92,7 @@ public class StatsRestService {
     @GET
     @Path("/countAuthorsPatents")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountAuthorsPatents() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getCountAuthorsPatents() throws ObjectSerializationException {
         SimpleResponse response = reportGenerator.getCountAuthors(DataSourceType.PATENT.value);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -101,7 +101,7 @@ public class StatsRestService {
     @GET
     @Path("/countsAuthorsPublications")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getCountAuthorsPublications() throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getCountAuthorsPublications() throws ObjectSerializationException {
         SimpleResponse response = reportGenerator.getCountAuthors(DataSourceType.PUBLICATION.value);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -112,9 +112,9 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getPatentOwnershipEvolution(@PathParam("owner") String ownersName,
                                                                  @PathParam("category") String category)
-            throws ResponseSerializationException {
+            throws ObjectSerializationException {
 
-        // check category valid
+        // TODO: check category valid
 
         ChartResponse response = reportGenerator.chartQuery(
                 new PatentOwnershipEvolutionQuery(reportGenerator.getStatsQuery(), ownersName, category),

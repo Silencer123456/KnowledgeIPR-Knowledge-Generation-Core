@@ -6,7 +6,7 @@ import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
+import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,7 +57,7 @@ public class ReportCreator {
             String content = SerializationUtils.serializeObject(report);
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(content);
-        } catch (IOException | ResponseSerializationException e) {
+        } catch (IOException | ObjectSerializationException e) {
 
             //e.printStackTrace();
             return null;

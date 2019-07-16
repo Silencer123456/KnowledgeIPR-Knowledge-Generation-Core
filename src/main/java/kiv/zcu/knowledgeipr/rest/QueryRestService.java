@@ -7,8 +7,8 @@ import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ApiException;
+import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
-import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
@@ -71,7 +71,7 @@ public class QueryRestService {
     @GET
     @Path("/synonyms/{word}")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ResponseSerializationException {
+    public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ObjectSerializationException {
         WordNetResponse response = reportGenerator.getSynonyms(word);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();

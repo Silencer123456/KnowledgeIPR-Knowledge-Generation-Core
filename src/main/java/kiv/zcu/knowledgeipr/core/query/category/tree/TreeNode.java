@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.query.category.tree;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -8,7 +9,9 @@ import java.util.List;
 
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
+    @JsonUnwrapped
     public T data;
+    @JsonIgnore
     public TreeNode<T> parent;
     public List<TreeNode<T>> children;
     @JsonIgnore

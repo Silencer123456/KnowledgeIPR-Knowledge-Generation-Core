@@ -7,7 +7,7 @@ import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.utils.Constants;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationException;
+import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,7 +91,7 @@ public class GraphReport<X, Y> implements IReport {
 
             Files.write(Paths.get(basePath + filename), json.getBytes(StandardCharsets.UTF_8));
             return true;
-        } catch (IOException | ResponseSerializationException e) {
+        } catch (IOException | ObjectSerializationException e) {
             e.printStackTrace();
         }
 

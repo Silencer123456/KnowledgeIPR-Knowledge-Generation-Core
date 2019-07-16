@@ -1,6 +1,8 @@
 package kiv.zcu.knowledgeipr.core.query.category.data;
 
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
+import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
+import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,12 +90,20 @@ public class SampleCategories {
         return root;
     }
 
-    public String getTreeAsString() {
-        return getSubtreeAsString(root);
+    public String getTreeAsJson(String categoryName) throws ObjectSerializationException {
+        if (categoryName == null) {
+            return SerializationUtils.serializeObject(root);
+        } else {
+            return SerializationUtils.serializeObject(getCategory(categoryName));
+        }
     }
 
     public String getSubtreeAsString(String categoryName) {
-        return getSubtreeAsString(getCategory(categoryName));
+        if (categoryName == null) {
+            return getSubtreeAsString(root);
+        } else {
+            return getSubtreeAsString(getCategory(categoryName));
+        }
     }
 
     private String getSubtreeAsString(TreeNode<Category> topNode) {
