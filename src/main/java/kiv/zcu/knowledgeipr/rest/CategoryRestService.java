@@ -10,9 +10,7 @@ import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
-import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
-import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -44,7 +42,7 @@ public class CategoryRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName, @PathParam("page") int page) throws ApiException {
         if (!categories.containsCategory(categoryName)) {
-            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Wrong category name."));
+            throw new ApiException("Wrong category name.");
         }
 
         TreeNode<Category> category = categories.getCategory(categoryName);
@@ -78,7 +76,7 @@ public class CategoryRestService {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new ObjectSerializationException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
+            throw new ObjectSerializationException(e.getMessage());
         }
     }
 

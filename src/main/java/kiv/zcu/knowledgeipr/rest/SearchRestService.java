@@ -8,9 +8,7 @@ import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.QueryOptionsValidationException;
-import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
-import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
 
 import javax.ws.rs.*;
@@ -19,12 +17,12 @@ import java.io.IOException;
 /**
  * Service for handling incoming REST requests
  */
-@Path("/query/")
-public class QueryRestService {
+@Path("/search/")
+public class SearchRestService {
 
     private ReportController reportController;
 
-    public QueryRestService(ReportController reportController) {
+    public SearchRestService(ReportController reportController) {
         this.reportController = reportController;
     }
 
@@ -42,11 +40,12 @@ public class QueryRestService {
     @Consumes("application/json")
     @Produces("application/json")
     public javax.ws.rs.core.Response query(@PathParam("page") int page, String queryJson) throws ApiException {
+        Integer.parseInt("adfasdfasdfasdf");
         if (page <= 0) {
-            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Page cannot be <= 0"));
+            throw new ApiException("Page cannot be <= 0");
         }
         if (page > 1000) {
-            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Page cannot be > 1000"));
+            throw new ApiException("Page cannot be > 1000");
 
         }
         Query query;
@@ -55,17 +54,26 @@ public class QueryRestService {
 
         } catch (IOException | QueryOptionsValidationException e) {
             e.printStackTrace();
-            throw new ApiException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
+            throw new ApiException(e.getMessage());
         }
 
         return processQueryInit(query, page);
     }
 
     @POST
-    @Path("/query")
+    @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response query(Query query) throws ApiException {
+    public javax.ws.rs.core.Response query(String queryJson) throws ApiException {
+        Query query;
+        try {
+            query = deserializeQuery(queryJson);
+
+        } catch (IOException | QueryOptionsValidationException e) {
+            e.printStackTrace();
+            throw new ApiException(e.getMessage());
+        }
+
         return processQueryInit(query, 1); // Use default 1
     }
 
@@ -86,7 +94,7 @@ public class QueryRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response queryWithLimit(@PathParam("limit") int limit, String queryJson) throws ApiException {
         if (limit > 1000) {
-            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Limit cannot exceed 1000"));
+            throw new ApiException("Limit cannot exceed 1000");
         }
 
         Query query;
@@ -95,7 +103,7 @@ public class QueryRestService {
 
         } catch (IOException | QueryOptionsValidationException e) {
             e.printStackTrace();
-            throw new ApiException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
+            throw new ApiException(e.getMessage());
         }
 
         StandardResponse standardResponse = reportController.processQuery(query, 1, limit);
@@ -113,7 +121,7 @@ public class QueryRestService {
      */
     private javax.ws.rs.core.Response processQueryInit(Query query, int page) throws ApiException {
         if (query.getFilters() == null || query.getFilters().isEmpty() || query.getSourceType() == null) {
-            throw new ApiException(new BaseResponse(StatusResponse.ERROR, "Wrong query format."));
+            throw new ApiException("Wrong query format.");
         }
 
         int limit = 20;

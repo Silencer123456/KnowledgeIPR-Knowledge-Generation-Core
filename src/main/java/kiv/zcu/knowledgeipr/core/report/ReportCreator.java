@@ -8,8 +8,6 @@ import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dbaccess.IReportRepository;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
-import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
-import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,7 +65,7 @@ public class ReportCreator {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(content);
         } catch (IOException e) {
-            throw new ObjectSerializationException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
+            throw new ObjectSerializationException(e.getMessage());
         }
     }
 }

@@ -5,4 +5,6 @@ public class AppConstants {
 
     // Error codes
     public static final int GENERIC_APP_ERROR_CODE = 5001;
+    public static final int OBJECT_SERIALIZATION_ERROR_CODE = 5002;
+    public static final int API_EXCEPTION_ERROR_CODE = 5003;
 }

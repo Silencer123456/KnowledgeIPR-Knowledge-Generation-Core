@@ -36,6 +36,13 @@ public class CommonMongoRunner {
         database = connection.getConnectionInstance();
     }
 
+    /**
+     * Performs the actual execution of the query
+     *
+     * @param collectionName - Name of the collection on which to perform the query
+     * @param list           - List of Bson documents with the query
+     * @return - Iterator of retrieved documents
+     */
     public AggregateIterable<Document> run(DataSourceType collectionName, List<Bson> list) {
         LOGGER.info("MongoDB query: " + Arrays.toString(list.toArray()));
         MongoCollection<Document> collection = database.getCollection(collectionName.value);

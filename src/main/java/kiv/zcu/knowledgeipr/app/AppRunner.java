@@ -6,12 +6,11 @@ import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 import kiv.zcu.knowledgeipr.rest.CategoryRestService;
 import kiv.zcu.knowledgeipr.rest.DataRestService;
-import kiv.zcu.knowledgeipr.rest.QueryRestService;
+import kiv.zcu.knowledgeipr.rest.SearchRestService;
 import kiv.zcu.knowledgeipr.rest.StatsRestService;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
 import kiv.zcu.knowledgeipr.rest.errorhandling.GenericExceptionHandler;
-import kiv.zcu.knowledgeipr.rest.errorhandling.MongoExceptionHandler;
-import kiv.zcu.knowledgeipr.rest.errorhandling.ResponseSerializationExceptionHandler;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationExceptionHandler;
 
 import javax.ws.rs.core.Application;
 import java.io.IOException;
@@ -29,13 +28,13 @@ public class AppRunner extends Application {
 
         ReportController reportGenerator = new ReportController(new ReportCreator(new FileRepository()));
 
-        singletons.add(new QueryRestService(reportGenerator));
+        singletons.add(new SearchRestService(reportGenerator));
         singletons.add(new StatsRestService(reportGenerator));
         singletons.add(new CategoryRestService(reportGenerator));
         singletons.add(new DataRestService(reportGenerator));
         singletons.add(new ApiExceptionHandler());
-        singletons.add(new ResponseSerializationExceptionHandler());
-        singletons.add(new MongoExceptionHandler());
+        singletons.add(new ObjectSerializationExceptionHandler());
+        //singletons.add(new MongoExceptionHandler());
         singletons.add(new GenericExceptionHandler());
 
         try {
