@@ -24,5 +24,5 @@ public interface IQueryCreator {
      * @param category       - Category, which should be used as filter
      * @return Chart data
      */
-    List<Pair<String, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category);
+    List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category);
 }

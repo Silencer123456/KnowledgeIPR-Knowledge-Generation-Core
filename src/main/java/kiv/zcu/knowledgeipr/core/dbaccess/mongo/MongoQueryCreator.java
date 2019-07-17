@@ -81,7 +81,7 @@ public class MongoQueryCreator implements IQueryCreator {
         AggregateIterable<Document> output = mongoRunner.runCountAggregation(collectionName, field.value, 30);
 
         for (Document doc : output) {
-            String author = (String) doc.get(field.value);
+            String author = String.valueOf(doc.get(field.value));
             fieldToCounts.add(new Pair<>(author, (Integer) doc.get("count")));
         }
 
@@ -115,11 +115,13 @@ public class MongoQueryCreator implements IQueryCreator {
     }
 
     @Override
-    public List<Pair<String, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
+    public List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
+        LOGGER.info("Running getPatentOwnershipEvolutionQuery query on " + owner + " owner and " + category + " category on " + collectionName + " collection.");
+
         MongoCollection<Document> collection = mongoRunner.getCollection(collectionName.value);
 
         String field = ResponseField.YEAR.value;
-        List<Pair<String, Integer>> fieldToCounts = new ArrayList<>();
+        List<Pair<Integer, Integer>> fieldToCounts = new ArrayList<>();
 
         AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
                 match(and(Filters.text(category), Filters.eq("owners.name", owner))),
@@ -132,7 +134,8 @@ public class MongoQueryCreator implements IQueryCreator {
         )).allowDiskUse(true);
 
         for (Document doc : output) {
-            String author = (String) doc.get(field);
+            //String author = String.valueOf(doc.get(field));
+            int author = (Integer) doc.get(field);
             fieldToCounts.add(new Pair<>(author, (Integer) doc.get("count")));
         }
 
