@@ -1,7 +1,11 @@
 package kiv.zcu.knowledgeipr.app;
 
+import kiv.zcu.knowledgeipr.core.dbaccess.FileRepository;
+import kiv.zcu.knowledgeipr.core.report.ReportController;
+import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 import kiv.zcu.knowledgeipr.rest.CategoryRestService;
+import kiv.zcu.knowledgeipr.rest.DataRestService;
 import kiv.zcu.knowledgeipr.rest.QueryRestService;
 import kiv.zcu.knowledgeipr.rest.StatsRestService;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
@@ -22,9 +26,13 @@ public class AppRunner extends Application {
      * Registers services and sets up logger
      */
     public AppRunner() {
-        singletons.add(new QueryRestService());
-        singletons.add(new StatsRestService());
-        singletons.add(new CategoryRestService());
+
+        ReportController reportGenerator = new ReportController(new ReportCreator(new FileRepository()));
+
+        singletons.add(new QueryRestService(reportGenerator));
+        singletons.add(new StatsRestService(reportGenerator));
+        singletons.add(new CategoryRestService(reportGenerator));
+        singletons.add(new DataRestService(reportGenerator));
         singletons.add(new ApiExceptionHandler());
         singletons.add(new ResponseSerializationExceptionHandler());
         singletons.add(new MongoExceptionHandler());

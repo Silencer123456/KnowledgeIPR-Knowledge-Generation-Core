@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Projections.fields;
@@ -27,10 +28,18 @@ import static com.mongodb.client.model.Projections.include;
  */
 public class CommonMongoRunner {
 
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     private MongoDatabase database;
 
     public CommonMongoRunner(MongoConnection connection) {
         database = connection.getConnectionInstance();
+    }
+
+    public AggregateIterable<Document> run(DataSourceType collectionName, List<Bson> list) {
+        LOGGER.info("MongoDB query: " + Arrays.toString(list.toArray()));
+        MongoCollection<Document> collection = database.getCollection(collectionName.value);
+        return collection.aggregate(list).allowDiskUse(true);
     }
 
     /**
@@ -44,10 +53,8 @@ public class CommonMongoRunner {
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    public AggregateIterable<Document> runCountUnwindAggregation(String collectionName, String arrayName, String fieldName, int limit) {
-        MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        return collection.aggregate(Arrays.asList(
+    public AggregateIterable<Document> runCountUnwindAggregation(DataSourceType collectionName, String arrayName, String fieldName, int limit) {
+        List<Bson> list = Arrays.asList(
                 project(new Document("_id", 0)
                         .append(fieldName, 1)),
                 unwind("$" + arrayName),
@@ -55,8 +62,9 @@ public class CommonMongoRunner {
                         Accumulators.sum("count", 1)),
                 project(new Document("_id", 0).append(fieldName, "$_id").append("count", 1)),
                 sort(new Document("count", -1)),
-                limit(limit)
-        )).allowDiskUse(true);
+                limit(limit));
+
+        return run(collectionName, list);
     }
 
     /**
@@ -69,17 +77,16 @@ public class CommonMongoRunner {
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    public AggregateIterable<Document> runCountAggregation(String collectionName, String fieldName, int limit) {
-        MongoCollection<Document> collection = database.getCollection(collectionName);
-
-        return collection.aggregate(Arrays.asList(
+    public AggregateIterable<Document> runCountAggregation(DataSourceType collectionName, String fieldName, int limit) {
+        List<Bson> list = Arrays.asList(
                 project(new Document("_id", 0)
                         .append(fieldName, 1)),
                 group("$" + fieldName, Accumulators.sum("count", 1)),
                 project(new Document("_id", 0).append(fieldName, "$_id").append("count", 1)),
                 sort(new Document("count", -1)),
-                limit(limit)
-        )).allowDiskUse(true);
+                limit(limit));
+
+        return run(collectionName, list);
     }
 
     /**

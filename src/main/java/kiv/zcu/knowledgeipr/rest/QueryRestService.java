@@ -2,10 +2,8 @@ package kiv.zcu.knowledgeipr.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import kiv.zcu.knowledgeipr.core.dbaccess.FileRepository;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
-import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
@@ -24,7 +22,11 @@ import java.io.IOException;
 @Path("/query/")
 public class QueryRestService {
 
-    private ReportController reportGenerator = new ReportController(new ReportCreator(new FileRepository()));
+    private ReportController reportController;
+
+    public QueryRestService(ReportController reportController) {
+        this.reportController = reportController;
+    }
 
     /**
      * Accepts a query, processes it and
@@ -73,7 +75,7 @@ public class QueryRestService {
     @Path("/synonyms/{word}")
     @Produces("application/json")
     public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ObjectSerializationException {
-        WordNetResponse response = reportGenerator.getSynonyms(word);
+        WordNetResponse response = reportController.getSynonyms(word);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -96,7 +98,7 @@ public class QueryRestService {
             throw new ApiException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
         }
 
-        StandardResponse standardResponse = reportGenerator.processQuery(query, 1, limit);
+        StandardResponse standardResponse = reportController.processQuery(query, 1, limit);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }
@@ -115,7 +117,7 @@ public class QueryRestService {
         }
 
         int limit = 20;
-        StandardResponse standardResponse = reportGenerator.processQuery(query, page, limit);
+        StandardResponse standardResponse = reportController.processQuery(query, page, limit);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

@@ -1,14 +1,13 @@
 package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
 
 import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Filters;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
-import kiv.zcu.knowledgeipr.core.query.IQueryCreator;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,13 +24,13 @@ import static com.mongodb.client.model.Filters.and;
  * created on 7/2/2019
  * TODO: Refactor methods into one
  */
-public class MongoQueryCreator implements IQueryCreator {
+public class MongoQueryRunner implements IQueryRunner {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private CommonMongoRunner mongoRunner;
 
-    public MongoQueryCreator(CommonMongoRunner mongoRunner) {
+    public MongoQueryRunner(CommonMongoRunner mongoRunner) {
         this.mongoRunner = mongoRunner;
     }
 
@@ -53,12 +52,12 @@ public class MongoQueryCreator implements IQueryCreator {
      * @return - List of 'author name, count' pairs
      */
     @Override
-    public List<Pair<String, Integer>> activePeople(String collectionName, String type) {
+    public List<Pair<String, Integer>> activePeople(DataSourceType collectionName, String type, int limit) {
         LOGGER.info("Running 'active " + type + "' method on " + collectionName + " collection.");
 
         List<Pair<String, Integer>> activeAuthors = new ArrayList<>();
 
-        AggregateIterable<Document> output = mongoRunner.runCountUnwindAggregation(collectionName, type, type + ".name", 20);
+        AggregateIterable<Document> output = mongoRunner.runCountUnwindAggregation(collectionName, type, type + ".name", limit);
 
         for (Document doc : output) {
             String author = doc.get(type, Document.class).getString("name");
@@ -73,7 +72,7 @@ public class MongoQueryCreator implements IQueryCreator {
         return activeAuthors;
     }
 
-    public List<Pair<String, Integer>> countByField(String collectionName, ResponseField field) {
+    public List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field) {
         LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
 
         List<Pair<String, Integer>> fieldToCounts = new ArrayList<>();
@@ -118,20 +117,20 @@ public class MongoQueryCreator implements IQueryCreator {
     public List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
         LOGGER.info("Running getPatentOwnershipEvolutionQuery query on " + owner + " owner and " + category + " category on " + collectionName + " collection.");
 
-        MongoCollection<Document> collection = mongoRunner.getCollection(collectionName.value);
-
         String field = ResponseField.YEAR.value;
         List<Pair<Integer, Integer>> fieldToCounts = new ArrayList<>();
 
-        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
+
+        List<Bson> list = Arrays.asList(
                 match(and(Filters.text(category), Filters.eq("owners.name", owner))),
                 project(new Document("_id", 0)
                         .append(field, 1)),
                 group("$" + field, Accumulators.sum("count", 1)),
                 project(new Document("_id", 0).append(field, "$_id").append("count", 1)),
                 sort(new Document("count", -1)),
-                limit(30)
-        )).allowDiskUse(true);
+                limit(30));
+
+        AggregateIterable<Document> output = mongoRunner.run(collectionName, list);
 
         for (Document doc : output) {
             //String author = String.valueOf(doc.get(field));

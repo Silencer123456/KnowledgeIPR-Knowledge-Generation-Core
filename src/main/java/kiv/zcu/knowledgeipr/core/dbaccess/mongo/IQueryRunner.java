@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query;
+package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
@@ -10,11 +10,11 @@ import java.util.List;
  * Abstract interface specifying all the specific queries that can be run on the database.
  * The concrete implementations of this class are responsible for creation and execution of the queries.
  */
-public interface IQueryCreator {
+public interface IQueryRunner {
 
-    List<Pair<String, Integer>> countByField(String collectionName, ResponseField field);
+    List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field);
 
-    List<Pair<String, Integer>> activePeople(String collectionName, String type);
+    List<Pair<String, Integer>> activePeople(DataSourceType collectionName, String type, int limit);
 
     /**
      * // TODO: maybe generify, replace category string

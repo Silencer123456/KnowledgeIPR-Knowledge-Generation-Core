@@ -10,12 +10,8 @@ import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
-import kiv.zcu.knowledgeipr.core.dbaccess.mongo.CommonMongoRunner;
-import kiv.zcu.knowledgeipr.core.dbaccess.mongo.DataRetriever;
-import kiv.zcu.knowledgeipr.core.dbaccess.mongo.MongoConnection;
-import kiv.zcu.knowledgeipr.core.dbaccess.mongo.MongoQueryCreator;
+import kiv.zcu.knowledgeipr.core.dbaccess.mongo.*;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
-import kiv.zcu.knowledgeipr.core.query.IQueryCreator;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
@@ -38,7 +34,7 @@ public class ReportController {
     private ReportCreator reportCreator;
     private DataRetriever dataRetriever;
 
-    private IQueryCreator statsQuery;
+    private IQueryRunner statsQuery;
 
     private WordNet wordNet;
     private TextSummarizer summarizer;
@@ -49,7 +45,7 @@ public class ReportController {
         CommonMongoRunner mongoRunner = new CommonMongoRunner(MongoConnection.getInstance());
 
         dataRetriever = new DataRetriever(mongoRunner);
-        statsQuery = new MongoQueryCreator(mongoRunner);
+        statsQuery = new MongoQueryRunner(mongoRunner);
 
         wordNet = new WordNet();
         summarizer = new TextSummarizer();
@@ -91,13 +87,13 @@ public class ReportController {
         return response;
     }
 
-    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName) throws ObjectSerializationException {
+    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName) throws ObjectSerializationException {
         return chartQuery(chartQuery, filename, collectionName, false);
     }
 
-    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName, boolean overwrite)
+    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName, boolean overwrite)
             throws ObjectSerializationException {
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + filename.value);
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + filename);
         if (cachedReport != null && !overwrite) {
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
         }
@@ -105,14 +101,14 @@ public class ReportController {
         List<Pair<T, V>> list = chartQuery.get();
         ChartReport<T, V> report = reportCreator.createChartReport(chartQuery.getTitle(), chartQuery.getxLabel(), chartQuery.getyLabel(), list);
 
-        report.save(collectionName + "\\" + filename.value);
+        report.save(collectionName + "\\" + filename);
 
         cachedReport = reportCreator.loadReportToJson(report);
 
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
-    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) throws ObjectSerializationException {
+    public ChartResponse chartQuery(DataSourceType collectionName, ReportFilename reportFilename) throws ObjectSerializationException {
         return chartQuery(collectionName, reportFilename, false);
     }
 
@@ -125,7 +121,7 @@ public class ReportController {
      * @param reportFilename
      * @return
      */
-    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename, boolean overwrite)
+    public ChartResponse chartQuery(DataSourceType collectionName, ReportFilename reportFilename, boolean overwrite)
             throws ObjectSerializationException {
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportFilename.value);
         if (cachedReport != null && !overwrite) {
@@ -144,11 +140,11 @@ public class ReportController {
                 report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
                 break;
             case ACTIVE_OWNERS:
-                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, ResponseField.OWNERS.value);
+                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, ResponseField.OWNERS.value, 1000);
                 report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activeOwners);
                 break;
             case ACTIVE_AUTHORS:
-                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, ResponseField.AUTHORS.value);
+                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, ResponseField.AUTHORS.value, 20);
                 report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activeAuthors);
                 break;
             case COUNT_BY_PUBLISHER:
@@ -180,10 +176,10 @@ public class ReportController {
     }
 
     // TODO: probably delete or hardcode
-    public SimpleResponse getCountAuthors(String collectionName) throws ObjectSerializationException {
+    public SimpleResponse getCountAuthors(DataSourceType collectionName) throws ObjectSerializationException {
         String reportName = "countOfAuthors.json";
 
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName.value + "\\" + reportName);
         if (cachedReport == null) {
             LOGGER.info("Cached report could not be found, querying database");
             // The cached file could not be loaded, we need to fetch new results from the database
@@ -193,7 +189,7 @@ public class ReportController {
             int authorCount = 120000;
 
             SimpleReport simpleReport = new SimpleReport(authorCount);
-            simpleReport.save(collectionName + "\\" + reportName);
+            simpleReport.save(collectionName.value + "\\" + reportName);
 
             cachedReport = reportCreator.loadReportToJson(simpleReport);
         }
@@ -218,7 +214,7 @@ public class ReportController {
         return count;
     }
 
-    public IQueryCreator getStatsQuery() {
+    public IQueryRunner getStatsQuery() {
         return statsQuery;
     }
 }

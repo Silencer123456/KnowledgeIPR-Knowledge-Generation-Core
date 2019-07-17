@@ -2,8 +2,8 @@ package kiv.zcu.knowledgeipr.core.query.queries;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
-import kiv.zcu.knowledgeipr.core.query.IQueryCreator;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Integer, Integer> 
     private static final String X_AXIS = "Year";
     private static final String Y_AXIS = "Count";
 
-    private IQueryCreator queryCreator;
+    private IQueryRunner queryCreator;
 
     private String ownersName;
     private String category;
@@ -28,7 +28,7 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Integer, Integer> 
      * @param ownersName - Name of the owner to search
      * @param category - Name of the category to search
      */
-    public PatentOwnershipEvolutionQuery(IQueryCreator queryCreator, String ownersName, String category) {
+    public PatentOwnershipEvolutionQuery(IQueryRunner queryCreator, String ownersName, String category) {
         super("Patent ownership for owner " + ownersName + " in " + category + " category.", X_AXIS, Y_AXIS);
 
         this.queryCreator = queryCreator;
