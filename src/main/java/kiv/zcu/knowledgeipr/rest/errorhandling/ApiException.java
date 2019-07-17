@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.rest.exception;
+package kiv.zcu.knowledgeipr.rest.errorhandling;
 
 import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 

@@ -10,8 +10,8 @@ import kiv.zcu.knowledgeipr.core.query.category.data.SampleCategories;
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
-import kiv.zcu.knowledgeipr.rest.exception.ApiException;
-import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
 import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
@@ -35,7 +35,7 @@ public class CategoryRestService {
      *
      * @param categoryName - Name of the category
      * @return
-     * @throws ApiException If the category name is not valid, an exception is thrown
+     * @throws ApiException If the category name is not valid, an errorhandling is thrown
      */
     @GET
     @Path("/get/{categoryName}/{page}")

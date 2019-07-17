@@ -2,7 +2,7 @@ package kiv.zcu.knowledgeipr.core.query.category.data;
 
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
 import java.util.ArrayList;
 import java.util.List;

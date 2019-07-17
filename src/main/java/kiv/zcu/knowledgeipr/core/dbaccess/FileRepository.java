@@ -2,9 +2,9 @@ package kiv.zcu.knowledgeipr.core.dbaccess;
 
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.report.IReport;
-import kiv.zcu.knowledgeipr.core.utils.Constants;
+import kiv.zcu.knowledgeipr.core.utils.AppConstants;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class FileRepository implements IReportRepository {
             String json = SerializationUtils.serializeObject(object);
 
             Properties properties = AppServletContextListener.getProperties();
-            String basePath = properties.getProperty(Constants.REPORTS_RESOURCE_NAME);
+            String basePath = properties.getProperty(AppConstants.REPORTS_RESOURCE_NAME);
 
             new File(basePath + name).getParentFile().mkdirs();
 

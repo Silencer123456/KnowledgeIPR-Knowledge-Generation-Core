@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.rest.exception;
+package kiv.zcu.knowledgeipr.rest.errorhandling;
 
 public class QueryOptionsValidationException extends Exception {
 

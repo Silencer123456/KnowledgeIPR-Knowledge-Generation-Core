@@ -12,6 +12,7 @@
 
     <dependencies>
         <dependency>
+            <!-- Rest Easy -->
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>3.6.3.Final</version>

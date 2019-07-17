@@ -8,7 +8,7 @@ import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 

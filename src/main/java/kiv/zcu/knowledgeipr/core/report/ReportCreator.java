@@ -7,7 +7,9 @@ import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dbaccess.IReportRepository;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
+import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,15 +61,13 @@ public class ReportCreator {
         }
     }
 
-    public JsonNode loadReportToJson(Object report) {
+    public JsonNode loadReportToJson(Object report) throws ObjectSerializationException {
         try {
             String content = SerializationUtils.serializeObject(report);
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(content);
-        } catch (IOException | ObjectSerializationException e) {
-
-            //e.printStackTrace();
-            return null;
+        } catch (IOException e) {
+            throw new ObjectSerializationException(new BaseResponse(StatusResponse.ERROR, e.getMessage()));
         }
     }
 }

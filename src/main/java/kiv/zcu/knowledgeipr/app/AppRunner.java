@@ -4,9 +4,10 @@ import kiv.zcu.knowledgeipr.logging.MyLogger;
 import kiv.zcu.knowledgeipr.rest.CategoryRestService;
 import kiv.zcu.knowledgeipr.rest.QueryRestService;
 import kiv.zcu.knowledgeipr.rest.StatsRestService;
-import kiv.zcu.knowledgeipr.rest.exception.ApiExceptionHandler;
-import kiv.zcu.knowledgeipr.rest.exception.MongoExceptionHandler;
-import kiv.zcu.knowledgeipr.rest.exception.ResponseSerializationExceptionHandler;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
+import kiv.zcu.knowledgeipr.rest.errorhandling.GenericExceptionHandler;
+import kiv.zcu.knowledgeipr.rest.errorhandling.MongoExceptionHandler;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ResponseSerializationExceptionHandler;
 
 import javax.ws.rs.core.Application;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class AppRunner extends Application {
         singletons.add(new ApiExceptionHandler());
         singletons.add(new ResponseSerializationExceptionHandler());
         singletons.add(new MongoExceptionHandler());
+        singletons.add(new GenericExceptionHandler());
 
         try {
             MyLogger.setup("restServer");

@@ -7,7 +7,7 @@ import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.core.report.ReportFilename;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
 import kiv.zcu.knowledgeipr.rest.response.SimpleResponse;
 
@@ -126,7 +126,7 @@ public class StatsRestService {
 
     @POST
     @Path("/generateStats/{overwrite}")
-    public javax.ws.rs.core.Response generateStats(@PathParam("overwrite") boolean overwrite) {
+    public javax.ws.rs.core.Response generateStats(@PathParam("overwrite") boolean overwrite) throws ObjectSerializationException {
         reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_AUTHORS, overwrite);
         reportGenerator.chartQuery(DataSourceType.PATENT.value, ReportFilename.ACTIVE_OWNERS, overwrite);
         reportGenerator.chartQuery(DataSourceType.PUBLICATION.value, ReportFilename.ACTIVE_AUTHORS, overwrite);

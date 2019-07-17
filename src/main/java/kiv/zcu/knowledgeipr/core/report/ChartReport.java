@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,6 +13,7 @@ import kiv.zcu.knowledgeipr.core.dbaccess.IReportRepository;
 public class ChartReport<X, Y> implements IReport {
 
     private Chart chart;
+    @JsonIgnore
     private IReportRepository repository;
 
     public ChartReport(Chart chart, IReportRepository repository) {

@@ -17,7 +17,8 @@ import kiv.zcu.knowledgeipr.core.dbaccess.mongo.MongoQueryCreator;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
 import kiv.zcu.knowledgeipr.core.query.IQueryCreator;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
 
 import java.util.ArrayList;
@@ -90,11 +91,12 @@ public class ReportController {
         return response;
     }
 
-    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName) {
+    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName) throws ObjectSerializationException {
         return chartQuery(chartQuery, filename, collectionName, false);
     }
 
-    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName, boolean overwrite) {
+    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName, boolean overwrite)
+            throws ObjectSerializationException {
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + filename.value);
         if (cachedReport != null && !overwrite) {
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
@@ -110,7 +112,7 @@ public class ReportController {
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
-    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) {
+    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) throws ObjectSerializationException {
         return chartQuery(collectionName, reportFilename, false);
     }
 
@@ -123,7 +125,8 @@ public class ReportController {
      * @param reportFilename
      * @return
      */
-    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename, boolean overwrite) {
+    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename, boolean overwrite)
+            throws ObjectSerializationException {
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportFilename.value);
         if (cachedReport != null && !overwrite) {
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
@@ -177,7 +180,7 @@ public class ReportController {
     }
 
     // TODO: probably delete or hardcode
-    public SimpleResponse getCountAuthors(String collectionName) {
+    public SimpleResponse getCountAuthors(String collectionName) throws ObjectSerializationException {
         String reportName = "countOfAuthors.json";
 
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportName);

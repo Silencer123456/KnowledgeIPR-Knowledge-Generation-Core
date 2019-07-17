@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.core.query;
 
-import kiv.zcu.knowledgeipr.rest.exception.QueryOptionsValidationException;
+import kiv.zcu.knowledgeipr.rest.errorhandling.QueryOptionsValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
