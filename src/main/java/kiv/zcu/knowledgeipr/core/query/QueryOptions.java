@@ -14,6 +14,7 @@ public class QueryOptions {
      * Default timeout value
      */
     private static final int DEFAULT_TIMEOUT = 100;
+    private static final int MAX_TIMEOUT = 1000;
 
     private Map<String, Object> options;
 
@@ -34,7 +35,12 @@ public class QueryOptions {
      */
     public int getTimeout() {
         if (options.containsKey("timeout")) {
-            return (int) options.get("timeout");
+            int timeout = (int) options.get("timeout");
+            if (timeout < 0) {
+                timeout = DEFAULT_TIMEOUT;
+            }
+            timeout = Math.min(timeout, MAX_TIMEOUT);
+            return timeout;
         } else {
             return DEFAULT_TIMEOUT;
         }

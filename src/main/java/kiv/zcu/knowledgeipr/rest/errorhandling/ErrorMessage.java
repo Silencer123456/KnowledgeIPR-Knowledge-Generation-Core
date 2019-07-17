@@ -7,6 +7,8 @@ public class ErrorMessage {
      */
     int status;
 
+    String statusName;
+
     /**
      * application specific error code
      */
@@ -68,5 +70,13 @@ public class ErrorMessage {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 }

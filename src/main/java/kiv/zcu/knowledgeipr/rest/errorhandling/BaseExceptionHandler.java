@@ -11,6 +11,7 @@ abstract class BaseExceptionHandler<T extends Throwable> implements ExceptionMap
     Response getErrorResponse(Response.Status status, int errorCode, String message) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatus(status.getStatusCode());
+        errorMessage.setStatusName(status.getReasonPhrase());
         errorMessage.setCode(errorCode);
         errorMessage.setMessage(message);
         //StringWriter errorStackTrace = new StringWriter();

@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 public class GenericExceptionHandler extends BaseExceptionHandler<Throwable> {
     @Override
     public Response toResponse(Throwable ex) {
+        ex.printStackTrace();
         return getErrorResponse(getHttpStatus(ex),
                 AppConstants.API_EXCEPTION_ERROR_CODE,
                 ex.getMessage());

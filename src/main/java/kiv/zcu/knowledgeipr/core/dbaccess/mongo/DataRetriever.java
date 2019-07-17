@@ -67,7 +67,7 @@ public class DataRetriever {
 
         filter = addAllFilters(query, true, true);
 
-        LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+        LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
         // Run second query
         return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }

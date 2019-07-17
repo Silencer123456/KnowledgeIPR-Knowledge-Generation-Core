@@ -40,7 +40,6 @@ public class SearchRestService {
     @Consumes("application/json")
     @Produces("application/json")
     public javax.ws.rs.core.Response query(@PathParam("page") int page, String queryJson) throws ApiException {
-        Integer.parseInt("adfasdfasdfasdf");
         if (page <= 0) {
             throw new ApiException("Page cannot be <= 0");
         }
