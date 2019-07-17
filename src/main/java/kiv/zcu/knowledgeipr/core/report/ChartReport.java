@@ -3,36 +3,20 @@ package kiv.zcu.knowledgeipr.core.report;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.app.AppServletContextListener;
-import kiv.zcu.knowledgeipr.core.utils.Constants;
-import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Properties;
+import kiv.zcu.knowledgeipr.core.dbaccess.IReportRepository;
 
 /**
  * DataReport holding chart data
  * TODO: implement generic interface for all reports
  */
-public class GraphReport<X, Y> implements IReport {
+public class ChartReport<X, Y> implements IReport {
 
-    private String title;
-    private String xLabel;
-    private String yLabel;
-    private List<Pair<X, Y>> data;
+    private Chart chart;
+    private IReportRepository repository;
 
-    public GraphReport(String title, String xLabel, String yLabel, List<Pair<X, Y>> data) {
-        this.title = title;
-        this.xLabel = xLabel;
-        this.yLabel = yLabel;
-        this.data = data;
+    public ChartReport(Chart chart, IReportRepository repository) {
+        this.chart = chart;
+        this.repository = repository;
     }
 
     /**
@@ -81,20 +65,6 @@ public class GraphReport<X, Y> implements IReport {
      */
     @Override
     public boolean save(String filename) {
-        try {
-            String json = SerializationUtils.serializeObject(this);
-
-            Properties properties = AppServletContextListener.getProperties();
-            String basePath = properties.getProperty(Constants.REPORTS_RESOURCE_NAME);
-
-            new File(basePath + filename).getParentFile().mkdirs();
-
-            Files.write(Paths.get(basePath + filename), json.getBytes(StandardCharsets.UTF_8));
-            return true;
-        } catch (IOException | ObjectSerializationException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+        return repository.save(this, filename);
     }
 }

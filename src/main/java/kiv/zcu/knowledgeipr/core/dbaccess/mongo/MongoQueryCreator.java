@@ -6,8 +6,8 @@ import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Filters;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.IQueryCreator;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.query.IQueryCreator;
 import org.bson.Document;
 
 import java.util.ArrayList;

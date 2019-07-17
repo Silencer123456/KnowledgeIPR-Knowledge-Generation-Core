@@ -1,0 +1,43 @@
+package kiv.zcu.knowledgeipr.core.query;
+
+import javafx.util.Pair;
+
+import java.util.List;
+
+/**
+ * Abstract class representing a specific query, which returns chart data
+ *
+ * @param <T> - The x axis data type
+ * @param <V> - The y axis data type
+ */
+public abstract class ChartQuery<T, V> {
+
+    private String title;
+    private String xLabel;
+    private String yLabel;
+
+    public ChartQuery(String title, String xLabel, String yLabel) {
+        this.title = title;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
+    }
+
+    /**
+     * Creates the query and gets the results
+     * @return - Chart data in form of list of pair values
+     */
+    public abstract List<Pair<T, V>> get();
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getxLabel() {
+        return xLabel;
+    }
+
+    public String getyLabel() {
+        return yLabel;
+    }
+
+}

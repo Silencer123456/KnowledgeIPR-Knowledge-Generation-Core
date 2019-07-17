@@ -1,11 +1,14 @@
-package kiv.zcu.knowledgeipr.core.dbaccess;
+package kiv.zcu.knowledgeipr.core.query;
 
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 
 import java.util.List;
 
 /**
- * Abstract interface specifying all the specific queries that can be run on the database
+ * Abstract interface specifying all the specific queries that can be run on the database.
+ * The concrete implementations of this class are responsible for creation and execution of the queries.
  */
 public interface IQueryCreator {
 

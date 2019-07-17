@@ -7,14 +7,15 @@ import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
+import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
-import kiv.zcu.knowledgeipr.core.dbaccess.IChartQuery;
-import kiv.zcu.knowledgeipr.core.dbaccess.IQueryCreator;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.dbaccess.mongo.CommonMongoRunner;
 import kiv.zcu.knowledgeipr.core.dbaccess.mongo.DataRetriever;
 import kiv.zcu.knowledgeipr.core.dbaccess.mongo.MongoConnection;
 import kiv.zcu.knowledgeipr.core.dbaccess.mongo.MongoQueryCreator;
+import kiv.zcu.knowledgeipr.core.query.ChartQuery;
+import kiv.zcu.knowledgeipr.core.query.IQueryCreator;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.exception.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
@@ -89,22 +90,33 @@ public class ReportController {
         return response;
     }
 
-    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) {
-        return chartQuery(collectionName, reportFilename, false);
+    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName) {
+        return chartQuery(chartQuery, filename, collectionName, false);
     }
 
+    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, ReportFilename filename, DataSourceType collectionName, boolean overwrite) {
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + filename.value);
+        if (cachedReport != null && !overwrite) {
+            return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+        }
 
-    public <T, V> ChartResponse chartQuery(IChartQuery<T, V> chartQuery, String title, String x, String y, String filename) {
         List<Pair<T, V>> list = chartQuery.get();
-        GraphReport<T, V> report = reportCreator.createChartReport(title, x, y, list);
-        report.save(filename);
-        JsonNode cachedReport = reportCreator.loadReportToJson(report);
+        ChartReport<T, V> report = reportCreator.createChartReport(chartQuery.getTitle(), chartQuery.getxLabel(), chartQuery.getyLabel(), list);
+
+        report.save(collectionName + "\\" + filename.value);
+
+        cachedReport = reportCreator.loadReportToJson(report);
 
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
+    public ChartResponse chartQuery(String collectionName, ReportFilename reportFilename) {
+        return chartQuery(collectionName, reportFilename, false);
+    }
+
     /**
      * TODO: Refactor
+     * TODO: Later change all functions to use the above chartQuery(ChartQuery<T, V> chartQuery, String title, String x, String y, String filename) method
      * Creates a report from a chart query
      *
      * @param collectionName
@@ -117,7 +129,7 @@ public class ReportController {
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
         }
 
-        GraphReport<String, Integer> report;
+        ChartReport<String, Integer> report;
 
         switch (reportFilename) {
             case COUNT_BY_YEAR:
@@ -153,7 +165,8 @@ public class ReportController {
                 report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", countByLang);
                 break;
             default:
-                report = new GraphReport<>("", "", "", new ArrayList<>());
+                report = reportCreator.createChartReport("", "", "", new ArrayList<>());
+
         }
 
         report.save(collectionName + "\\" + reportFilename.value);

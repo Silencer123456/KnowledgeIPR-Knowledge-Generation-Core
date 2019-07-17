@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core.report;
 /**
  * @author Stepan Baratta
  * created on 7/10/2019
+ * TODO: later replace with external source
  */
 public enum ReportFilename {
     COUNT_BY_YEAR("countByYear.json"),
@@ -12,7 +13,8 @@ public enum ReportFilename {
     ACTIVE_OWNERS("activeowners.json"),
     COUNT_BY_PUBLISHER("prolificPublishers.json"),
     COUNT_BY_VENUES("prolificVenues.json"),
-    COUNT_BY_LANG("countByLang.json");
+    COUNT_BY_LANG("countByLang.json"),
+    PATENT_OWNER_EVO("patentOwnershipEvolution.json");
 
     public final String value;
 

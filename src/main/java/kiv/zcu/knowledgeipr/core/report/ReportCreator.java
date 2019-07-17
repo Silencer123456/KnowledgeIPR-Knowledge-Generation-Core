@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dbaccess.IReportRepository;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.exception.ObjectSerializationException;
 
@@ -21,6 +22,12 @@ import java.util.Properties;
  */
 public class ReportCreator {
 
+    private IReportRepository reportRepository;
+
+    public ReportCreator(IReportRepository reportRepository) {
+        this.reportRepository = reportRepository;
+    }
+
     /**
      * Creates a report from the provided record list.
      * @param recordList
@@ -31,8 +38,8 @@ public class ReportCreator {
         return new DataReport(recordList);
     }
 
-    public <X, Y> GraphReport<X, Y> createChartReport(String title, String xLabel, String yLabel, List<Pair<X, Y>> data) {
-        GraphReport<X, Y> report = new GraphReport<>(title, xLabel, yLabel, data);
+    public <X, Y> ChartReport<X, Y> createChartReport(String title, String xLabel, String yLabel, List<Pair<X, Y>> data) {
+        ChartReport<X, Y> report = new ChartReport<>(new Chart<>(title, xLabel, yLabel, data), reportRepository);
         return report;
     }
 

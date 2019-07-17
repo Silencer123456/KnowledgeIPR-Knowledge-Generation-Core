@@ -2,20 +2,19 @@ package kiv.zcu.knowledgeipr.core.query.queries;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.IChartQuery;
-import kiv.zcu.knowledgeipr.core.dbaccess.IQueryCreator;
+import kiv.zcu.knowledgeipr.core.query.ChartQuery;
+import kiv.zcu.knowledgeipr.core.query.IQueryCreator;
 
 import java.util.List;
 
 /**
- * Manages the creation of a query returning evolution of patents ownership by a specified company
+ * Manages the creation of a query returning evolution of patents ownership by a specified company (owner)
  * in a specified category
  */
-public class PatentOwnershipEvolutionQuery implements IChartQuery<String, Integer> {
+public class PatentOwnershipEvolutionQuery extends ChartQuery<String, Integer> {
 
-    public static final String NAME = "Patent ownership evolution";
-    public static final String X_AXIS = "Year";
-    public static final String Y_AXIS = "Count";
+    private static final String X_AXIS = "Year";
+    private static final String Y_AXIS = "Count";
 
     private IQueryCreator queryCreator;
 
@@ -25,11 +24,13 @@ public class PatentOwnershipEvolutionQuery implements IChartQuery<String, Intege
     /**
      * todo: Change string parameters to single hashmap with all the values
      *
-     * @param queryCreator
-     * @param ownersName
-     * @param category
+     * @param queryCreator - The implementation of the query creator, responsible for creating and executing the query
+     * @param ownersName - Name of the owner to search
+     * @param category - Name of the category to search
      */
     public PatentOwnershipEvolutionQuery(IQueryCreator queryCreator, String ownersName, String category) {
+        super("Patent ownership for owner " + ownersName + " in " + category + " category.", X_AXIS, Y_AXIS);
+
         this.queryCreator = queryCreator;
         this.ownersName = ownersName;
         this.category = category;

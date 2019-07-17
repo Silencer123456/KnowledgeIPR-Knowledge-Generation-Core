@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import kiv.zcu.knowledgeipr.core.dbaccess.FileRepository;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
@@ -23,7 +24,7 @@ import java.io.IOException;
 @Path("/query/")
 public class QueryRestService {
 
-    private ReportController reportGenerator = new ReportController(new ReportCreator());
+    private ReportController reportGenerator = new ReportController(new ReportCreator(new FileRepository()));
 
     /**
      * Accepts a query, processes it and

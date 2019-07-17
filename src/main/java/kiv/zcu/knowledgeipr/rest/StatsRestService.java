@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.rest;
 
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.FileRepository;
 import kiv.zcu.knowledgeipr.core.query.queries.PatentOwnershipEvolutionQuery;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
@@ -15,7 +16,7 @@ import javax.ws.rs.*;
 @Path("/stats/")
 public class StatsRestService {
 
-    private ReportController reportGenerator = new ReportController(new ReportCreator());
+    private ReportController reportGenerator = new ReportController(new ReportCreator(new FileRepository()));
 
     @GET
     @Path("/activeAuthorsPatents")
@@ -118,8 +119,7 @@ public class StatsRestService {
 
         ChartResponse response = reportGenerator.chartQuery(
                 new PatentOwnershipEvolutionQuery(reportGenerator.getStatsQuery(), ownersName, category),
-                PatentOwnershipEvolutionQuery.NAME, PatentOwnershipEvolutionQuery.X_AXIS,
-                PatentOwnershipEvolutionQuery.Y_AXIS, "patentOwnershipEvolution.json");
+                ReportFilename.PATENT_OWNER_EVO, DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }

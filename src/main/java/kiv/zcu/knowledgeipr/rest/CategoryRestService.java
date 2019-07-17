@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.FileRepository;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.category.data.Category;
 import kiv.zcu.knowledgeipr.core.query.category.data.SampleCategories;
@@ -24,7 +25,7 @@ import java.util.Map;
 @Path("/category/")
 public class CategoryRestService {
 
-    private ReportController reportGenerator = new ReportController(new ReportCreator());
+    private ReportController reportGenerator = new ReportController(new ReportCreator(new FileRepository()));
 
     private SampleCategories categories = new SampleCategories();
 
