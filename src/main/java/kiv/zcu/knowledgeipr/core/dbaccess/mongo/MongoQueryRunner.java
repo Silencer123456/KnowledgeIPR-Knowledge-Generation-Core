@@ -130,7 +130,7 @@ public class MongoQueryRunner implements IQueryRunner {
                 sort(new Document("count", -1)),
                 limit(30));
 
-        AggregateIterable<Document> output = mongoRunner.run(collectionName, list);
+        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, list);
 
         for (Document doc : output) {
             //String author = String.valueOf(doc.get(field));

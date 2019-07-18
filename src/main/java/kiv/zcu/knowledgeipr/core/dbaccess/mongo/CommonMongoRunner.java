@@ -43,7 +43,7 @@ public class CommonMongoRunner {
      * @param list           - List of Bson documents with the query
      * @return - Iterator of retrieved documents
      */
-    public AggregateIterable<Document> run(DataSourceType collectionName, List<Bson> list) {
+    public AggregateIterable<Document> runAggregation(DataSourceType collectionName, List<Bson> list) {
         LOGGER.info("MongoDB query: " + Arrays.toString(list.toArray()));
         MongoCollection<Document> collection = database.getCollection(collectionName.value);
         return collection.aggregate(list).allowDiskUse(true);
@@ -71,7 +71,7 @@ public class CommonMongoRunner {
                 sort(new Document("count", -1)),
                 limit(limit));
 
-        return run(collectionName, list);
+        return runAggregation(collectionName, list);
     }
 
     /**
@@ -93,7 +93,7 @@ public class CommonMongoRunner {
                 sort(new Document("count", -1)),
                 limit(limit));
 
-        return run(collectionName, list);
+        return runAggregation(collectionName, list);
     }
 
     /**
@@ -101,8 +101,9 @@ public class CommonMongoRunner {
      * Returns a list of results limited by the specified limit.
      * The returned result list contains only projected fields relevant to the response.
      *
+     * TODO: Solve performance while sorting by meta text score + add collation for searching case insensitive index
      * @param filter         - The search parameter filter
-     * @param collectionName - Name of the Mongo collection in which to run the search
+     * @param collectionName - Name of the Mongo collection in which to runAggregation the search
      * @param limit          - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
@@ -115,11 +116,11 @@ public class CommonMongoRunner {
         FindIterable<Document> iterable = collection
                 .find(filter)
                 .skip(page > 0 ? ((page - 1) * limit) : 0)
-                .limit(limit)
                 .projection(getProjectionFields(collectionName))
                 //.sort(Sorts.metaTextScore("score"))
+                .limit(limit)
                 .maxTime(timeout, TimeUnit.SECONDS);
-
+        //.collation(Collation.builder().locale("en").collationStrength(CollationStrength.SECONDARY).build());
         try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
             while (cursor.hasNext()) {
                 Document document = cursor.next();

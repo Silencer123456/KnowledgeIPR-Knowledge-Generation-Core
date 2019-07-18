@@ -52,7 +52,7 @@ public class CategoryRestService {
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
-        StandardResponse standardResponse = reportController.processQuery(query, page, 20);
+        StandardResponse standardResponse = reportController.runSearch(query, page, 20, false);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

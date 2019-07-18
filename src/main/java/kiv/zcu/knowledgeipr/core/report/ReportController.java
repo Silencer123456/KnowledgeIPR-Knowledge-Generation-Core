@@ -59,12 +59,16 @@ public class ReportController {
      * @param page  - page number to display
      * @return BaseResponse object encapsulating the report.
      */
-    public StandardResponse processQuery(Query query, int page, int limit) {
+    public StandardResponse runSearch(Query query, int page, int limit, boolean advanced) {
         StandardResponse response;
 
         List<DbRecord> dbRecordList;
         try {
-            dbRecordList = dataRetriever.runQuery(query, page, limit);
+            if (advanced) {
+                dbRecordList = dataRetriever.runSearchAdvanced(query, page, limit);
+            } else {
+                dbRecordList = dataRetriever.runSearchSimple(query, page, limit);
+            }
 
             DataReport report = reportCreator.createReport(dbRecordList);
 

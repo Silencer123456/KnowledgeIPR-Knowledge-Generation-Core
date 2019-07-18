@@ -12,6 +12,7 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,17 +34,19 @@ public class DataRetriever {
 
     /**
      * Runs the query on the source database and returns a result set.
-     * First a quick query is run, performing an exact match search, which should be very fast when using index.
+     * First a quick query is runAggregation, performing an exact match search, which should be very fast when using index.
      * This query is limited to just few seconds of execution.
-     * If no results are returned by that time, the second main query is run with user
+     * If no results are returned by that time, the second main query is runAggregation with user
      * specified timeout.
      *
-     * @param query - knowledgeipr.Query to be run
+     * @param query - knowledgeipr.Query to be runAggregation
      * @param page  - Page to return
      * @param limit - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    public List<DbRecord> runQuery(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
+    public List<DbRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
+        LOGGER.info("Running advanced search");
+
         String sourceType = query.getSourceType();
         isValidSourceType(sourceType);
 
@@ -56,7 +59,7 @@ public class DataRetriever {
             LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
             try {
                 List<DbRecord> results = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
-                // If something was found, we do not need to run the second query
+                // If something was found, we do not need to runAggregation the second query
                 if (!results.isEmpty()) {
                     return results;
                 }
@@ -70,6 +73,31 @@ public class DataRetriever {
         LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
         // Run second query
         return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
+    }
+
+    public List<DbRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
+        LOGGER.info("Running simple search");
+
+        String sourceType = query.getSourceType();
+        isValidSourceType(sourceType);
+
+        BsonDocument filter = addAllFilters(query, false, false);
+        if (filter.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DbRecord> records = new ArrayList<>();
+
+        if (filterContainsIndex(query.getFilters())) {
+            LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+            try {
+                records = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
+            } catch (MongoExecutionTimeoutException e) {
+                LOGGER.info("Nothing found during quick query");
+            }
+        }
+
+        return records;
     }
 
     /**

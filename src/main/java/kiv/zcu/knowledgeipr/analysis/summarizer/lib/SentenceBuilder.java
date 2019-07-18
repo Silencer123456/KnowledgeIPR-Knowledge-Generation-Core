@@ -34,7 +34,7 @@ public class SentenceBuilder {
                 splitLines[j] = null;
         }
 
-        //System.out.println(i + "st run");
+        //System.out.println(i + "st runAggregation");
         for (String aSentence : splitLines) {
             //System.out.println(sentence);
             if (aSentence != null) {
