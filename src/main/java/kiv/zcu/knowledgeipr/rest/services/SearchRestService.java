@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.rest;
+package kiv.zcu.knowledgeipr.rest.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;

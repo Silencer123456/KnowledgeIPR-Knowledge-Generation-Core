@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.rest;
+package kiv.zcu.knowledgeipr.rest.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -52,7 +52,7 @@ public class CategoryRestService {
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
-        StandardResponse standardResponse = reportController.runSearch(query, page, 20, false);
+        StandardResponse standardResponse = reportController.runSearch(query, page, 20, true);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

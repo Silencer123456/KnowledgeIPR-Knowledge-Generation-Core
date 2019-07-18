@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Projections.fields;
-import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Projections.*;
 
 /**
  * Runs common Mongo queries
@@ -139,6 +138,7 @@ public class CommonMongoRunner {
     public Bson getProjectionFields(String collectionName) {
         if (collectionName.equals(DataSourceType.PATENT.value)) {
             return fields(
+                    exclude("_id"),
                     //Projections.metaTextScore("score"),
                     include(
                             ResponseField.TITLE.toString(),
@@ -156,6 +156,7 @@ public class CommonMongoRunner {
                     ));
         } else {
             return fields(
+                    exclude("_id"),
                     include(
                             //Projections.metaTextScore("score"),
                             ResponseField.TITLE.toString(),

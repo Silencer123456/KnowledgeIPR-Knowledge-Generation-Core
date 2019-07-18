@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.rest;
+package kiv.zcu.knowledgeipr.rest.services;
 
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.queries.PatentOwnershipEvolutionQuery;

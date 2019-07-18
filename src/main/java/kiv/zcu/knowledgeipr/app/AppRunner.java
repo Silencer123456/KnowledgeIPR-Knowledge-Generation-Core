@@ -4,13 +4,13 @@ import kiv.zcu.knowledgeipr.core.dbaccess.FileRepository;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
-import kiv.zcu.knowledgeipr.rest.CategoryRestService;
-import kiv.zcu.knowledgeipr.rest.DataRestService;
-import kiv.zcu.knowledgeipr.rest.SearchRestService;
-import kiv.zcu.knowledgeipr.rest.StatsRestService;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
 import kiv.zcu.knowledgeipr.rest.errorhandling.GenericExceptionHandler;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationExceptionHandler;
+import kiv.zcu.knowledgeipr.rest.services.CategoryRestService;
+import kiv.zcu.knowledgeipr.rest.services.DataRestService;
+import kiv.zcu.knowledgeipr.rest.services.SearchRestService;
+import kiv.zcu.knowledgeipr.rest.services.StatsRestService;
 
 import javax.ws.rs.core.Application;
 import java.io.IOException;
