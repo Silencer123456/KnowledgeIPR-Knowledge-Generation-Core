@@ -1,5 +1,9 @@
 package kiv.zcu.knowledgeipr.core.database.dbconnection;
 
+import kiv.zcu.knowledgeipr.app.AppServletContextListener;
+import kiv.zcu.knowledgeipr.core.utils.AppConstants;
+import org.apache.commons.dbutils.DbUtils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,7 +13,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Provides a connection to SQL Knowledge database.
+ * Provides a connection to SQL database.
  */
 public class DbManager {
 
@@ -27,20 +31,23 @@ public class DbManager {
      * @throws ClassNotFoundException
      */
     public Connection createConnection() throws SQLException, ClassNotFoundException {
-        String configPath = "mydb.cfg";
+        Properties properties = AppServletContextListener.getProperties();
+        String basePath = properties.getProperty(AppConstants.DB_CONFIG_RESOURCE_NAME);
+
+        //String configPath = "mydb.cfg";
         Properties prop = new Properties();
         String host;
         String username;
         String password;
         String driver;
         try {
-            prop.load(new FileInputStream(configPath));
+            prop.load(new FileInputStream(basePath));
             host = prop.getProperty("host");
             username = prop.getProperty("username");
             password = prop.getProperty("password");
             driver = prop.getProperty("driver");
         } catch (IOException e) {
-            LOGGER.warning("Unable to find " + configPath + " file in " + configPath);
+            LOGGER.severe("Unable to find file in " + basePath);
             e.printStackTrace();
 
             host = "Unknown HOST";
@@ -64,10 +71,6 @@ public class DbManager {
     }
 
     public void closeConnection() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        DbUtils.closeQuietly(connection);
     }
 }
