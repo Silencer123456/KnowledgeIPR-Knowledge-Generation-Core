@@ -1,7 +1,6 @@
 package kiv.zcu.knowledgeipr.core.report;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.JsonObject;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
@@ -18,6 +17,7 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -32,7 +32,7 @@ public class ReportController {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private ReportCreator reportCreator;
-    private DataRetriever dataRetriever;
+    private MongoDataRetriever dataRetriever;
 
     private IQueryRunner statsQuery;
 
@@ -44,7 +44,7 @@ public class ReportController {
 
         CommonMongoRunner mongoRunner = new CommonMongoRunner(MongoConnection.getInstance());
 
-        dataRetriever = new DataRetriever(mongoRunner);
+        dataRetriever = new MongoDataRetriever(mongoRunner);
         statsQuery = new MongoQueryRunner(mongoRunner);
 
         wordNet = new WordNet();
@@ -60,6 +60,10 @@ public class ReportController {
      * @return BaseResponse object encapsulating the report.
      */
     public StandardResponse runSearch(Query query, int page, int limit, boolean advanced) {
+
+        // TODO: First query the SQL database, if the query was already asked, then get the list of associated reports
+        // with that query. Check if the requested page and the page of some reports corresponds, if yes, return the report as JSON
+        // and only create the standard response from it.
         StandardResponse response;
 
         List<DbRecord> dbRecordList;
@@ -72,7 +76,7 @@ public class ReportController {
 
             DataReport report = reportCreator.createReport(dbRecordList);
 
-            response = new StandardResponse(StatusResponse.SUCCESS, "OK", report.getAsJson());
+            response = new StandardResponse(StatusResponse.SUCCESS, "OK", report);
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
             response.setReturnedCount(limit);
             response.setPage(page);
@@ -81,10 +85,10 @@ public class ReportController {
 
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
-            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
+            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.info("Query processing was prematurely terminated: " + e.getMessage());
         } catch (MongoExecutionTimeoutException e) {
-            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new JsonObject());
+            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.info(e.getMessage());
         }
 
@@ -95,6 +99,16 @@ public class ReportController {
         return chartQuery(chartQuery, filename, collectionName, false);
     }
 
+    /**
+     * @param chartQuery     The query instance which will create the query and retrieve the results
+     * @param filename       - The filename under which the final report should be saved, TODO: replace
+     * @param collectionName - Name of the collection, on which to run the query (patents or publications)
+     * @param overwrite      - Flag specifying whether to overwrite the file TODO: change
+     * @param <T>            - The X value data type on the result chart
+     * @param <V>            - The Y value data type on the result chart
+     * @return - The chart response object
+     * @throws ObjectSerializationException in case of serialization errors
+     */
     public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName, boolean overwrite)
             throws ObjectSerializationException {
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + filename);
@@ -121,13 +135,13 @@ public class ReportController {
      * TODO: Later change all functions to use the above chartQuery(ChartQuery<T, V> chartQuery, String title, String x, String y, String filename) method
      * Creates a report from a chart query
      *
-     * @param collectionName
+     * @param dataSourceType
      * @param reportFilename
      * @return
      */
-    public ChartResponse chartQuery(DataSourceType collectionName, ReportFilename reportFilename, boolean overwrite)
+    public ChartResponse chartQuery(DataSourceType dataSourceType, ReportFilename reportFilename, boolean overwrite)
             throws ObjectSerializationException {
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + reportFilename.value);
+        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(dataSourceType + "\\" + reportFilename.value);
         if (cachedReport != null && !overwrite) {
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
         }
@@ -136,35 +150,35 @@ public class ReportController {
 
         switch (reportFilename) {
             case COUNT_BY_YEAR:
-                List<Pair<String, Integer>> countByYear = statsQuery.countByField(collectionName, ResponseField.YEAR);
+                List<Pair<String, Integer>> countByYear = statsQuery.countByField(dataSourceType, ResponseField.YEAR);
                 report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
                 break;
             case COUNT_BY_FOS:
-                List<Pair<String, Integer>> countByFos = statsQuery.countByField(collectionName, ResponseField.FOS);
+                List<Pair<String, Integer>> countByFos = statsQuery.countByField(dataSourceType, ResponseField.FOS);
                 report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
                 break;
-            case ACTIVE_OWNERS:
-                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, ResponseField.OWNERS.value, 1000);
-                report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activeOwners);
-                break;
-            case ACTIVE_AUTHORS:
-                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, ResponseField.AUTHORS.value, 20);
-                report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activeAuthors);
-                break;
+//            case ACTIVE_OWNERS:
+//                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, ResponseField.OWNERS.value, 1000);
+//                report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activeOwners);
+//                break;
+//            case ACTIVE_AUTHORS:
+//                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, ResponseField.AUTHORS.value, 20);
+//                report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activeAuthors);
+//                break;
             case COUNT_BY_PUBLISHER:
-                List<Pair<String, Integer>> prolificPublishers = statsQuery.countByField(collectionName, ResponseField.PUBLISHER);
+                List<Pair<String, Integer>> prolificPublishers = statsQuery.countByField(dataSourceType, ResponseField.PUBLISHER);
                 report = reportCreator.createChartReport("Prolific publishers", "Publisher name", "Number of publications", prolificPublishers);
                 break;
             case COUNT_BY_KEYWORD:
-                List<Pair<String, Integer>> keywords = statsQuery.countByField(collectionName, ResponseField.KEYWORDS);
+                List<Pair<String, Integer>> keywords = statsQuery.countByField(dataSourceType, ResponseField.KEYWORDS);
                 report = reportCreator.createChartReport("Number of documents by keywords", "Keyword", "Number of documents", keywords);
                 break;
             case COUNT_BY_VENUES:
-                List<Pair<String, Integer>> venues = statsQuery.countByField(collectionName, ResponseField.VENUE);
+                List<Pair<String, Integer>> venues = statsQuery.countByField(dataSourceType, ResponseField.VENUE);
                 report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", venues);
                 break;
             case COUNT_BY_LANG:
-                List<Pair<String, Integer>> countByLang = statsQuery.countByField(collectionName, ResponseField.LANG);
+                List<Pair<String, Integer>> countByLang = statsQuery.countByField(dataSourceType, ResponseField.LANG);
                 report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", countByLang);
                 break;
             default:
@@ -172,7 +186,7 @@ public class ReportController {
 
         }
 
-        report.save(collectionName + "\\" + reportFilename.value);
+        report.save(dataSourceType + "\\" + reportFilename.value);
 
         cachedReport = reportCreator.loadReportToJson(report);
 

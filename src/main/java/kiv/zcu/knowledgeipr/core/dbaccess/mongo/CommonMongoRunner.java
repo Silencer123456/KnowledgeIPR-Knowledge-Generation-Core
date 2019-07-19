@@ -4,6 +4,8 @@ import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Collation;
+import com.mongodb.client.model.CollationStrength;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
@@ -42,7 +44,7 @@ public class CommonMongoRunner {
      * @param list           - List of Bson documents with the query
      * @return - Iterator of retrieved documents
      */
-    public AggregateIterable<Document> runAggregation(DataSourceType collectionName, List<Bson> list) {
+    AggregateIterable<Document> runAggregation(DataSourceType collectionName, List<Bson> list) {
         LOGGER.info("MongoDB query: " + Arrays.toString(list.toArray()));
         MongoCollection<Document> collection = database.getCollection(collectionName.value);
         return collection.aggregate(list).allowDiskUse(true);
@@ -59,7 +61,7 @@ public class CommonMongoRunner {
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    public AggregateIterable<Document> runCountUnwindAggregation(DataSourceType collectionName, String arrayName, String fieldName, int limit) {
+    AggregateIterable<Document> runCountUnwindAggregation(DataSourceType collectionName, String arrayName, String fieldName, int limit) {
         List<Bson> list = Arrays.asList(
                 project(new Document("_id", 0)
                         .append(fieldName, 1)),
@@ -83,7 +85,7 @@ public class CommonMongoRunner {
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    public AggregateIterable<Document> runCountAggregation(DataSourceType collectionName, String fieldName, int limit) {
+    AggregateIterable<Document> runCountAggregation(DataSourceType collectionName, String fieldName, int limit) {
         List<Bson> list = Arrays.asList(
                 project(new Document("_id", 0)
                         .append(fieldName, 1)),
@@ -106,7 +108,7 @@ public class CommonMongoRunner {
      * @param limit          - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
      */
-    public List<DbRecord> doSearch(String collectionName, Bson filter, int limit, int page, int timeout)
+    List<DbRecord> doSearch(String collectionName, Bson filter, int limit, int page, int timeout)
             throws MongoQueryException, MongoExecutionTimeoutException {
 
         MongoCollection<Document> collection = database.getCollection(collectionName);
@@ -118,8 +120,8 @@ public class CommonMongoRunner {
                 .projection(getProjectionFields(collectionName))
                 //.sort(Sorts.metaTextScore("score"))
                 .limit(limit)
-                .maxTime(timeout, TimeUnit.SECONDS);
-        //.collation(Collation.builder().locale("en").collationStrength(CollationStrength.SECONDARY).build());
+                .maxTime(timeout, TimeUnit.SECONDS)
+                .collation(Collation.builder().locale("en").collationStrength(CollationStrength.SECONDARY).build());
         try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
             while (cursor.hasNext()) {
                 Document document = cursor.next();
@@ -135,7 +137,7 @@ public class CommonMongoRunner {
      *
      * @return - BSON representation of projected fields
      */
-    public Bson getProjectionFields(String collectionName) {
+    private Bson getProjectionFields(String collectionName) {
         if (collectionName.equals(DataSourceType.PATENT.value)) {
             return fields(
                     exclude("_id"),

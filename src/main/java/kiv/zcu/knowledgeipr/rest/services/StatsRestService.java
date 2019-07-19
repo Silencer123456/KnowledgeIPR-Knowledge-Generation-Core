@@ -1,6 +1,8 @@
 package kiv.zcu.knowledgeipr.rest.services;
 
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.query.queries.ActivePersonQuery;
 import kiv.zcu.knowledgeipr.core.query.queries.PatentOwnershipEvolutionQuery;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportFilename;
@@ -24,7 +26,9 @@ public class StatsRestService {
     @Path("/activeAuthorsPatents")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ObjectSerializationException {
-        ChartResponse response = reportController.chartQuery(DataSourceType.PATENT, ReportFilename.ACTIVE_AUTHORS);
+        ChartResponse response = reportController.chartQuery(
+                new ActivePersonQuery(reportController.getStatsQuery(), ResponseField.AUTHORS.value),
+                "activeAuthors.json", DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -33,7 +37,9 @@ public class StatsRestService {
     @Path("/activeOwnersPatents")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveOwnersPatents() throws ObjectSerializationException {
-        ChartResponse response = reportController.chartQuery(DataSourceType.PATENT, ReportFilename.ACTIVE_OWNERS);
+        ChartResponse response = reportController.chartQuery(
+                new ActivePersonQuery(reportController.getStatsQuery(), ResponseField.OWNERS.value),
+                "activeOwners.json", DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -42,7 +48,9 @@ public class StatsRestService {
     @Path("/activeAuthorsPublications")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ObjectSerializationException {
-        ChartResponse response = reportController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.ACTIVE_AUTHORS);
+        ChartResponse response = reportController.chartQuery(
+                new ActivePersonQuery(reportController.getStatsQuery(), ResponseField.AUTHORS.value),
+                "activeAuthors.json", DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }

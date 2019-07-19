@@ -23,12 +23,12 @@ import java.util.regex.Pattern;
  * Accesses the source database, runs queries on it and gets
  * a results set back.
  */
-public class DataRetriever {
+public class MongoDataRetriever {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private CommonMongoRunner mongoRunner;
 
-    public DataRetriever(CommonMongoRunner mongoRunner) {
+    public MongoDataRetriever(CommonMongoRunner mongoRunner) {
         this.mongoRunner = mongoRunner;
     }
 

@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.rest.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.JsonElement;
+import kiv.zcu.knowledgeipr.core.report.DataReport;
 
 /**
  * Holds the data for the response
@@ -20,12 +20,12 @@ public class StandardResponse {
     private String summary;
 
     @JsonProperty("report")
-    private JsonElement reportJson;
+    private DataReport report;
 
-    public StandardResponse(StatusResponse status, String msg, JsonElement reportJson) {
+    public StandardResponse(StatusResponse status, String msg, DataReport report) {
         this.msg = msg;
         this.status = status;
-        this.reportJson = reportJson;
+        this.report = report;
     }
 
     public String getMsg() {
@@ -36,8 +36,8 @@ public class StandardResponse {
         return status;
     }
 
-    public JsonElement getReportJson() {
-        return reportJson;
+    public DataReport getReport() {
+        return report;
     }
 
     public void setRequestTime(int requestTime) {

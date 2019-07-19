@@ -23,6 +23,10 @@ public class DbManager {
 
     private Connection connection;
 
+    public DbManager() throws SQLException, ClassNotFoundException {
+        createConnection();
+    }
+
     /**
      * Creates connection to the database
      *
@@ -30,7 +34,7 @@ public class DbManager {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public Connection createConnection() throws SQLException, ClassNotFoundException {
+    private Connection createConnection() throws SQLException, ClassNotFoundException {
         Properties properties = AppServletContextListener.getProperties();
         String basePath = properties.getProperty(AppConstants.DB_CONFIG_RESOURCE_NAME);
 
@@ -67,6 +71,10 @@ public class DbManager {
         LOGGER.info("CONNECTION: " + connection);
 
         this.connection = connection;
+        return connection;
+    }
+
+    public Connection getConnection() {
         return connection;
     }
 
