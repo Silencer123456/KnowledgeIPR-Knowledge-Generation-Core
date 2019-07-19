@@ -6,6 +6,9 @@ import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
+import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
+import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
+import kiv.zcu.knowledgeipr.core.database.repository.DbQueryHandler;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
@@ -36,6 +39,8 @@ public class ReportController {
 
     private IQueryRunner statsQuery;
 
+    private DbQueryHandler dbQueryHandler;
+
     private WordNet wordNet;
     private TextSummarizer summarizer;
 
@@ -49,6 +54,7 @@ public class ReportController {
 
         wordNet = new WordNet();
         summarizer = new TextSummarizer();
+        dbQueryHandler = new DbQueryHandler();
     }
 
     /**
@@ -61,11 +67,13 @@ public class ReportController {
      */
     public StandardResponse runSearch(Query query, int page, int limit, boolean advanced) {
 
+        dbQueryHandler.saveQuery(new QueryDto("test", "test", "test"), new ReportDto());
+
         // TODO: First query the SQL database, if the query was already asked, then get the list of associated reports
         // with that query. Check if the requested page and the page of some reports corresponds, if yes, return the report as JSON
         // and only create the standard response from it.
-        StandardResponse response;
 
+        StandardResponse response;
         List<DbRecord> dbRecordList;
         try {
             if (advanced) {
@@ -78,15 +86,14 @@ public class ReportController {
 
             response = new StandardResponse(StatusResponse.SUCCESS, "OK", report);
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
-            response.setReturnedCount(limit);
+            response.setCount(limit);
             response.setPage(page);
-
             //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
 
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
-            LOGGER.info("Query processing was prematurely terminated: " + e.getMessage());
+            LOGGER.warning("Query processing was prematurely terminated: " + e.getMessage());
         } catch (MongoExecutionTimeoutException e) {
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.info(e.getMessage());

@@ -10,6 +10,12 @@ public class QueryDto {
     private String rawText;
     private String normalizedText;
 
+    public QueryDto(String hash, String rawText, String normalizedText) {
+        this.hash = hash;
+        this.rawText = rawText;
+        this.normalizedText = normalizedText;
+    }
+
     public int getId() {
         return id;
     }

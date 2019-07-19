@@ -61,7 +61,7 @@ public class DbManager {
         }
 
         LOGGER.info("host: " + host + "\nusername: " + username + "\npassword: " + password + "\ndriver: " + driver);
-
+// TODO: handle case when db could not be loaded
         Class.forName(driver);
         LOGGER.info("--------------------------");
         LOGGER.info("DRIVER: " + driver);

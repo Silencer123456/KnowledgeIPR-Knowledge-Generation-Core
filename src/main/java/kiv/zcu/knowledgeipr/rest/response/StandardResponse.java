@@ -14,7 +14,7 @@ public class StandardResponse {
     private StatusResponse status;
     private int requestTime;
     private int searchedCount;
-    private int returnedCount;
+    private int count;
     private int page;
 
     private String summary;
@@ -48,8 +48,8 @@ public class StandardResponse {
         this.searchedCount = searchedCount;
     }
 
-    public void setReturnedCount(int returnedCount) {
-        this.returnedCount = returnedCount;
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public void setPage(int page) {
