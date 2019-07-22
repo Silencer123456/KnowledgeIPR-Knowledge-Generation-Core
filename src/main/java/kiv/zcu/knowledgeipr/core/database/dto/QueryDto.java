@@ -6,11 +6,11 @@ public class QueryDto {
 
     LocalDate lastSubmittedDate;
     private long id;
-    private String hash;
+    private int hash;
     private String rawText;
     private String normalizedText;
 
-    public QueryDto(String hash, String rawText, String normalizedText) {
+    public QueryDto(int hash, String rawText, String normalizedText) {
         this.hash = hash;
         this.rawText = rawText;
         this.normalizedText = normalizedText;
@@ -24,11 +24,11 @@ public class QueryDto {
         this.id = id;
     }
 
-    public String getHash() {
+    public int getHash() {
         return hash;
     }
 
-    public void setHash(String hash) {
+    public void setHash(int hash) {
         this.hash = hash;
     }
 

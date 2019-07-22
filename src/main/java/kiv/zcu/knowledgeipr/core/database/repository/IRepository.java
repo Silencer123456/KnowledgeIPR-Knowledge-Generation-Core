@@ -1,5 +1,7 @@
 package kiv.zcu.knowledgeipr.core.database.repository;
 
+import kiv.zcu.knowledgeipr.core.database.repository.specification.Specification;
+
 import java.util.List;
 
 public interface IRepository<T> {

@@ -3,8 +3,14 @@ package kiv.zcu.knowledgeipr.core.database.repository;
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DbManager;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
+import kiv.zcu.knowledgeipr.core.database.repository.specification.QueryByHashCodeSpecification;
+import kiv.zcu.knowledgeipr.core.database.repository.specification.ReportsForQuerySpecification;
+import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.report.DataReport;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +35,7 @@ public class DbQueryHandler {
     }
 
     public void checkCache(QueryDto query, int page, int limit) {
-        reportsRepository.query(new ReportsForQuerySpecification(query));
+        //reportsRepository.query(new ReportsForQuerySpecification(query));
     }
 
     // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
@@ -48,5 +54,25 @@ public class DbQueryHandler {
         //TODO: check success... log report.....
 
 
+    }
+
+    public Query getByHash(int hashCode) {
+        Query resultQuery = null;
+        List<QueryDto> queryDtoList = queryRepository.query(new QueryByHashCodeSpecification(hashCode));
+        if (queryDtoList.size() >= 1) {
+            QueryDto tmp = queryDtoList.get(0);
+            resultQuery = new Query("", new HashMap<>(), new HashMap<>(), new HashMap<>());
+        }
+
+        return resultQuery;
+    }
+
+    public List<DataReport> getReportsForQuery(Query query) {
+        // get query by hash from DB
+        //Query q = getByHash(query.hashCode());
+
+        List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(query));
+
+        return null;
     }
 }

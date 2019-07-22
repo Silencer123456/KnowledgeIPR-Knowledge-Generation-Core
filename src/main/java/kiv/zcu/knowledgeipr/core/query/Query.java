@@ -56,4 +56,17 @@ public class Query {
 
         this.options.validate();
     }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        if (filters != null) {
+            result = 31 * result + filters.hashCode();
+        }
+        if (conditions != null) {
+            result = 31 * result + conditions.hashCode();
+        }
+
+        return result;
+    }
 }

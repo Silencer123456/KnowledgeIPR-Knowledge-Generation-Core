@@ -74,6 +74,10 @@ public class ReportController {
         StandardResponse response = null;
         List<DbRecord> dbRecordList;
         try {
+            // get list of associated teports
+            List<DataReport> reports = dbQueryHandler.getReportsForQuery(query);
+
+
             if (advanced) {
                 dbRecordList = dataRetriever.runSearchAdvanced(query, page, limit);
             } else {
@@ -89,7 +93,7 @@ public class ReportController {
             //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
 
             // TODO: Work in progress
-            QueryDto queryDto = new QueryDto("test", SerializationUtils.serializeObject(query), "test");
+            QueryDto queryDto = new QueryDto(query.hashCode(), SerializationUtils.serializeObject(query), "test");
             dbQueryHandler.saveQuery(queryDto,
                     new ReportDto(queryDto, limit, SerializationUtils.serializeObject(report), null, null, page));
 

@@ -2,11 +2,15 @@ package kiv.zcu.knowledgeipr.core.database.repository;
 
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DbManager;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
+import kiv.zcu.knowledgeipr.core.database.repository.specification.Specification;
+import kiv.zcu.knowledgeipr.core.database.repository.specification.SqlSpecification;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,6 +74,21 @@ public class QueryRepository implements IRepository<QueryDto> {
 
     @Override
     public List<QueryDto> query(Specification specification) {
-        return null;
+        final SqlSpecification sqlSpecification = (SqlSpecification) specification;
+        final Connection connection = dbManager.getConnection();
+
+        BeanListHandler<QueryDto> beanListHandler
+                = new BeanListHandler<>(QueryDto.class);
+
+        String queryString = sqlSpecification.toSqlQuery();
+
+        List<QueryDto> queriesList = new ArrayList<>();
+        try {
+            queriesList = runner.query(connection, queryString, beanListHandler);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return queriesList;
     }
 }
