@@ -31,7 +31,7 @@ public class Query {
         return filters;
     }
 
-    public String getTextQuery() {
+    public String getTextFilter() {
         return filters.get("text");
     }
 

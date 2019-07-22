@@ -4,6 +4,7 @@ import kiv.zcu.knowledgeipr.core.database.dbconnection.DbManager;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,13 +24,33 @@ public class ReportRepository implements IRepository<ReportDto> {
     }
 
     @Override
-    public void add(ReportDto item) {
-        add(Collections.singletonList(item));
+    public long add(ReportDto item) {
+        return add(Collections.singletonList(item));
     }
 
     @Override
-    public void add(Iterable<ReportDto> items) {
+    public long add(Iterable<ReportDto> items) {
+        long newId = -1;
 
+        final Connection connection = dbManager.getConnection();
+        ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
+
+        String insertQuery = "INSERT INTO report (queryId, docsPerPage, reportText, page) VALUES (?, ?, ?, ?)";
+        try {
+            for (ReportDto report : items) {
+                newId = runner.insert(connection, insertQuery, scalarHandler,
+                        report.getQuery().getId(), report.getDocsPerPage(), report.getReportText(), report.getPage());
+                // TODO: check if success ...
+
+                // TODO: insert to references + reportreferences table
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return newId;
     }
 
     @Override
@@ -45,6 +66,11 @@ public class ReportRepository implements IRepository<ReportDto> {
     @Override
     public void remove(Specification specification) {
 
+    }
+
+    @Override
+    public ReportDto getById(int id) {
+        return null;
     }
 
     // TODO: Handle better the exception handling

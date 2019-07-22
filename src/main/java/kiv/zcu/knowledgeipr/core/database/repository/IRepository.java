@@ -3,15 +3,23 @@ package kiv.zcu.knowledgeipr.core.database.repository;
 import java.util.List;
 
 public interface IRepository<T> {
-    void add(T item);
+    /**
+     * Adds an item to the repository.
+     *
+     * @param item - item to be inserted
+     * @return id of the inserted record
+     */
+    long add(T item);
 
-    void add(Iterable<T> items);
+    long add(Iterable<T> items);
 
     void update(T item);
 
     void remove(T item);
 
     void remove(Specification specification);
+
+    T getById(int id);
 
     List<T> query(Specification specification);
 }

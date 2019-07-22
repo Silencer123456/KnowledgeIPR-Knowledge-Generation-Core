@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core.database.repository;
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DbManager;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,23 +23,29 @@ public class QueryRepository implements IRepository<QueryDto> {
     }
 
     @Override
-    public void add(QueryDto item) {
-        add(Collections.singletonList(item));
+    public long add(QueryDto item) {
+        return add(Collections.singletonList(item));
     }
 
     @Override
-    public void add(Iterable<QueryDto> items) {
+    public long add(Iterable<QueryDto> items) {
+        long newId = -1;
+
         final Connection connection = dbManager.getConnection();
+        ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
         String insertQuery = "INSERT INTO query (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
         try {
             for (QueryDto query : items) {
-                int numRowsInserted = runner.update(connection, insertQuery, query.getHash(), query.getRawText(), query.getNormalizedText());
+                newId = runner.insert(connection, insertQuery, scalarHandler,
+                        query.getHash(), query.getRawText(), query.getNormalizedText());
                 // TODO: check if success ...
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return newId;
     }
 
     @Override
@@ -54,6 +61,11 @@ public class QueryRepository implements IRepository<QueryDto> {
     @Override
     public void remove(Specification specification) {
 
+    }
+
+    @Override
+    public QueryDto getById(int id) {
+        return null;
     }
 
     @Override

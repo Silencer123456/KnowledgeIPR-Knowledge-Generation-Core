@@ -34,7 +34,17 @@ public class DbQueryHandler {
 
     // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
     public void saveQuery(QueryDto query, ReportDto reportDto) {
-        queryRepository.add(query);
+        long queryId = queryRepository.add(query);
+        if (queryId == -1) {
+            LOGGER.warning("Could not save query to database.");
+        }
+        query.setId(queryId);
+
+        reportDto.setQuery(query);
+        long reportId = reportsRepository.add(reportDto);
+
+
+
         //TODO: check success... log report.....
 
 

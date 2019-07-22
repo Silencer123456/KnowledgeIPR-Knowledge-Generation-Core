@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class QueryDto {
 
     LocalDate lastSubmittedDate;
-    private int id;
+    private long id;
     private String hash;
     private String rawText;
     private String normalizedText;
@@ -16,11 +16,11 @@ public class QueryDto {
         this.normalizedText = normalizedText;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

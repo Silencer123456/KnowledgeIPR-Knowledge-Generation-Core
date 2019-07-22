@@ -15,6 +15,7 @@ import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.dbaccess.mongo.*;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
 import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
@@ -66,14 +67,11 @@ public class ReportController {
      * @return BaseResponse object encapsulating the report.
      */
     public StandardResponse runSearch(Query query, int page, int limit, boolean advanced) {
-
-        dbQueryHandler.saveQuery(new QueryDto("test", "test", "test"), new ReportDto());
-
         // TODO: First query the SQL database, if the query was already asked, then get the list of associated reports
         // with that query. Check if the requested page and the page of some reports corresponds, if yes, return the report as JSON
         // and only create the standard response from it.
 
-        StandardResponse response;
+        StandardResponse response = null;
         List<DbRecord> dbRecordList;
         try {
             if (advanced) {
@@ -90,6 +88,11 @@ public class ReportController {
             response.setPage(page);
             //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
 
+            // TODO: Work in progress
+            QueryDto queryDto = new QueryDto("test", SerializationUtils.serializeObject(query), "test");
+            dbQueryHandler.saveQuery(queryDto,
+                    new ReportDto(queryDto, limit, SerializationUtils.serializeObject(report), null, null, page));
+
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
@@ -97,6 +100,9 @@ public class ReportController {
         } catch (MongoExecutionTimeoutException e) {
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.info(e.getMessage());
+        } catch (ObjectSerializationException e) {
+            LOGGER.warning("Could not serialize the report object for saving.");
+            e.printStackTrace();
         }
 
         return response;
