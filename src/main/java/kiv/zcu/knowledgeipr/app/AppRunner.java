@@ -13,7 +13,6 @@ import kiv.zcu.knowledgeipr.rest.services.SearchRestService;
 import kiv.zcu.knowledgeipr.rest.services.StatsRestService;
 
 import javax.ws.rs.core.Application;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,11 +36,7 @@ public class AppRunner extends Application {
         //singletons.add(new MongoExceptionHandler());
         singletons.add(new GenericExceptionHandler());
 
-        try {
-            MyLogger.setup("restServer");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MyLogger.setup("restServer");
     }
 
     @Override

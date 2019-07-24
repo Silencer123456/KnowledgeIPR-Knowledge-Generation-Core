@@ -56,7 +56,7 @@ public class MongoDataRetriever {
         }
 
         if (filterContainsIndex(query.getFilters())) {
-            LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+            LOGGER.info("Running quick query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
             try {
                 List<DbRecord> results = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
                 // If something was found, we do not need to runAggregation the second query
@@ -70,7 +70,7 @@ public class MongoDataRetriever {
 
         filter = addAllFilters(query, true, true);
 
-        LOGGER.info("Running 2. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
+        LOGGER.info("Running extended query: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
         // Run second query
         return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }

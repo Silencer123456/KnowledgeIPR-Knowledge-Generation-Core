@@ -35,10 +35,10 @@ public class DbQueryService {
     /**
      * Saves query to the database and associates a report with it.
      *
-     * @param query
-     * @param report
-     * @param limit
-     * @param page
+     * @param query - The query to be saved
+     * @param report - The report to be saved and associated to the query
+     * @param limit - results limit
+     * @param page page number
      */
     // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
     public void saveQuery(Query query, DataReport report, int limit, int page) {
@@ -93,7 +93,7 @@ public class DbQueryService {
      * @param limit - Results count limit
      * @return
      */
-    // TODO: refactor
+    // TODO: refactor, later instead of deserializing to report, use only the json
     public DataReport getReportForQuery(Query query, int page, int limit) {
         List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(query, page, limit));
         if (reportDtoList == null || reportDtoList.isEmpty()) {
@@ -101,7 +101,6 @@ public class DbQueryService {
         }
 
         ReportDto reportDto = reportDtoList.get(0);
-
         try {
             DataReport dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
             LOGGER.info("Cached report found for query: " + query.hashCode() + ", page: " + page + ", limit: " + limit);
@@ -111,6 +110,5 @@ public class DbQueryService {
             e.printStackTrace();
             return null;
         }
-
     }
 }

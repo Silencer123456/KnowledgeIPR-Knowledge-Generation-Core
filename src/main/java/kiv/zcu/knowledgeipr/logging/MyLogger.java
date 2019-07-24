@@ -4,6 +4,9 @@ import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.*;
@@ -12,20 +15,79 @@ import java.util.logging.*;
  * Provides logging to the console and file
  */
 public class MyLogger {
-    static private FileHandler fileTxt;
-    static private SimpleFormatter formatterTxt;
+    static private Date dat = new Date();
 
-    public static void setup(String fileSuffix) throws IOException {
+    //static private FileHandler fileTxt;
+    static private SimpleFormatter formatterTxt;
+    static private MessageFormat formatter;
+
+    //private final static String format = "{0,date} {0,time}";
+    private static Object[] args = new Object[1];
+
+    private static String lineSeparator = "\n";
+
+    public static void setup(String fileSuffix) {
         formatterTxt = new SimpleFormatter() {
-            private static final String format = "[%1$tF %1$tT] [%2$-7s] %3$s %n";
+            private static final String format = "{0,date} {0,time}";
 
             @Override
-            public synchronized String format(LogRecord lr) {
-                return String.format(format,
-                        new Date(lr.getMillis()),
-                        lr.getLevel().getLocalizedName(),
-                        lr.getMessage()
-                );
+            public synchronized String format(LogRecord record) {
+                StringBuilder sb = new StringBuilder();
+
+                // Minimize memory allocations here.
+                dat.setTime(record.getMillis());
+                args[0] = dat;
+
+                // Date and time
+                StringBuffer text = new StringBuffer();
+                if (formatter == null) {
+                    formatter = new MessageFormat(format);
+                }
+                formatter.format(args, text, null);
+                sb.append(text);
+                sb.append(" ");
+
+
+                // Class name
+                if (record.getSourceClassName() != null) {
+                    sb.append(record.getSourceClassName());
+                } else {
+                    sb.append(record.getLoggerName());
+                }
+
+                // Method name
+                if (record.getSourceMethodName() != null) {
+                    sb.append(" ");
+                    sb.append(record.getSourceMethodName());
+                }
+                sb.append(" - "); // lineSeparator
+
+                String message = formatMessage(record);
+
+                // Level
+                sb.append(record.getLevel().getLocalizedName());
+                sb.append(": ");
+
+                // Indent - the more serious, the more indented.
+                //sb.append( String.format("% ""s") );
+                int iOffset = (1000 - record.getLevel().intValue()) / 100;
+                for (int i = 0; i < iOffset; i++) {
+                    sb.append(" ");
+                }
+
+                sb.append(message);
+                sb.append(lineSeparator);
+                if (record.getThrown() != null) {
+                    try {
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        record.getThrown().printStackTrace(pw);
+                        pw.close();
+                        sb.append(sw.toString());
+                    } catch (Exception ex) {
+                    }
+                }
+                return sb.toString();
             }
         };
 
@@ -41,7 +103,7 @@ public class MyLogger {
 
         logger.setLevel(Level.ALL);
 
-        setupConsoleHandler(logger);
+        //setupConsoleHandler(logger);
         setupFileHandler(logger, fileSuffix);
     }
 
