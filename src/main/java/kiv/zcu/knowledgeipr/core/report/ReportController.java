@@ -6,16 +6,13 @@ import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
-import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
-import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
-import kiv.zcu.knowledgeipr.core.database.repository.DbQueryHandler;
+import kiv.zcu.knowledgeipr.core.database.repository.DbQueryService;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.dbaccess.mongo.*;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
@@ -40,7 +37,7 @@ public class ReportController {
 
     private IQueryRunner statsQuery;
 
-    private DbQueryHandler dbQueryHandler;
+    private DbQueryService dbQueryService;
 
     private WordNet wordNet;
     private TextSummarizer summarizer;
@@ -55,7 +52,7 @@ public class ReportController {
 
         wordNet = new WordNet();
         summarizer = new TextSummarizer();
-        dbQueryHandler = new DbQueryHandler();
+        dbQueryService = new DbQueryService();
     }
 
     /**
@@ -66,36 +63,29 @@ public class ReportController {
      * @param page  - page number to display
      * @return BaseResponse object encapsulating the report.
      */
+    // TODO: Refactor
     public StandardResponse runSearch(Query query, int page, int limit, boolean advanced) {
-        // TODO: First query the SQL database, if the query was already asked, then get the list of associated reports
-        // with that query. Check if the requested page and the page of some reports corresponds, if yes, return the report as JSON
-        // and only create the standard response from it.
-
-        StandardResponse response = null;
-        List<DbRecord> dbRecordList;
+        StandardResponse response;
         try {
-            // get list of associated teports
-            List<DataReport> reports = dbQueryHandler.getReportsForQuery(query);
+            DataReport report;
+            report = dbQueryService.getReportForQuery(query, page, limit);
+            if (report == null) {
+                List<DbRecord> dbRecordList;
+                if (advanced) {
+                    dbRecordList = dataRetriever.runSearchAdvanced(query, page, limit);
+                } else {
+                    dbRecordList = dataRetriever.runSearchSimple(query, page, limit);
+                }
+                report = reportCreator.createReport(dbRecordList);
 
-
-            if (advanced) {
-                dbRecordList = dataRetriever.runSearchAdvanced(query, page, limit);
-            } else {
-                dbRecordList = dataRetriever.runSearchSimple(query, page, limit);
+                dbQueryService.saveQuery(query, report, limit, page);
             }
-
-            DataReport report = reportCreator.createReport(dbRecordList);
 
             response = new StandardResponse(StatusResponse.SUCCESS, "OK", report);
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
             response.setCount(limit);
             response.setPage(page);
             //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
-
-            // TODO: Work in progress
-            QueryDto queryDto = new QueryDto(query.hashCode(), SerializationUtils.serializeObject(query), "test");
-            dbQueryHandler.saveQuery(queryDto,
-                    new ReportDto(queryDto, limit, SerializationUtils.serializeObject(report), null, null, page));
 
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
@@ -104,9 +94,6 @@ public class ReportController {
         } catch (MongoExecutionTimeoutException e) {
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.info(e.getMessage());
-        } catch (ObjectSerializationException e) {
-            LOGGER.warning("Could not serialize the report object for saving.");
-            e.printStackTrace();
         }
 
         return response;

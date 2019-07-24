@@ -1,18 +1,21 @@
 package kiv.zcu.knowledgeipr.core.database.dto;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 public class ReportDto {
-    private int id;
-    private QueryDto query;
+    private long reportId;
+    private long queryId;
     private int docsPerPage;
     private String reportText;
-    private LocalDate dateGenerated;
-    private LocalDate dateUpdated;
+    private Timestamp dateGenerated;
+    private Timestamp dateUpdated;
     private int page;
 
-    public ReportDto(QueryDto query, int docsPerPage, String reportText, LocalDate dateGenerated, LocalDate dateUpdated, int page) {
-        this.query = query;
+    public ReportDto() {
+    }
+
+    public ReportDto(long queryId, int docsPerPage, String reportText, Timestamp dateGenerated, Timestamp dateUpdated, int page) {
+        this.queryId = queryId;
         this.docsPerPage = docsPerPage;
         this.reportText = reportText;
         this.dateGenerated = dateGenerated;
@@ -20,20 +23,20 @@ public class ReportDto {
         this.page = page;
     }
 
-    public int getId() {
-        return id;
+    public long getReportId() {
+        return reportId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setReportId(long reportId) {
+        this.reportId = reportId;
     }
 
-    public QueryDto getQuery() {
-        return query;
+    public long getQueryId() {
+        return queryId;
     }
 
-    public void setQuery(QueryDto query) {
-        this.query = query;
+    public void setQueryId(long query) {
+        this.queryId = query;
     }
 
     public int getDocsPerPage() {
@@ -52,19 +55,19 @@ public class ReportDto {
         this.reportText = reportText;
     }
 
-    public LocalDate getDateGenerated() {
+    public Timestamp getDateGenerated() {
         return dateGenerated;
     }
 
-    public void setDateGenerated(LocalDate dateGenerated) {
+    public void setDateGenerated(Timestamp dateGenerated) {
         this.dateGenerated = dateGenerated;
     }
 
-    public LocalDate getDateUpdated() {
+    public Timestamp getDateUpdated() {
         return dateUpdated;
     }
 
-    public void setDateUpdated(LocalDate dateUpdated) {
+    public void setDateUpdated(Timestamp dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 

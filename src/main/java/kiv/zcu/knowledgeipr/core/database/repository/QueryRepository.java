@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.core.database.repository;
 
-import kiv.zcu.knowledgeipr.core.database.dbconnection.DbManager;
+import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
 import kiv.zcu.knowledgeipr.core.database.repository.specification.Specification;
 import kiv.zcu.knowledgeipr.core.database.repository.specification.SqlSpecification;
@@ -16,13 +16,9 @@ import java.util.List;
 
 public class QueryRepository implements IRepository<QueryDto> {
 
-    private DbManager dbManager;
-
     private QueryRunner runner;
 
-    public QueryRepository(DbManager dbManager) {
-        this.dbManager = dbManager;
-
+    QueryRepository() {
         runner = new QueryRunner();
     }
 
@@ -35,11 +31,12 @@ public class QueryRepository implements IRepository<QueryDto> {
     public long add(Iterable<QueryDto> items) {
         long newId = -1;
 
-        final Connection connection = dbManager.getConnection();
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
         String insertQuery = "INSERT INTO query (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
         try {
+            final Connection connection = DataSourceUtils.getConnection();
+
             for (QueryDto query : items) {
                 newId = runner.insert(connection, insertQuery, scalarHandler,
                         query.getHash(), query.getRawText(), query.getNormalizedText());
@@ -75,7 +72,6 @@ public class QueryRepository implements IRepository<QueryDto> {
     @Override
     public List<QueryDto> query(Specification specification) {
         final SqlSpecification sqlSpecification = (SqlSpecification) specification;
-        final Connection connection = dbManager.getConnection();
 
         BeanListHandler<QueryDto> beanListHandler
                 = new BeanListHandler<>(QueryDto.class);
@@ -84,6 +80,7 @@ public class QueryRepository implements IRepository<QueryDto> {
 
         List<QueryDto> queriesList = new ArrayList<>();
         try {
+            final Connection connection = DataSourceUtils.getConnection();
             queriesList = runner.query(connection, queryString, beanListHandler);
         } catch (SQLException e) {
             e.printStackTrace();

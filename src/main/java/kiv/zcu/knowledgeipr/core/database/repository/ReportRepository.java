@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.core.database.repository;
 
-import kiv.zcu.knowledgeipr.core.database.dbconnection.DbManager;
+import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
 import kiv.zcu.knowledgeipr.core.database.repository.specification.Specification;
 import kiv.zcu.knowledgeipr.core.database.repository.specification.SqlSpecification;
@@ -15,12 +15,9 @@ import java.util.List;
 
 public class ReportRepository implements IRepository<ReportDto> {
 
-    private DbManager dbManager;
-
     private QueryRunner runner;
 
-    public ReportRepository(DbManager dbManager) {
-        this.dbManager = dbManager;
+    public ReportRepository() {
 
         runner = new QueryRunner();
     }
@@ -34,14 +31,14 @@ public class ReportRepository implements IRepository<ReportDto> {
     public long add(Iterable<ReportDto> items) {
         long newId = -1;
 
-        final Connection connection = dbManager.getConnection();
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
         String insertQuery = "INSERT INTO report (queryId, docsPerPage, reportText, page) VALUES (?, ?, ?, ?)";
         try {
+            final Connection connection = DataSourceUtils.getConnection();
             for (ReportDto report : items) {
                 newId = runner.insert(connection, insertQuery, scalarHandler,
-                        report.getQuery().getId(), report.getDocsPerPage(), report.getReportText(), report.getPage());
+                        report.getQueryId(), report.getDocsPerPage(), report.getReportText(), report.getPage());
                 // TODO: check if success ...
 
                 // TODO: insert to references + reportreferences table
@@ -50,7 +47,6 @@ public class ReportRepository implements IRepository<ReportDto> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
 
         return newId;
     }
@@ -80,10 +76,9 @@ public class ReportRepository implements IRepository<ReportDto> {
     public List<ReportDto> query(Specification specification) {
         final SqlSpecification sqlSpecification = (SqlSpecification) specification;
 
-        final Connection connection = dbManager.getConnection();
-
         BeanListHandler<ReportDto> beanListHandler = new BeanListHandler<>(ReportDto.class);
         try {
+            final Connection connection = DataSourceUtils.getConnection();
             return runner.query(connection, sqlSpecification.toSqlQuery(), beanListHandler);
         } catch (SQLException e) {
             e.printStackTrace();

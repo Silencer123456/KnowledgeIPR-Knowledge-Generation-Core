@@ -147,7 +147,9 @@ public class MongoDataRetriever {
         for (Map.Entry<String, String> filterEntry : filters.entrySet()) {
             boolean isFieldValid = ResponseField.isValid(filterEntry.getKey());
             if (!isFieldValid) {
-                LOGGER.warning("Field " + filterEntry.getKey() + " is not valid, skipping.");
+                if (!filterEntry.getKey().equals("$text")) { // Temp solution
+                    LOGGER.warning("Field " + filterEntry.getKey() + " is not valid, skipping.");
+                }
                 continue;
             }
 

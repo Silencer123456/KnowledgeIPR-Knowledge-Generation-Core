@@ -64,6 +64,7 @@
     <orderEntry type="library" name="Maven: net.sf.extjwnl:extjwnl-data-wn31:1.2" level="project" />
     <orderEntry type="library" name="Maven: commons-dbutils:commons-dbutils:1.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.h2database:h2:1.4.199" level="project" />
+    <orderEntry type="library" name="Maven: c3p0:c3p0:0.9.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.mariadb.jdbc:mariadb-java-client:2.4.2" level="project" />
   </component>
 </module>

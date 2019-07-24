@@ -10,6 +10,9 @@ import org.bson.Document;
 public class DbRecord {
     private Document document;
 
+    public DbRecord() {
+    }
+
     public DbRecord(Document document) {
         this.document = document;
     }

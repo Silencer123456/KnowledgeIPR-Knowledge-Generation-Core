@@ -12,6 +12,9 @@ public class DataReport {
     private String summary = "Test summary";
     private List<DbRecord> records;
 
+    public DataReport() {
+    }
+
     public DataReport(List<DbRecord> records) {
         this.records = records;
     }
