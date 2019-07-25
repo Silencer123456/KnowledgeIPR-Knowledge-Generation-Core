@@ -46,7 +46,7 @@ public class CommonMongoRunner {
      */
     AggregateIterable<Document> runAggregation(DataSourceType collectionName, List<Bson> list) {
         LOGGER.info("MongoDB query: " + Arrays.toString(list.toArray()));
-        MongoCollection<Document> collection = database.getCollection(collectionName.value);
+        MongoCollection<Document> collection = database.getCollection("samplepublication");
         return collection.aggregate(list).allowDiskUse(true);
     }
 

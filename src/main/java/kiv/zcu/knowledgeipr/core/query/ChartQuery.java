@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.query;
 
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.core.dbaccess.mongo.IQueryRunner;
 
 import java.util.List;
 
@@ -11,12 +12,14 @@ import java.util.List;
  * @param <V> - The y axis data type
  */
 public abstract class ChartQuery<T, V> {
-
     private String title;
     private String xLabel;
     private String yLabel;
 
-    public ChartQuery(String title, String xLabel, String yLabel) {
+    protected IQueryRunner queryCreator;
+
+    public ChartQuery(IQueryRunner queryCreator, String title, String xLabel, String yLabel) {
+        this.queryCreator = queryCreator;
         this.title = title;
         this.xLabel = xLabel;
         this.yLabel = yLabel;

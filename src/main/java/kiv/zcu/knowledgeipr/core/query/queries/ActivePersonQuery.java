@@ -18,8 +18,6 @@ public class ActivePersonQuery extends ChartQuery<String, Integer> {
     private static final String X_AXIS = "Owner's name";
     private static final String Y_AXIS = "Count";
 
-    private IQueryRunner queryCreator;
-
     private String personType;
 
     /**
@@ -29,9 +27,8 @@ public class ActivePersonQuery extends ChartQuery<String, Integer> {
      * @param type         - Type of person (authors or owners)
      */
     public ActivePersonQuery(IQueryRunner queryCreator, String type) {
-        super("Patent ownership for " + type, X_AXIS, Y_AXIS);
+        super(queryCreator, "Patent ownership for " + type, X_AXIS, Y_AXIS);
 
-        this.queryCreator = queryCreator;
         this.personType = type;
     }
 

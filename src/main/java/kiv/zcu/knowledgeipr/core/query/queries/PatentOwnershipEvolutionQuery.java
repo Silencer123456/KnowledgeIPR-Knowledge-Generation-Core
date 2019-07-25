@@ -16,8 +16,6 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Integer, Integer> 
     private static final String X_AXIS = "Year";
     private static final String Y_AXIS = "Count";
 
-    private IQueryRunner queryCreator;
-
     private String ownersName;
     private String category;
 
@@ -29,7 +27,7 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Integer, Integer> 
      * @param category - Name of the category to search
      */
     public PatentOwnershipEvolutionQuery(IQueryRunner queryCreator, String ownersName, String category) {
-        super("Patent ownership for owner " + ownersName + " in " + category + " category.", X_AXIS, Y_AXIS);
+        super(queryCreator, "Patent ownership for owner " + ownersName + " in " + category + " category.", X_AXIS, Y_AXIS);
 
         this.queryCreator = queryCreator;
         this.ownersName = ownersName;

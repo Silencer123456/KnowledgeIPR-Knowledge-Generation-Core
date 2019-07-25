@@ -9,7 +9,6 @@ import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.database.repository.DbQueryService;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.dbaccess.mongo.*;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
 import kiv.zcu.knowledgeipr.core.query.Query;
@@ -17,7 +16,6 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -117,8 +115,11 @@ public class ReportController {
             throws ObjectSerializationException {
         JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + filename);
         if (cachedReport != null && !overwrite) {
+            LOGGER.info("Cached report found for " + filename);
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
         }
+
+        LOGGER.info("Querying database for: " + chartQuery.getTitle());
 
         List<Pair<T, V>> list = chartQuery.get();
         ChartReport<T, V> report = reportCreator.createChartReport(chartQuery.getTitle(), chartQuery.getxLabel(), chartQuery.getyLabel(), list);
@@ -130,72 +131,72 @@ public class ReportController {
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
-    public ChartResponse chartQuery(DataSourceType collectionName, ReportFilename reportFilename) throws ObjectSerializationException {
-        return chartQuery(collectionName, reportFilename, false);
-    }
-
-    /**
-     * TODO: Refactor
-     * TODO: Later change all functions to use the above chartQuery(ChartQuery<T, V> chartQuery, String title, String x, String y, String filename) method
-     * Creates a report from a chart query
-     *
-     * @param dataSourceType
-     * @param reportFilename
-     * @return
-     */
-    public ChartResponse chartQuery(DataSourceType dataSourceType, ReportFilename reportFilename, boolean overwrite)
-            throws ObjectSerializationException {
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(dataSourceType + "\\" + reportFilename.value);
-        if (cachedReport != null && !overwrite) {
-            return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-        }
-
-        ChartReport<String, Integer> report;
-
-        switch (reportFilename) {
-            case COUNT_BY_YEAR:
-                List<Pair<String, Integer>> countByYear = statsQuery.countByField(dataSourceType, ResponseField.YEAR);
-                report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
-                break;
-            case COUNT_BY_FOS:
-                List<Pair<String, Integer>> countByFos = statsQuery.countByArrayField(dataSourceType, ResponseField.FOS);
-                report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
-                break;
-//            case ACTIVE_OWNERS:
-//                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, ResponseField.OWNERS.value, 1000);
-//                report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activeOwners);
+//    public ChartResponse chartQuery(DataSourceType collectionName, ReportFilename reportFilename) throws ObjectSerializationException {
+//        return chartQuery(collectionName, reportFilename, false);
+//    }
+//
+//    /**
+//     * TODO: Refactor
+//     * TODO: Later change all functions to use the above chartQuery(ChartQuery<T, V> chartQuery, String title, String x, String y, String filename) method
+//     * Creates a report from a chart query
+//     *
+//     * @param dataSourceType
+//     * @param reportFilename
+//     * @return
+//     */
+//    public ChartResponse chartQuery(DataSourceType dataSourceType, ReportFilename reportFilename, boolean overwrite)
+//            throws ObjectSerializationException {
+//        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(dataSourceType + "\\" + reportFilename.value);
+//        if (cachedReport != null && !overwrite) {
+//            return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//        }
+//
+//        ChartReport<String, Integer> report;
+//
+//        switch (reportFilename) {
+//            case COUNT_BY_YEAR:
+//                List<Pair<String, Integer>> countByYear = statsQuery.countByField(dataSourceType, ResponseField.YEAR);
+//                report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
 //                break;
-//            case ACTIVE_AUTHORS:
-//                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, ResponseField.AUTHORS.value, 20);
-//                report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activeAuthors);
+//            case COUNT_BY_FOS:
+//                List<Pair<String, Integer>> countByFos = statsQuery.countByArrayField(dataSourceType, ResponseField.FOS);
+//                report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
 //                break;
-            case COUNT_BY_PUBLISHER:
-                List<Pair<String, Integer>> prolificPublishers = statsQuery.countByField(dataSourceType, ResponseField.PUBLISHER);
-                report = reportCreator.createChartReport("Prolific publishers", "Publisher name", "Number of publications", prolificPublishers);
-                break;
-            case COUNT_BY_KEYWORD:
-                List<Pair<String, Integer>> keywords = statsQuery.countByArrayField(dataSourceType, ResponseField.KEYWORDS);
-                report = reportCreator.createChartReport("Number of documents by keywords", "Keyword", "Number of documents", keywords);
-                break;
-            case COUNT_BY_VENUES:
-                List<Pair<String, Integer>> venues = statsQuery.countByField(dataSourceType, ResponseField.VENUE);
-                report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", venues);
-                break;
-            case COUNT_BY_LANG:
-                List<Pair<String, Integer>> countByLang = statsQuery.countByField(dataSourceType, ResponseField.LANG);
-                report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", countByLang);
-                break;
-            default:
-                report = reportCreator.createChartReport("", "", "", new ArrayList<>());
-
-        }
-
-        report.save(dataSourceType + "\\" + reportFilename.value);
-
-        cachedReport = reportCreator.loadReportToJson(report);
-
-        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
-    }
+////            case ACTIVE_OWNERS:
+////                List<Pair<String, Integer>> activeOwners = statsQuery.activePeople(collectionName, ResponseField.OWNERS.value, 1000);
+////                report = reportCreator.createChartReport("Active owners", "Owners", "Number of published works", activeOwners);
+////                break;
+////            case ACTIVE_AUTHORS:
+////                List<Pair<String, Integer>> activeAuthors = statsQuery.activePeople(collectionName, ResponseField.AUTHORS.value, 20);
+////                report = reportCreator.createChartReport("Active authors", "Authors", "Number of published works", activeAuthors);
+////                break;
+//            case COUNT_BY_PUBLISHER:
+//                List<Pair<String, Integer>> prolificPublishers = statsQuery.countByField(dataSourceType, ResponseField.PUBLISHER);
+//                report = reportCreator.createChartReport("Prolific publishers", "Publisher name", "Number of publications", prolificPublishers);
+//                break;
+//            case COUNT_BY_KEYWORD:
+//                List<Pair<String, Integer>> keywords = statsQuery.countByArrayField(dataSourceType, ResponseField.KEYWORDS);
+//                report = reportCreator.createChartReport("Number of documents by keywords", "Keyword", "Number of documents", keywords);
+//                break;
+//            case COUNT_BY_VENUES:
+//                List<Pair<String, Integer>> venues = statsQuery.countByField(dataSourceType, ResponseField.VENUE);
+//                report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", venues);
+//                break;
+//            case COUNT_BY_LANG:
+//                List<Pair<String, Integer>> countByLang = statsQuery.countByField(dataSourceType, ResponseField.LANG);
+//                report = reportCreator.createChartReport("Number of documents by venues", "Venue", "Number of documents", countByLang);
+//                break;
+//            default:
+//                report = reportCreator.createChartReport("", "", "", new ArrayList<>());
+//
+//        }
+//
+//        report.save(dataSourceType + "\\" + reportFilename.value);
+//
+//        cachedReport = reportCreator.loadReportToJson(report);
+//
+//        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+//    }
 
     // TODO: probably delete or hardcode
     public SimpleResponse getCountAuthors(DataSourceType collectionName) throws ObjectSerializationException {
