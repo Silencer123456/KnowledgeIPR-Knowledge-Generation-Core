@@ -2,10 +2,10 @@ package kiv.zcu.knowledgeipr.rest.services;
 
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
-import kiv.zcu.knowledgeipr.core.query.queries.ActivePersonQuery;
-import kiv.zcu.knowledgeipr.core.query.queries.CountByArrayFieldQuery;
-import kiv.zcu.knowledgeipr.core.query.queries.CountByFieldQuery;
-import kiv.zcu.knowledgeipr.core.query.queries.PatentOwnershipEvolutionQuery;
+import kiv.zcu.knowledgeipr.core.query.chartquery.ActivePersonQuery;
+import kiv.zcu.knowledgeipr.core.query.chartquery.CountByArrayFieldQuery;
+import kiv.zcu.knowledgeipr.core.query.chartquery.CountByFieldQuery;
+import kiv.zcu.knowledgeipr.core.query.chartquery.PatentOwnershipEvolutionQuery;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
@@ -160,7 +160,7 @@ public class StatsRestService {
             throws ObjectSerializationException {
 
         // TODO! check category valid
-        // TODO! better way of disambiguaiting reports, probably saving to database instead
+        // TODO! better way of disambiguaiting reports filenames, probably saving to database instead
 
         ChartResponse response = reportController.chartQuery(
                 new PatentOwnershipEvolutionQuery(reportController.getStatsQuery(), ownersName, category),

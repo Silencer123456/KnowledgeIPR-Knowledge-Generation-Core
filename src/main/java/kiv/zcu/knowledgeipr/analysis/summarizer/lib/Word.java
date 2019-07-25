@@ -21,7 +21,7 @@ public class Word {
     @Override
     public String toString() {
 //        return String.format("%-20s ...belongs to sentence %s", this.wordText, this.belongsToSentenceN);
-        return String.format(this.wordText);
+        return this.wordText;
     }
 
     public String getWordText() {

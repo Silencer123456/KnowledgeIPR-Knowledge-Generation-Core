@@ -47,8 +47,6 @@ public class SampleCategories {
 
     public boolean containsCategory(String category) {
         Comparable<Category> searchCriteria = treeData -> {
-            if (treeData == null)
-                return 1;
             boolean nodeOk = treeData.getName().equals(category);
             return nodeOk ? 0 : 1;
         };
@@ -60,8 +58,6 @@ public class SampleCategories {
 
     public TreeNode<Category> getCategory(String category) {
         Comparable<Category> searchCriteria = treeData -> {
-            if (treeData == null)
-                return 1;
             boolean nodeOk = treeData.getName().equals(category);
             return nodeOk ? 0 : 1;
         };

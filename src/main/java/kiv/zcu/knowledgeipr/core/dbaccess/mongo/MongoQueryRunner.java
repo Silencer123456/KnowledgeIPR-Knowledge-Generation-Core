@@ -18,7 +18,7 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.and;
 
 /**
- * Serves for executing various queries gathering statistical information
+ * Serves for executing various chartquery gathering statistical information
  *
  * @author Stepan Baratta
  * created on 7/2/2019
@@ -63,11 +63,6 @@ public class MongoQueryRunner implements IQueryRunner {
             String author = doc.get(type, Document.class).getString("name");
             activeAuthors.add(new Pair<>(author, (Integer) doc.get("count")));
         }
-//        activeAuthors.add(new Pair<>("test", 20154623));
-//        activeAuthors.add(new Pair<>("test", 456));
-//        activeAuthors.add(new Pair<>("test", 20146523));
-//        activeAuthors.add(new Pair<>("test", 20154623));
-//        activeAuthors.add(new Pair<>("test", 20654123));
 
         return activeAuthors;
     }
@@ -99,12 +94,6 @@ public class MongoQueryRunner implements IQueryRunner {
             String author = String.valueOf(doc.get(field.value));
             fieldToCounts.add(new Pair<>(author, (Integer) doc.get("count")));
         }
-
-//        fieldToCounts.add(new Pair<>("test", 20123));
-//        fieldToCounts.add(new Pair<>("test", 20123));
-//        fieldToCounts.add(new Pair<>("test", 20123));
-//        fieldToCounts.add(new Pair<>("test", 20123));
-//        fieldToCounts.add(new Pair<>("test", 20123));
 
         return fieldToCounts;
     }

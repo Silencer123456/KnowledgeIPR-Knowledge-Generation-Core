@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Handles incoming queries from the REST API.
+ * Handles incoming chartquery from the REST API.
  * Invokes the data retrieval module to get result set.
  * Invokes report creator to generate a report from the result set.
  * Sends response back to the REST API.

@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query.queries;
+package kiv.zcu.knowledgeipr.core.query.chartquery;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
@@ -18,7 +18,7 @@ public class ActivePersonQuery extends ChartQuery<String, Integer> {
     private static final String X_AXIS = "Owner's name";
     private static final String Y_AXIS = "Count";
 
-    private String personType;
+    private final String personType;
 
     /**
      * todo: Change string parameters to single hashmap with all the values

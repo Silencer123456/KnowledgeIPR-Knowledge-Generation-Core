@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class AppRunner extends Application {
 
-    private Set<Object> singletons = new HashSet<Object>();
+    private Set<Object> singletons = new HashSet<>();
 
     /**
      * Registers services and sets up logger

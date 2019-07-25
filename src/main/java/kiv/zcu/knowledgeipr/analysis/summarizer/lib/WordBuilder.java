@@ -134,8 +134,8 @@ public class WordBuilder {
         if (w == null)
             return false;
 
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getBelongingSentenceNo() == w.getBelongingSentenceNo())
+        for (Word word : list) {
+            if (word.getBelongingSentenceNo() == w.getBelongingSentenceNo())
                 return true;
         }
 

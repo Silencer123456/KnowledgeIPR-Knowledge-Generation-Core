@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- * Accesses the source database, runs queries on it and gets
+ * Accesses the source database, runs chartquery on it and gets
  * a results set back.
  */
 public class MongoDataRetriever {

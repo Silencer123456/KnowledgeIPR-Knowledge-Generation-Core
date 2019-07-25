@@ -7,8 +7,8 @@ import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
 import java.util.List;
 
 /**
- * Abstract interface specifying all the specific queries that can be runAggregation on the database.
- * The concrete implementations of this class are responsible for creation and execution of the queries.
+ * Abstract interface specifying all the specific chartquery that can be runAggregation on the database.
+ * The concrete implementations of this class are responsible for creation and execution of the chartquery.
  */
 public interface IQueryRunner {
 

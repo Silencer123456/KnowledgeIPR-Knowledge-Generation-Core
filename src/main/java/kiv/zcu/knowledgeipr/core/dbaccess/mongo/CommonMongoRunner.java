@@ -22,7 +22,7 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Projections.*;
 
 /**
- * Runs common Mongo queries
+ * Runs common Mongo chartquery
  *
  * @author Stepan Baratta
  * created on 7/10/2019
@@ -46,7 +46,7 @@ public class CommonMongoRunner {
      */
     AggregateIterable<Document> runAggregation(DataSourceType collectionName, List<Bson> list) {
         LOGGER.info("MongoDB query: " + Arrays.toString(list.toArray()));
-        MongoCollection<Document> collection = database.getCollection("samplepublication");
+        MongoCollection<Document> collection = database.getCollection(collectionName.value);
         return collection.aggregate(list).allowDiskUse(true);
     }
 
@@ -175,9 +175,5 @@ public class CommonMongoRunner {
                             ResponseField.LANG.toString()
                     ));
         }
-    }
-
-    public MongoCollection<Document> getCollection(String name) {
-        return database.getCollection(name);
     }
 }

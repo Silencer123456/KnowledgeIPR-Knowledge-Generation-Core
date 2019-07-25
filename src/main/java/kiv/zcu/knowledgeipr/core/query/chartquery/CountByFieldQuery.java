@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query.queries;
+package kiv.zcu.knowledgeipr.core.query.chartquery;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
