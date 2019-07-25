@@ -2,8 +2,8 @@ package kiv.zcu.knowledgeipr.rest.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;

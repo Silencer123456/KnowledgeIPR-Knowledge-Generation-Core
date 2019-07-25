@@ -1,7 +1,6 @@
-package kiv.zcu.knowledgeipr.core.dbaccess;
+package kiv.zcu.knowledgeipr.core.report;
 
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
-import kiv.zcu.knowledgeipr.core.report.IReport;
 import kiv.zcu.knowledgeipr.core.utils.AppConstants;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;

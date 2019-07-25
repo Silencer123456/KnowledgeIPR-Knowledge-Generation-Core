@@ -1,8 +1,8 @@
-package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
+package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 
 import java.util.List;
 

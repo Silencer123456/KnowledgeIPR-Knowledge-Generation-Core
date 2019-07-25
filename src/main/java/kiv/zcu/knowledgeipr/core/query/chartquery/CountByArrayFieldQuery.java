@@ -1,9 +1,9 @@
 package kiv.zcu.knowledgeipr.core.query.chartquery;
 
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
-import kiv.zcu.knowledgeipr.core.dbaccess.mongo.IQueryRunner;
+import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
 
 import java.util.List;

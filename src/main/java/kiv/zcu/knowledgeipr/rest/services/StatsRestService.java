@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.rest.services;
 
-import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.chartquery.ActivePersonQuery;
 import kiv.zcu.knowledgeipr.core.query.chartquery.CountByArrayFieldQuery;
 import kiv.zcu.knowledgeipr.core.query.chartquery.CountByFieldQuery;

@@ -1,6 +1,4 @@
-package kiv.zcu.knowledgeipr.core.dbaccess;
-
-import kiv.zcu.knowledgeipr.core.report.IReport;
+package kiv.zcu.knowledgeipr.core.report;
 
 public interface IReportRepository {
 

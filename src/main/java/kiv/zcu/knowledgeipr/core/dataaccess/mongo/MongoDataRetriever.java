@@ -1,12 +1,12 @@
-package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
+package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.client.model.Filters;
-import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import org.bson.BsonDocument;
@@ -225,7 +225,7 @@ public class MongoDataRetriever {
      * Creates condition filters from the query.
      * Like gt, lt
      *
-     * @param conditions   - List of conditions to be converted to the dbaccess filters
+     * @param conditions   - List of conditions to be converted to the dataaccess filters
      * @param bsonDocument - Bson document, to which add the option filters
      */
     private void addConditionsFilters(Map<String, Map<String, Integer>> conditions, BsonDocument bsonDocument) {

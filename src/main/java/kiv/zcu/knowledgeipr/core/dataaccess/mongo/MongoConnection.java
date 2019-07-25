@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
+package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
@@ -22,7 +22,7 @@ public class MongoConnection {
      */
     private static final String DEFAULT_DB_NAME = "knowingipr";
     /**
-     * Path to the dbaccess configuration file
+     * Path to the dataaccess configuration file
      */
     private static final String MONGO_CONFIG_PATH = "mongo-config.cfg";
     /**

@@ -1,11 +1,11 @@
-package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
+package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Filters;
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 

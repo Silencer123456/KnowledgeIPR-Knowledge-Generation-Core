@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.core.report;
 
-import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
 
 import java.util.List;
 

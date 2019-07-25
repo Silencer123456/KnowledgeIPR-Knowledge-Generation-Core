@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.app;
 
-import kiv.zcu.knowledgeipr.core.dbaccess.FileRepository;
+import kiv.zcu.knowledgeipr.core.report.FileRepository;
 import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.logging.MyLogger;

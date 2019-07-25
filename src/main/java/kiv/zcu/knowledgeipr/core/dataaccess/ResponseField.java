@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.dbaccess;
+package kiv.zcu.knowledgeipr.core.dataaccess;
 
 // TODO: Separate fields for patents and publications into its own enums
 public enum ResponseField {

@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.dbaccess.mongo;
+package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
@@ -6,9 +6,9 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Collation;
 import com.mongodb.client.model.CollationStrength;
-import kiv.zcu.knowledgeipr.core.dbaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dbaccess.DbRecord;
-import kiv.zcu.knowledgeipr.core.dbaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
