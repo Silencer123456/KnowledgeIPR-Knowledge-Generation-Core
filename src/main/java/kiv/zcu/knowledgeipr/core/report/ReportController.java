@@ -158,7 +158,7 @@ public class ReportController {
                 report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByYear);
                 break;
             case COUNT_BY_FOS:
-                List<Pair<String, Integer>> countByFos = statsQuery.countByField(dataSourceType, ResponseField.FOS);
+                List<Pair<String, Integer>> countByFos = statsQuery.countByArrayField(dataSourceType, ResponseField.FOS);
                 report = reportCreator.createChartReport("Number of documents by field of study", "Field of study", "Number of documents", countByFos);
                 break;
 //            case ACTIVE_OWNERS:
@@ -174,7 +174,7 @@ public class ReportController {
                 report = reportCreator.createChartReport("Prolific publishers", "Publisher name", "Number of publications", prolificPublishers);
                 break;
             case COUNT_BY_KEYWORD:
-                List<Pair<String, Integer>> keywords = statsQuery.countByField(dataSourceType, ResponseField.KEYWORDS);
+                List<Pair<String, Integer>> keywords = statsQuery.countByArrayField(dataSourceType, ResponseField.KEYWORDS);
                 report = reportCreator.createChartReport("Number of documents by keywords", "Keyword", "Number of documents", keywords);
                 break;
             case COUNT_BY_VENUES:

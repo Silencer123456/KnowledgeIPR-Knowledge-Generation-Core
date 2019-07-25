@@ -14,6 +14,8 @@ public interface IQueryRunner {
 
     List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field);
 
+    List<Pair<String, Integer>> countByArrayField(DataSourceType collectionName, ResponseField field);
+
     List<Pair<String, Integer>> activePeople(DataSourceType collectionName, String type, int limit);
 
     /**

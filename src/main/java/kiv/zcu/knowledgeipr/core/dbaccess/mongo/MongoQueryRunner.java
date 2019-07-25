@@ -72,6 +72,22 @@ public class MongoQueryRunner implements IQueryRunner {
         return activeAuthors;
     }
 
+    @Override
+    public List<Pair<String, Integer>> countByArrayField(DataSourceType collectionName, ResponseField field) {
+        LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
+
+        List<Pair<String, Integer>> fieldToCounts = new ArrayList<>();
+
+        AggregateIterable<Document> output = mongoRunner.runCountUnwindAggregation(collectionName, field.value, field.value, 30);
+
+        for (Document doc : output) {
+            String author = String.valueOf(doc.get(field.value));
+            fieldToCounts.add(new Pair<>(author, (Integer) doc.get("count")));
+        }
+
+        return fieldToCounts;
+    }
+
     public List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field) {
         LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
 
@@ -91,26 +107,6 @@ public class MongoQueryRunner implements IQueryRunner {
 //        fieldToCounts.add(new Pair<>("test", 20123));
 
         return fieldToCounts;
-    }
-
-    public int getPeopleCount(String collectionName, String type) {
-//        MongoCollection<Document> collection = database.getCollection(collectionName);
-//
-//        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
-//                project(new Document("_id", 0)
-//                        .append(type + ".name", 1)),
-//                unwind("$" + type),
-//                group("$ " + type + ".name", Accumulators.sum("count", 1)),
-//                match(gt("count", 1)),
-//                count("count"),
-//                limit(20)
-//        )).allowDiskUse(true);
-//
-//        for (Document doc : output) {
-//            String author = (String) doc.get("fos"); // TODO: change
-//        }
-
-        return 0;
     }
 
     @Override
@@ -139,5 +135,25 @@ public class MongoQueryRunner implements IQueryRunner {
         }
 
         return fieldToCounts;
+    }
+
+    public int getPeopleCount(String collectionName, String type) {
+//        MongoCollection<Document> collection = database.getCollection(collectionName);
+//
+//        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
+//                project(new Document("_id", 0)
+//                        .append(type + ".name", 1)),
+//                unwind("$" + type),
+//                group("$ " + type + ".name", Accumulators.sum("count", 1)),
+//                match(gt("count", 1)),
+//                count("count"),
+//                limit(20)
+//        )).allowDiskUse(true);
+//
+//        for (Document doc : output) {
+//            String author = (String) doc.get("fos"); // TODO: change
+//        }
+
+        return 0;
     }
 }

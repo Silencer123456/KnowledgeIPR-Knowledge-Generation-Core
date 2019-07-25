@@ -66,8 +66,8 @@ public class CommonMongoRunner {
                 project(new Document("_id", 0)
                         .append(fieldName, 1)),
                 unwind("$" + arrayName),
-                group(new Document("$toLower", "$" + fieldName),
-                        Accumulators.sum("count", 1)),
+                //group(new Document("$toLower", "$" + fieldName),
+                group("$" + fieldName, Accumulators.sum("count", 1)),
                 project(new Document("_id", 0).append(fieldName, "$_id").append("count", 1)),
                 sort(new Document("count", -1)),
                 limit(limit));
