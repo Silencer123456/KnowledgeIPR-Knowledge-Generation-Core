@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.core.database.repository;
 
-import kiv.zcu.knowledgeipr.core.database.repository.specification.Specification;
+import kiv.zcu.knowledgeipr.core.database.specification.Specification;
 
 import java.util.List;
 

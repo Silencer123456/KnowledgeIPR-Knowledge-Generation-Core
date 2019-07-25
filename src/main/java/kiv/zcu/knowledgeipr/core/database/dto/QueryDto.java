@@ -1,10 +1,10 @@
 package kiv.zcu.knowledgeipr.core.database.dto;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 public class QueryDto {
 
-    LocalDate lastSubmittedDate;
+    Timestamp lastSubmittedDate;
     private long id;
     private int hash;
     private String rawText;
@@ -48,11 +48,11 @@ public class QueryDto {
         this.normalizedText = normalizedText;
     }
 
-    public LocalDate getLastSubmittedDate() {
+    public Timestamp getLastSubmittedDate() {
         return lastSubmittedDate;
     }
 
-    public void setLastSubmittedDate(LocalDate lastSubmittedDate) {
+    public void setLastSubmittedDate(Timestamp lastSubmittedDate) {
         this.lastSubmittedDate = lastSubmittedDate;
     }
 }

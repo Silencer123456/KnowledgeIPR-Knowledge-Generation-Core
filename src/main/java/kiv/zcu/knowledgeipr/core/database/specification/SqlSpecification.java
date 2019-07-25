@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.database.repository.specification;
+package kiv.zcu.knowledgeipr.core.database.specification;
 
 public interface SqlSpecification extends Specification {
     String toSqlQuery();

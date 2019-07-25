@@ -1,14 +1,18 @@
-package kiv.zcu.knowledgeipr.core.database.repository;
+package kiv.zcu.knowledgeipr.core.database.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
-import kiv.zcu.knowledgeipr.core.database.repository.specification.QueryByHashCodeSpecification;
-import kiv.zcu.knowledgeipr.core.database.repository.specification.ReportsForQuerySpecification;
+import kiv.zcu.knowledgeipr.core.database.mapper.QueryToQueryDtoMapper;
+import kiv.zcu.knowledgeipr.core.database.mapper.ReportToReportDtoMapper;
+import kiv.zcu.knowledgeipr.core.database.repository.IRepository;
+import kiv.zcu.knowledgeipr.core.database.repository.QueryRepository;
+import kiv.zcu.knowledgeipr.core.database.repository.ReportRepository;
+import kiv.zcu.knowledgeipr.core.database.specification.QueryByHashCodeSpecification;
+import kiv.zcu.knowledgeipr.core.database.specification.ReportsForQuerySpecification;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
-import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
 import java.io.IOException;
@@ -44,7 +48,7 @@ public class DbQueryService {
     public void saveQuery(Query query, DataReport report, int limit, int page) {
         LOGGER.info("Saving query " + query.hashCode() + "; limit: " + limit + "; page: " + page);
         try {
-            QueryDto queryDto = new QueryDto(query.hashCode(), SerializationUtils.serializeObject(query), "test");
+            QueryDto queryDto = new QueryToQueryDtoMapper().map(query);
 
             if (getReportForQuery(query, page, limit) != null) {
                 LOGGER.info("Report for query already exists, saving skipped");
@@ -59,7 +63,7 @@ public class DbQueryService {
             }
             queryDto.setId(queryId);
 
-            ReportDto reportDto = new ReportDto(queryId, limit, SerializationUtils.serializeObject(report), null, null, page);
+            ReportDto reportDto = new ReportToReportDtoMapper(page, limit, queryId).map(report);
 
             reportDto.setQueryId(queryId);
             long reportId = reportsRepository.add(reportDto);

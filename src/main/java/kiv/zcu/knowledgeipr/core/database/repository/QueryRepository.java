@@ -2,8 +2,8 @@ package kiv.zcu.knowledgeipr.core.database.repository;
 
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
-import kiv.zcu.knowledgeipr.core.database.repository.specification.Specification;
-import kiv.zcu.knowledgeipr.core.database.repository.specification.SqlSpecification;
+import kiv.zcu.knowledgeipr.core.database.specification.Specification;
+import kiv.zcu.knowledgeipr.core.database.specification.SqlSpecification;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
@@ -18,7 +18,7 @@ public class QueryRepository implements IRepository<QueryDto> {
 
     private QueryRunner runner;
 
-    QueryRepository() {
+    public QueryRepository() {
         runner = new QueryRunner();
     }
 
