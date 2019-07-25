@@ -2,12 +2,12 @@ package kiv.zcu.knowledgeipr.rest.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.category.data.Category;
 import kiv.zcu.knowledgeipr.core.query.category.data.SampleCategories;
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
-import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
@@ -21,10 +21,10 @@ import java.util.Map;
 @Path("/category/")
 public class CategoryRestService {
 
-    private ReportController reportController;
+    private DataAccessController dataAccessController;
 
-    public CategoryRestService(ReportController reportController) {
-        this.reportController = reportController;
+    public CategoryRestService(DataAccessController dataAccessController) {
+        this.dataAccessController = dataAccessController;
     }
 
     private SampleCategories categories = new SampleCategories();
@@ -52,7 +52,7 @@ public class CategoryRestService {
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
-        StandardResponse standardResponse = reportController.runSearch(query, page, 20, true);
+        StandardResponse standardResponse = dataAccessController.runSearch(query, page, 20, true);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

@@ -2,10 +2,10 @@ package kiv.zcu.knowledgeipr.rest.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.report.ReportController;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
@@ -24,10 +24,10 @@ import java.util.Map;
 @Path("/search/")
 public class SearchRestService {
 
-    private ReportController reportController;
+    private DataAccessController dataAccessController;
 
-    public SearchRestService(ReportController reportController) {
-        this.reportController = reportController;
+    public SearchRestService(DataAccessController dataAccessController) {
+        this.dataAccessController = dataAccessController;
     }
 
     /**
@@ -97,7 +97,7 @@ public class SearchRestService {
     @Path("/synonyms/{word}")
     @Produces("application/json")
     public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ObjectSerializationException {
-        WordNetResponse response = reportController.getSynonyms(word);
+        WordNetResponse response = dataAccessController.getSynonyms(word);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -120,7 +120,7 @@ public class SearchRestService {
             throw new ApiException(e.getMessage());
         }
 
-        StandardResponse standardResponse = reportController.runSearch(query, 1, limit, true);
+        StandardResponse standardResponse = dataAccessController.runSearch(query, 1, limit, true);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }
@@ -139,7 +139,7 @@ public class SearchRestService {
         }
 
         int limit = 20;
-        StandardResponse standardResponse = reportController.runSearch(query, page, limit, advancedSearch);
+        StandardResponse standardResponse = dataAccessController.runSearch(query, page, limit, advancedSearch);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

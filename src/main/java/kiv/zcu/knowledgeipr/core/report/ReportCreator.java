@@ -1,26 +1,18 @@
 package kiv.zcu.knowledgeipr.core.report;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 
 /**
- * TODO: Make abstract, use implementations for Mongo, ...
- *
- * Wrapper for creating reports
+ * Wrapper enabling the instantiation of various reports and contains methods for manipulating them
  */
 public class ReportCreator {
-
     private IReportRepository reportRepository;
 
     public ReportCreator(IReportRepository reportRepository) {
@@ -29,7 +21,7 @@ public class ReportCreator {
 
     /**
      * Creates a report from the provided record list.
-     * @param recordList
+     * @param recordList - List of records
      * @return - The generated report
      */
     public DataReport createReport(List<DbRecord> recordList) {
@@ -42,29 +34,12 @@ public class ReportCreator {
         return report;
     }
 
-    //TODO: refactor
     public JsonNode loadReportToJsonFromFile(String filename) {
-        try {
-            Properties properties = AppServletContextListener.getProperties();
-            String basePath = properties.getProperty("reports");
+        Properties properties = AppServletContextListener.getProperties();
+        String basePath = properties.getProperty("reports");
 
-            String content = new String(Files.readAllBytes(Paths.get(basePath + filename)));
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(content);
-        } catch (IOException e) {
+        if (basePath == null) return null;
 
-            //e.printStackTrace();
-            return null;
-        }
-    }
-
-    public JsonNode loadReportToJson(Object report) throws ObjectSerializationException {
-        try {
-            String content = SerializationUtils.serializeObject(report);
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(content);
-        } catch (IOException e) {
-            throw new ObjectSerializationException(e.getMessage());
-        }
+        return SerializationUtils.objectToJsonFromFile(basePath + filename);
     }
 }

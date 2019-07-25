@@ -20,30 +20,23 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- * Accesses the source database, runs chartquery on it and gets
- * a results set back.
+ * Class enables access to Mongo database and runs search queries on it.
+ * Uses the <code>Query</code> class to extract filters from the query and transforms them to
+ * the MongoDB's query format.
  */
-public class MongoDataRetriever {
+public class MongoDataSearcher implements IDataSearcher {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private CommonMongoRunner mongoRunner;
 
-    public MongoDataRetriever(CommonMongoRunner mongoRunner) {
-        this.mongoRunner = mongoRunner;
+    public MongoDataSearcher() {
+        this.mongoRunner = CommonMongoRunner.getInstance();
     }
 
     /**
-     * Runs the query on the source database and returns a result set.
-     * First a quick query is runAggregation, performing an exact match search, which should be very fast when using index.
-     * This query is limited to just few seconds of execution.
-     * If no results are returned by that time, the second main query is runAggregation with user
-     * specified timeout.
-     *
-     * @param query - knowledgeipr.Query to be runAggregation
-     * @param page  - Page to return
-     * @param limit - Limit of the returned results
-     * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
+     * {@inheritDoc}
      */
+    @Override
     public List<DbRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
         LOGGER.info("Running advanced search");
 
@@ -75,6 +68,10 @@ public class MongoDataRetriever {
         return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<DbRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
         LOGGER.info("Running simple search");
 
@@ -186,13 +183,11 @@ public class MongoDataRetriever {
      * @return true if the key is part of text index, false otherwise
      */
     private boolean isKeyTextIndexed(String key) {
-        //TODO: get info directly from Mongo
         return key.equals("title") ||
                 key.equals("authors.name") ||
                 key.equals("owners.name") ||
                 key.equals("abstract");
     }
-    // TODO: Dynamically read from Mongo
 
     /**
      * Checks if the provided filters map contains field, which is a part of
@@ -201,6 +196,7 @@ public class MongoDataRetriever {
      * @param filters Map of filters
      * @return true if the filters contain any of the indexed fields
      */
+    // TODO: Dynamically read from Mongo
     private boolean filterContainsIndex(Map<String, String> filters) {
         return filters.containsKey(ResponseField.DOCUMENT_ID.value) ||
                 filters.containsKey(ResponseField.TITLE.value) ||

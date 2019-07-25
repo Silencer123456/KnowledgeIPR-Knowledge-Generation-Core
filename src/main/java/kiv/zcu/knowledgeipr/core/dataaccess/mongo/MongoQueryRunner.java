@@ -18,11 +18,10 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.and;
 
 /**
- * Serves for executing various chartquery gathering statistical information
+ * Main purpose of this class is executing various concrete queries.
  *
  * @author Stepan Baratta
  * created on 7/2/2019
- * TODO: Refactor methods into one
  */
 public class MongoQueryRunner implements IQueryRunner {
 
@@ -30,26 +29,12 @@ public class MongoQueryRunner implements IQueryRunner {
 
     private CommonMongoRunner mongoRunner;
 
-    public MongoQueryRunner(CommonMongoRunner mongoRunner) {
-        this.mongoRunner = mongoRunner;
+    public MongoQueryRunner() {
+        mongoRunner = CommonMongoRunner.getInstance();
     }
 
     /**
-     * Queries Mongo database for most active authors.
-     * Query selects 20 most active authors along with the number of their publications/patents
-     * and sorts them in descending order.
-     * <p>
-     * db.patent.aggregate([
-     * {$project: { _id: 0, "authors.name": 1 } },
-     * {$unwind: "$authors" },
-     * {$group: { _id: { $toLower: "$authors.name" }, count: { $sum: 1 } }},
-     * {$project: { _id: 0,"authors.name": "$_id", count: 1 } },
-     * {$sort: { count: -1 } }
-     * ], { allowDiskUse: true })
-     *
-     * @param collectionName - Collection in which to search
-     * @param type           - 'authors' or 'owners'
-     * @return - List of 'author name, count' pairs
+     * {@inheritDoc}
      */
     @Override
     public List<Pair<String, Integer>> activePeople(DataSourceType collectionName, String type, int limit) {
@@ -67,6 +52,9 @@ public class MongoQueryRunner implements IQueryRunner {
         return activeAuthors;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Pair<String, Integer>> countByArrayField(DataSourceType collectionName, ResponseField field) {
         LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
@@ -83,6 +71,9 @@ public class MongoQueryRunner implements IQueryRunner {
         return fieldToCounts;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field) {
         LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
 
@@ -98,6 +89,9 @@ public class MongoQueryRunner implements IQueryRunner {
         return fieldToCounts;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
         LOGGER.info("Running getPatentOwnershipEvolutionQuery query on " + owner + " owner and " + category + " category on " + collectionName + " collection.");

@@ -20,8 +20,6 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Integer, Integer> 
     private String category;
 
     /**
-     * todo: Change string parameters to single hashmap with all the values
-     *
      * @param queryCreator - The implementation of the query creator, responsible for creating and executing the query
      * @param ownersName - Name of the owner to search
      * @param category - Name of the category to search

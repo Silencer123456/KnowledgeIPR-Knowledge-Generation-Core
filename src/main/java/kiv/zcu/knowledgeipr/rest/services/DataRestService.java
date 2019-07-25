@@ -1,16 +1,16 @@
 package kiv.zcu.knowledgeipr.rest.services;
 
-import kiv.zcu.knowledgeipr.core.report.ReportController;
+import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 
 import javax.ws.rs.Path;
 
 @Path("/data/")
 public class DataRestService {
 
-    private ReportController reportController;
+    private DataAccessController dataAccessController;
 
-    public DataRestService(ReportController reportController) {
-        this.reportController = reportController;
+    public DataRestService(DataAccessController dataAccessController) {
+        this.dataAccessController = dataAccessController;
     }
 
 }

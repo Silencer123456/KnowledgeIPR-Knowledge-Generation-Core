@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 public class SerializationUtils {
@@ -44,6 +46,25 @@ public class SerializationUtils {
             LOGGER.warning(e.getMessage());
             e.printStackTrace();
             throw new ObjectSerializationException("Could not create JSON tree from object");
+        }
+    }
+
+    /**
+     * Returns a parsed JsonNode object from a file.
+     *
+     * @param filepath - Full path to the file to be parsed
+     * @return JsonNode object
+     * @see JsonNode
+     */
+    public static JsonNode objectToJsonFromFile(String filepath) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepath)));
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(content);
+        } catch (IOException e) {
+            LOGGER.info("File " + filepath + "was not found.");
+            //e.printStackTrace();
+            return null;
         }
     }
 }

@@ -1,8 +1,7 @@
 package kiv.zcu.knowledgeipr.app;
 
-import kiv.zcu.knowledgeipr.core.report.FileRepository;
-import kiv.zcu.knowledgeipr.core.report.ReportController;
-import kiv.zcu.knowledgeipr.core.report.ReportCreator;
+import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoDataSearcher;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
 import kiv.zcu.knowledgeipr.rest.errorhandling.GenericExceptionHandler;
@@ -25,7 +24,7 @@ public class AppRunner extends Application {
      */
     public AppRunner() {
 
-        ReportController reportGenerator = new ReportController(new ReportCreator(new FileRepository()));
+        DataAccessController reportGenerator = new DataAccessController(new MongoDataSearcher());
 
         singletons.add(new SearchRestService(reportGenerator));
         singletons.add(new StatsRestService(reportGenerator));

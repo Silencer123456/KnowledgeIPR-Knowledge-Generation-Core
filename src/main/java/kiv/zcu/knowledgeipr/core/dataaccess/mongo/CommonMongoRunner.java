@@ -22,19 +22,20 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Projections.*;
 
 /**
- * Runs common Mongo chartquery
+ * A singleton class running common Mongo queries.
  *
  * @author Stepan Baratta
  * created on 7/10/2019
  */
 public class CommonMongoRunner {
-
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
+    private static CommonMongoRunner instance;
 
     private MongoDatabase database;
 
-    public CommonMongoRunner(MongoConnection connection) {
-        database = connection.getConnectionInstance();
+    public CommonMongoRunner() {
+        database = MongoConnection.getInstance().getConnectionInstance();
     }
 
     /**
@@ -175,5 +176,18 @@ public class CommonMongoRunner {
                             ResponseField.LANG.toString()
                     ));
         }
+    }
+
+    /**
+     * Returns the single instance of this object. If the instance is not yet constructed, it is created.
+     *
+     * @return single instance
+     */
+    public static CommonMongoRunner getInstance() {
+        if (instance == null) {
+            instance = new CommonMongoRunner();
+        }
+
+        return instance;
     }
 }
