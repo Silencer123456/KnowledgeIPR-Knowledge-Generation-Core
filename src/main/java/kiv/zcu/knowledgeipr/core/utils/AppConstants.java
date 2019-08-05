@@ -1,8 +1,9 @@
 package kiv.zcu.knowledgeipr.core.utils;
 
 public class AppConstants {
-    public static final String REPORTS_RESOURCE_NAME = "reports";
-    public static final String DB_CONFIG_RESOURCE_NAME = "db-config";
+    public static final String REPORTS_RESOURCE = "reports";
+    public static final String DB_CONFIG_RESOURCE = "db-config";
+    public static final String CATEGORY_JSON_RESOURCE = "categories";
 
     // Error codes
     public static final int GENERIC_APP_ERROR_CODE = 5001;

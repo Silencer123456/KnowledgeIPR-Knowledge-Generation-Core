@@ -7,20 +7,34 @@ import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 /**
  * Reads the categories from JSON format. It can be read from string or from
  * the filesystem.
  */
 public class JsonCategoryTreeReader implements ICategoryTreeReader {
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
 
     private String json;
 
+    /**
+     * Constructor enables loading the category tree from String.
+     *
+     * @param json - JSON String containing the category tree
+     */
     public JsonCategoryTreeReader(String json) {
         this.json = json;
     }
 
+    /**
+     * Constructor enables reading JSON from the filesystem
+     * @param path - Path to the JSON file containing the category tree
+     * @throws IOException
+     */
     public JsonCategoryTreeReader(Path path) throws IOException {
+        LOGGER.info("Attempting to read category tree from: " + path.toString());
         json = new String(Files.readAllBytes(path));
     }
 

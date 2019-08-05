@@ -36,7 +36,7 @@ public class DbManager {
      */
     private Connection createConnection() throws SQLException, ClassNotFoundException {
         Properties properties = AppServletContextListener.getProperties();
-        String basePath = properties.getProperty(AppConstants.DB_CONFIG_RESOURCE_NAME);
+        String basePath = properties.getProperty(AppConstants.DB_CONFIG_RESOURCE);
 
         //String configPath = "mydb.cfg";
         Properties prop = new Properties();

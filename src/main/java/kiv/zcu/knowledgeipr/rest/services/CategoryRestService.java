@@ -6,7 +6,7 @@ import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.category.data.Category;
-import kiv.zcu.knowledgeipr.core.query.category.data.SampleCategories;
+import kiv.zcu.knowledgeipr.core.query.category.data.CategoryHandler;
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
@@ -27,7 +27,7 @@ public class CategoryRestService {
         this.dataAccessController = dataAccessController;
     }
 
-    private SampleCategories categories = new SampleCategories();
+    private CategoryHandler categories = new CategoryHandler();
 
     /**
      * Returns a set of results by a category name.

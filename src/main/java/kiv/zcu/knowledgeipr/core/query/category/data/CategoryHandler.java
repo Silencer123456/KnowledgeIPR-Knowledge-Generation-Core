@@ -1,6 +1,8 @@
 package kiv.zcu.knowledgeipr.core.query.category.data;
 
+import kiv.zcu.knowledgeipr.app.AppServletContextListener;
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
+import kiv.zcu.knowledgeipr.core.utils.AppConstants;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
@@ -8,18 +10,20 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
-public class SampleCategories {
+public class CategoryHandler {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private TreeNode<Category> root;
 
-    public SampleCategories() {
+    public CategoryHandler() {
         try {
-            // TODO: read from config path
-            readCategories(new JsonCategoryTreeReader(Paths.get("C:\\Users\\UWB-Dalibor\\Desktop\\tmp\\test.json")));
+            Properties properties = AppServletContextListener.getProperties();
+            String basePath = properties.getProperty(AppConstants.CATEGORY_JSON_RESOURCE);
+            readCategories(new JsonCategoryTreeReader(Paths.get(basePath)));
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
             e.printStackTrace();
@@ -35,6 +39,7 @@ public class SampleCategories {
     public void readCategories(ICategoryTreeReader reader) {
         try {
             root = reader.read();
+            LOGGER.info("Categories read successfully");
         } catch (CategoryReadException e) {
             e.printStackTrace();
             LOGGER.warning(e.getMessage());

@@ -23,7 +23,7 @@ public class FileRepository implements IReportRepository {
             String json = SerializationUtils.serializeObject(object);
 
             Properties properties = AppServletContextListener.getProperties();
-            String basePath = properties.getProperty(AppConstants.REPORTS_RESOURCE_NAME);
+            String basePath = properties.getProperty(AppConstants.REPORTS_RESOURCE);
 
             new File(basePath + name).getParentFile().mkdirs();
             LOGGER.info("Saving report to " + basePath + name);

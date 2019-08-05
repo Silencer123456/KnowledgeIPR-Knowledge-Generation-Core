@@ -51,7 +51,7 @@ public class DataSourceUtils {
 
     private static Connection setUp() throws SQLException {
         Properties properties = AppServletContextListener.getProperties();
-        String basePath = properties.getProperty(AppConstants.DB_CONFIG_RESOURCE_NAME);
+        String basePath = properties.getProperty(AppConstants.DB_CONFIG_RESOURCE);
 
         Properties prop = new Properties();
         String host;
