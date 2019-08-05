@@ -32,7 +32,6 @@ public class AppRunner extends Application {
         singletons.add(new DataRestService(reportGenerator));
         singletons.add(new ApiExceptionHandler());
         singletons.add(new ObjectSerializationExceptionHandler());
-        //singletons.add(new MongoExceptionHandler());
         singletons.add(new GenericExceptionHandler());
 
         MyLogger.setup("restServer");

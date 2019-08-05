@@ -4,45 +4,41 @@ import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class SampleCategories {
+
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private TreeNode<Category> root;
 
     public SampleCategories() {
-        createCategories();
+        try {
+            // TODO: read from config path
+            readCategories(new JsonCategoryTreeReader(Paths.get("C:\\Users\\UWB-Dalibor\\Desktop\\tmp\\test.json")));
+        } catch (IOException e) {
+            LOGGER.warning(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    // TODO: Load from external source
-    public TreeNode<Category> createCategories() {
-        root = new TreeNode<>(new Category("Categories"));
-        {
-            TreeNode<Category> node0 = root.addChild(new Category("Vehicles"));
-            {
-                TreeNode<Category> node00 = node0.addChild(new Category("Wheels", new ArrayList<String>() {{
-                    add("rims");
-                    add("discs");
-                    add("hubs");
-                    add("axles");
-                }}));
-                {
-                    node00.addChild(new Category("rims"));
-                    node00.addChild(new Category("discs"));
-                    node00.addChild(new Category("hubs"));
-                    node00.addChild(new Category("axles"));
-                }
-                TreeNode<Category> node01 = node0.addChild(new Category("Tyres"));
-                TreeNode<Category> node02 = node0.addChild(new Category("Suspension"));
-                TreeNode<Category> node03 = node0.addChild(new Category("Windows"));
-                TreeNode<Category> node04 = node0.addChild(new Category("Brakes"));
-                TreeNode<Category> node05 = node0.addChild(new Category("Land vehicles"));
-            }
-            TreeNode<Category> node1 = root.addChild(new Category("Agriculture"));
+    /**
+     * Reads the categories from a specified category reader
+     *
+     * @param reader - category reader
+     * @return Root node representing the category tree
+     */
+    public void readCategories(ICategoryTreeReader reader) {
+        try {
+            root = reader.read();
+        } catch (CategoryReadException e) {
+            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
-
-        return root;
     }
 
     public boolean containsCategory(String category) {
@@ -70,8 +66,7 @@ public class SampleCategories {
     public List<String> getNodesAtLevel(int level) {
         List<String> nodes = new ArrayList<>();
 
-        TreeNode<Category> treeRoot = createCategories();
-        for (TreeNode<Category> node : treeRoot) {
+        for (TreeNode<Category> node : root) {
             //String indent = createIndent(node.getLevel());
             //System.out.println(indent + node.data);
             if (node.getLevel() == level) {
