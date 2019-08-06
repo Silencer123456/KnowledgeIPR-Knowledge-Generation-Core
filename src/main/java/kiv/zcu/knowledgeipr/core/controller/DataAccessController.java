@@ -14,11 +14,17 @@ import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
 import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
 import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.report.*;
+import kiv.zcu.knowledgeipr.core.report.ChartReport;
+import kiv.zcu.knowledgeipr.core.report.DataReport;
+import kiv.zcu.knowledgeipr.core.report.FileRepository;
+import kiv.zcu.knowledgeipr.core.report.ReportCreator;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
-import kiv.zcu.knowledgeipr.rest.response.*;
+import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
+import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
+import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +60,6 @@ public class DataAccessController {
      */
     private DbQueryService dbQueryService;
 
-    private WordNet wordNet;
     private TextSummarizer summarizer;
 
     public DataAccessController(IDataSearcher dataSearcher) {
@@ -64,7 +69,6 @@ public class DataAccessController {
 
         queryRunner = new MongoQueryRunner();
 
-        wordNet = new WordNet();
         summarizer = new TextSummarizer();
         dbQueryService = new DbQueryService();
     }
@@ -152,31 +156,9 @@ public class DataAccessController {
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
-    // TODO: probably delete or hardcode
-    public SimpleResponse getCountAuthors(DataSourceType collectionName) throws ObjectSerializationException {
-        String reportName = "countOfAuthors.json";
-
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName.value + "\\" + reportName);
-        if (cachedReport == null) {
-            LOGGER.info("Cached report could not be found, querying database");
-            // The cached file could not be loaded, we need to fetch new results from the database
-            //int authorCount = queryRunner.getPeopleCount(collectionName, "authors");
-
-            //int authorCount = 2;
-            int authorCount = 120000;
-
-            SimpleReport simpleReport = new SimpleReport(authorCount);
-            simpleReport.save(collectionName.value + "\\" + reportName);
-
-            cachedReport = SerializationUtils.getTreeFromObject(simpleReport);
-        }
-
-        return new SimpleResponse(cachedReport);
-    }
-
     public WordNetResponse getSynonyms(String word) {
-        List<String> synonyms = wordNet.getSynonymsForWord(word);
-        List<String> hypernyms = wordNet.getHypernymsForWord(word);
+        List<String> synonyms = WordNet.getInstance().getSynonymsForWord(word);
+        List<String> hypernyms = WordNet.getInstance().getHypernymsForWord(word);
         return new WordNetResponse(synonyms, hypernyms);
     }
 

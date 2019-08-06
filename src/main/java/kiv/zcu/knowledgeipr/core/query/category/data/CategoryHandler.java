@@ -33,7 +33,7 @@ public class CategoryHandler {
     /**
      * Reads the categories from a specified category reader
      *
-     * @param reader - category reader
+     * @param reader - Reader implementation responsible for reading the category tree
      * @return Root node representing the category tree
      */
     public void readCategories(ICategoryTreeReader reader) {

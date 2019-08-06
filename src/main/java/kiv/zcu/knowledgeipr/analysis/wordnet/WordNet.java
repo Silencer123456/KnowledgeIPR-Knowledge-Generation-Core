@@ -5,6 +5,7 @@ import net.sf.extjwnl.data.*;
 import net.sf.extjwnl.data.list.PointerTargetNode;
 import net.sf.extjwnl.data.list.PointerTargetNodeList;
 import net.sf.extjwnl.dictionary.Dictionary;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,11 @@ import java.util.logging.Logger;
 public class WordNet {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
+    public static WordNet instance;
+
     private Dictionary dictionary = null;
 
-    public WordNet() {
+    private WordNet() {
         init();
     }
 
@@ -92,5 +95,17 @@ public class WordNet {
         }
 
         return synonyms;
+    }
+
+    public static WordNet getInstance() {
+        if (instance == null) {
+            instance = new WordNet();
+        }
+        return instance;
+    }
+
+    public String getSynonymsForWordString(String word) {
+        List<String> syn = getSynonymsForWord(word);
+        return StringUtils.join(syn, " ");
     }
 }

@@ -4,6 +4,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Filters;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import org.bson.Document;
@@ -99,9 +100,10 @@ public class MongoQueryRunner implements IQueryRunner {
         String field = ResponseField.YEAR.value;
         List<Pair<Integer, Integer>> fieldToCounts = new ArrayList<>();
 
+        String categoryStr = WordNet.getInstance().getSynonymsForWordString(category);
 
         List<Bson> list = Arrays.asList(
-                match(and(Filters.text(category), Filters.eq("owners.name", owner))),
+                match(and(Filters.text(categoryStr), Filters.eq("owners.name", owner))),
                 project(new Document("_id", 0)
                         .append(field, 1)),
                 group("$" + field, Accumulators.sum("count", 1)),

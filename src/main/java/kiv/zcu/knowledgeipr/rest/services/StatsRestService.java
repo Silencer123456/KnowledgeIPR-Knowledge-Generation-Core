@@ -10,7 +10,6 @@ import kiv.zcu.knowledgeipr.core.query.chartquery.PatentOwnershipEvolutionQuery;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
-import kiv.zcu.knowledgeipr.rest.response.SimpleResponse;
 
 import javax.ws.rs.*;
 
@@ -130,24 +129,6 @@ public class StatsRestService {
         ChartResponse response = dataAccessController.chartQuery(
                 new CountByFieldQuery(dataAccessController.getQueryRunner(), ResponseField.LANG, DataSourceType.PUBLICATION),
                 "countByLang.json", DataSourceType.PUBLICATION);
-
-        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
-    }
-
-    @GET
-    @Path("/countAuthorsPatents")
-    @Produces("application/json")
-    public javax.ws.rs.core.Response getCountAuthorsPatents() throws ObjectSerializationException {
-        SimpleResponse response = dataAccessController.getCountAuthors(DataSourceType.PATENT);
-
-        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
-    }
-
-    @GET
-    @Path("/countsAuthorsPublications")
-    @Produces("application/json")
-    public javax.ws.rs.core.Response getCountAuthorsPublications() throws ObjectSerializationException {
-        SimpleResponse response = dataAccessController.getCountAuthors(DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
