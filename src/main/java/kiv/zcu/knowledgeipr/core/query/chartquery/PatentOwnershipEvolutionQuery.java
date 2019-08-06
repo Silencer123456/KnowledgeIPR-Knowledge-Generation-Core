@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * Manages the creation of a query returning evolution of patents ownership by a specified company (owner)
  * in a specified category
+ * TODO: Use prepared statements!!
  */
 public class PatentOwnershipEvolutionQuery extends ChartQuery<Integer, Integer> {
 

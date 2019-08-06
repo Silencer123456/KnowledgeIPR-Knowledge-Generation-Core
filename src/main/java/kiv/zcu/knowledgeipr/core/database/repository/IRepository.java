@@ -21,6 +21,8 @@ public interface IRepository<T> {
 
     void remove(Specification specification);
 
+    void removeAll();
+
     T getById(int id);
 
     List<T> query(Specification specification);

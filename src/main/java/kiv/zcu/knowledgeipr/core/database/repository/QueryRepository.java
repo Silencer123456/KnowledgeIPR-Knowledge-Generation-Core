@@ -65,6 +65,17 @@ public class QueryRepository implements IRepository<QueryDto> {
     }
 
     @Override
+    public void removeAll() {
+        String query = "DELETE FROM query";
+        try {
+            final Connection connection = DataSourceUtils.getConnection();
+            runner.update(connection, query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public QueryDto getById(int id) {
         return null;
     }

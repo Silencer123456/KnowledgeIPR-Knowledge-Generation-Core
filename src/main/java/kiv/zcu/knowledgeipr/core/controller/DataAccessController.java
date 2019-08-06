@@ -96,7 +96,7 @@ public class DataAccessController {
                 }
                 report = reportCreator.createReport(dbRecordList);
 
-                dbQueryService.saveQuery(query, report, limit, page);
+                dbQueryService.cacheQuery(query, report, limit, page);
             }
 
             response = new StandardResponse(StatusResponse.SUCCESS, "OK", report);
@@ -113,6 +113,8 @@ public class DataAccessController {
             response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.info(e.getMessage());
         }
+
+        dbQueryService.invalidateCache();
 
         return response;
     }

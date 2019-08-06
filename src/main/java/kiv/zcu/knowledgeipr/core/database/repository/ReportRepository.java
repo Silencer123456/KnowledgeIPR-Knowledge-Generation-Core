@@ -67,6 +67,17 @@ public class ReportRepository implements IRepository<ReportDto> {
     }
 
     @Override
+    public void removeAll() {
+        String query = "DELETE FROM report";
+        try {
+            final Connection connection = DataSourceUtils.getConnection();
+            runner.update(connection, query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public ReportDto getById(int id) {
         return null;
     }

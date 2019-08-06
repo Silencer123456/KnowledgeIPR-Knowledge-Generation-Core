@@ -45,7 +45,7 @@ public class DbQueryService {
      * @param page page number
      */
     // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
-    public void saveQuery(Query query, DataReport report, int limit, int page) {
+    public void cacheQuery(Query query, DataReport report, int limit, int page) {
         LOGGER.info("Saving query " + query.hashCode() + "; limit: " + limit + "; page: " + page);
         try {
             QueryDto queryDto = new QueryToQueryDtoMapper().map(query);
@@ -76,6 +76,20 @@ public class DbQueryService {
 
             DataSourceUtils.rollbackAndClose();
         }
+    }
+
+    public void invalidateCache() {
+        try {
+            DataSourceUtils.startTransaction();
+
+            reportsRepository.removeAll();
+            queryRepository.removeAll();
+
+            DataSourceUtils.commitAndClose();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LOGGER.info("Cache INVALIDATED");
     }
 
     public Query getByHash(int hashCode) {
