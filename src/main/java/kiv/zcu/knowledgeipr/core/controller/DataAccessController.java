@@ -7,13 +7,11 @@ import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
-import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
 import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.report.ChartReport;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.core.report.FileRepository;
@@ -46,58 +44,31 @@ public class DataAccessController {
     private ReportCreator reportCreator;
 
     /**
-     * Provides methods for searching the target database for data
-     */
-    private IDataSearcher dataSearcher;
-
-    /**
      * Provides methods for running concrete queries on the target database
      */
     private IQueryRunner queryRunner;
 
-    /**
-     * A database service class which manipulates the SQL database. Mainly used for caching queries, reports...
-     */
-    private DbQueryService dbQueryService;
-
     private TextSummarizer summarizer;
 
-    public DataAccessController(IDataSearcher dataSearcher) {
-        this.dataSearcher = dataSearcher;
-
+    public DataAccessController() {
         reportCreator = new ReportCreator(new FileRepository());
-
         queryRunner = new MongoQueryRunner();
-
         summarizer = new TextSummarizer();
-        dbQueryService = new DbQueryService();
     }
 
     /**
-     * Initiates the execution of the query on the target database and gets a list of
-     * results. Finally generates a report instance from the returned results.
+     * Generates a response to be sent back to the client from the returned results.
      *
      * @param query - query to process
      * @param page  - page number to display
      * @return BaseResponse object encapsulating the report.
      */
-    // TODO: Refactor
-    public StandardResponse runSearch(Query query, int page, int limit, boolean advanced) {
+    public StandardResponse generateResponseFromSearch(SearchStrategy searchStrategy, Query query, int page, int limit, boolean advanced) {
+        Search search = new Search(query, page, limit, advanced);
+
         StandardResponse response;
         try {
-            DataReport report;
-            report = dbQueryService.getReportForQuery(query, page, limit);
-            if (report == null) {
-                List<DbRecord> dbRecordList;
-                if (advanced) {
-                    dbRecordList = dataSearcher.runSearchAdvanced(query, page, limit);
-                } else {
-                    dbRecordList = dataSearcher.runSearchSimple(query, page, limit);
-                }
-                report = reportCreator.createReport(dbRecordList);
-
-                dbQueryService.cacheQuery(query, report, limit, page);
-            }
+            DataReport report = searchStrategy.search(search);
 
             response = new StandardResponse(StatusResponse.SUCCESS, "OK", report);
             response.setSearchedCount(getCountForDataSource(query.getSourceType()));
@@ -114,13 +85,7 @@ public class DataAccessController {
             LOGGER.info(e.getMessage());
         }
 
-        dbQueryService.invalidateCache();
-
         return response;
-    }
-
-    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName) throws ObjectSerializationException {
-        return chartQuery(chartQuery, filename, collectionName, false);
     }
 
     /**
@@ -158,12 +123,17 @@ public class DataAccessController {
         return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
     }
 
+    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName) throws ObjectSerializationException {
+        return chartQuery(chartQuery, filename, collectionName, false);
+    }
+
     public WordNetResponse getSynonyms(String word) {
         List<String> synonyms = WordNet.getInstance().getSynonymsForWord(word);
         List<String> hypernyms = WordNet.getInstance().getHypernymsForWord(word);
         return new WordNetResponse(synonyms, hypernyms);
     }
 
+    // TODO: Temp solution
     private int getCountForDataSource(String source) {
         int count = 0;
         if (source.equals("publication")) {

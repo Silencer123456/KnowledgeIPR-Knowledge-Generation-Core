@@ -12,6 +12,7 @@ import kiv.zcu.knowledgeipr.core.database.repository.ReportRepository;
 import kiv.zcu.knowledgeipr.core.database.specification.QueryByHashCodeSpecification;
 import kiv.zcu.knowledgeipr.core.database.specification.ReportsForQuerySpecification;
 import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
@@ -39,18 +40,16 @@ public class DbQueryService {
     /**
      * Saves query to the database and associates a report with it.
      *
-     * @param query - The query to be saved
+     * @param search - The search instance
      * @param report - The report to be saved and associated to the query
-     * @param limit - results limit
-     * @param page page number
      */
     // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
-    public void cacheQuery(Query query, DataReport report, int limit, int page) {
-        LOGGER.info("Saving query " + query.hashCode() + "; limit: " + limit + "; page: " + page);
+    public void cacheQuery(Search search, DataReport report) {
+        LOGGER.info("Saving query " + search.getQuery().hashCode() + "; limit: " + search.getLimit() + "; page: " + search.getPage());
         try {
-            QueryDto queryDto = new QueryToQueryDtoMapper().map(query);
+            QueryDto queryDto = new QueryToQueryDtoMapper().map(search.getQuery());
 
-            if (getReportForQuery(query, page, limit) != null) {
+            if (getCachedReport(search) != null) {
                 LOGGER.info("Report for query already exists, saving skipped");
                 return;
             }
@@ -63,7 +62,7 @@ public class DbQueryService {
             }
             queryDto.setId(queryId);
 
-            ReportDto reportDto = new ReportToReportDtoMapper(page, limit, queryId).map(report);
+            ReportDto reportDto = new ReportToReportDtoMapper(search.getPage(), search.getLimit(), queryId).map(report);
 
             reportDto.setQueryId(queryId);
             long reportId = reportsRepository.add(reportDto);
@@ -106,14 +105,12 @@ public class DbQueryService {
     /**
      * Returns a report associated with the specified query, where page and limit match
      *
-     * @param query - Query, for which to search reports
-     * @param page  - Results page
-     * @param limit - Results count limit
-     * @return
+     * @param search - Search instance, for which to search reports
+     * @return - Found cached report or null if nothing is found
      */
     // TODO: refactor, later instead of deserializing to report, use only the json
-    public DataReport getReportForQuery(Query query, int page, int limit) {
-        List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(query, page, limit));
+    public DataReport getCachedReport(Search search) {
+        List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(search.getQuery(), search.getPage(), search.getLimit()));
         if (reportDtoList == null || reportDtoList.isEmpty()) {
             return null;
         }
@@ -121,7 +118,7 @@ public class DbQueryService {
         ReportDto reportDto = reportDtoList.get(0);
         try {
             DataReport dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
-            LOGGER.info("Cached report found for query: " + query.hashCode() + ", page: " + page + ", limit: " + limit);
+            LOGGER.info("Cached report found for query: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
             return dataReport;
         } catch (IOException e) {
             LOGGER.info("No cached report found");

@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.rest.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
+import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
@@ -26,8 +27,11 @@ public class SearchRestService {
 
     private DataAccessController dataAccessController;
 
-    public SearchRestService(DataAccessController dataAccessController) {
+    private SearchStrategy searchStrategy;
+
+    public SearchRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
         this.dataAccessController = dataAccessController;
+        this.searchStrategy = searchStrategy;
     }
 
     /**
@@ -120,7 +124,7 @@ public class SearchRestService {
             throw new ApiException(e.getMessage());
         }
 
-        StandardResponse standardResponse = dataAccessController.runSearch(query, 1, limit, true);
+        StandardResponse standardResponse = dataAccessController.generateResponseFromSearch(searchStrategy, query, 1, limit, true);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }
@@ -139,7 +143,7 @@ public class SearchRestService {
         }
 
         int limit = 20;
-        StandardResponse standardResponse = dataAccessController.runSearch(query, page, limit, advancedSearch);
+        StandardResponse standardResponse = dataAccessController.generateResponseFromSearch(searchStrategy, query, page, limit, advancedSearch);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

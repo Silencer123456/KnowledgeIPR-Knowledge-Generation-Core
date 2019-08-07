@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.rest.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
+import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.category.data.Category;
@@ -23,8 +24,12 @@ public class CategoryRestService {
 
     private DataAccessController dataAccessController;
 
-    public CategoryRestService(DataAccessController dataAccessController) {
+    private SearchStrategy searchStrategy;
+
+    public CategoryRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
         this.dataAccessController = dataAccessController;
+
+        this.searchStrategy = searchStrategy;
     }
 
     private CategoryHandler categories = new CategoryHandler();
@@ -52,7 +57,7 @@ public class CategoryRestService {
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
-        StandardResponse standardResponse = dataAccessController.runSearch(query, page, 20, true);
+        StandardResponse standardResponse = dataAccessController.generateResponseFromSearch(searchStrategy, query, page, 20, true);
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

@@ -1,7 +1,12 @@
 package kiv.zcu.knowledgeipr.app;
 
+import kiv.zcu.knowledgeipr.core.controller.CategorySearchStrategy;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
+import kiv.zcu.knowledgeipr.core.controller.DefaultSearchStrategy;
+import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoDataSearcher;
+import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
 import kiv.zcu.knowledgeipr.rest.errorhandling.GenericExceptionHandler;
@@ -20,15 +25,23 @@ public class AppRunner extends Application {
     private Set<Object> singletons = new HashSet<>();
 
     /**
-     * Registers services and sets up logger
+     * Registers services and sets up logger.
+     * Registers dependencies between classes.
      */
     public AppRunner() {
 
-        DataAccessController reportGenerator = new DataAccessController(new MongoDataSearcher());
+        IDataSearcher dataSearcher = new MongoDataSearcher();
 
-        singletons.add(new SearchRestService(reportGenerator));
+        DbQueryService dbQueryService = new DbQueryService();
+
+        SearchStrategy categorySearchStrategy = new CategorySearchStrategy(dataSearcher, dbQueryService);
+        SearchStrategy defaultSearchStrategy = new DefaultSearchStrategy(dataSearcher, dbQueryService);
+
+        DataAccessController reportGenerator = new DataAccessController();
+
+        singletons.add(new SearchRestService(reportGenerator, defaultSearchStrategy));
         singletons.add(new StatsRestService(reportGenerator));
-        singletons.add(new CategoryRestService(reportGenerator));
+        singletons.add(new CategoryRestService(reportGenerator, categorySearchStrategy));
         singletons.add(new DataRestService(reportGenerator));
         singletons.add(new ApiExceptionHandler());
         singletons.add(new ObjectSerializationExceptionHandler());

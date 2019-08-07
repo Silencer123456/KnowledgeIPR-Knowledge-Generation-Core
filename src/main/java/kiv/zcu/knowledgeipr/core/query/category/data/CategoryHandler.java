@@ -48,7 +48,7 @@ public class CategoryHandler {
 
     public boolean containsCategory(String category) {
         Comparable<Category> searchCriteria = treeData -> {
-            boolean nodeOk = treeData.getName().equals(category);
+            boolean nodeOk = treeData.getName().equalsIgnoreCase(category);
             return nodeOk ? 0 : 1;
         };
 
@@ -59,7 +59,7 @@ public class CategoryHandler {
 
     public TreeNode<Category> getCategory(String category) {
         Comparable<Category> searchCriteria = treeData -> {
-            boolean nodeOk = treeData.getName().equals(category);
+            boolean nodeOk = treeData.getName().equalsIgnoreCase(category);
             return nodeOk ? 0 : 1;
         };
 
