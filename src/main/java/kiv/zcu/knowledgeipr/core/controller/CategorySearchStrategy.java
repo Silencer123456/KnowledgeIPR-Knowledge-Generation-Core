@@ -18,6 +18,7 @@ public class CategorySearchStrategy extends SearchStrategy {
         this.queryService = queryService;
     }
 
+    //TODO: get from SQL database confirmed records, take the rest from Mongo
     @Override
     public DataReport search(Search search) throws UserQueryException {
         DataReport report = queryService.getCachedReport(search);

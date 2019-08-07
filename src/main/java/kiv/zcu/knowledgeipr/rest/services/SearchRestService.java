@@ -22,6 +22,7 @@ import java.util.Map;
 /**
  * Service for handling incoming REST requests
  */
+// todo: Create parent class containing common fields
 @Path("/search/")
 public class SearchRestService {
 
