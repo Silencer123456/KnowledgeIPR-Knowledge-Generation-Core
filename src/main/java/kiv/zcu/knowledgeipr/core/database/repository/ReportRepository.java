@@ -1,6 +1,5 @@
 package kiv.zcu.knowledgeipr.core.database.repository;
 
-import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
 import kiv.zcu.knowledgeipr.core.database.specification.Specification;
 import kiv.zcu.knowledgeipr.core.database.specification.SqlSpecification;
@@ -23,19 +22,18 @@ public class ReportRepository implements IRepository<ReportDto> {
     }
 
     @Override
-    public long add(ReportDto item) {
-        return add(Collections.singletonList(item));
+    public long add(Connection connection, ReportDto item) {
+        return add(connection, Collections.singletonList(item));
     }
 
     @Override
-    public long add(Iterable<ReportDto> items) {
+    public long add(Connection connection, Iterable<ReportDto> items) {
         long newId = -1;
 
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
         String insertQuery = "INSERT INTO report (queryId, docsPerPage, reportText, page) VALUES (?, ?, ?, ?)";
         try {
-            final Connection connection = DataSourceUtils.getConnection();
             for (ReportDto report : items) {
                 newId = runner.insert(connection, insertQuery, scalarHandler,
                         report.getQueryId(), report.getDocsPerPage(), report.getReportText(), report.getPage());
@@ -44,6 +42,8 @@ public class ReportRepository implements IRepository<ReportDto> {
                 // TODO: insert to references + reportreferences table
 
             }
+
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -52,25 +52,24 @@ public class ReportRepository implements IRepository<ReportDto> {
     }
 
     @Override
-    public void update(ReportDto item) {
+    public void update(Connection connection, ReportDto item) {
 
     }
 
     @Override
-    public void remove(ReportDto item) {
+    public void remove(Connection connection, ReportDto item) {
 
     }
 
     @Override
-    public void remove(Specification specification) {
+    public void remove(Connection connection, Specification specification) {
 
     }
 
     @Override
-    public void removeAll() {
+    public void removeAll(Connection connection) {
         String query = "DELETE FROM report";
         try {
-            final Connection connection = DataSourceUtils.getConnection();
             runner.update(connection, query);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -82,15 +81,16 @@ public class ReportRepository implements IRepository<ReportDto> {
         return null;
     }
 
-    // TODO: Handle better the exception handling
+    // TODO: FIX CONNECTION CLOSING!!!!
     @Override
-    public List<ReportDto> query(Specification specification) {
+    public List<ReportDto> query(Connection connection, Specification specification) {
         final SqlSpecification sqlSpecification = (SqlSpecification) specification;
 
         BeanListHandler<ReportDto> beanListHandler = new BeanListHandler<>(ReportDto.class);
         try {
-            final Connection connection = DataSourceUtils.getConnection();
-            return runner.query(connection, sqlSpecification.toSqlQuery(), beanListHandler);
+            List<ReportDto> reportsList = runner.query(connection, sqlSpecification.toSqlQuery(), beanListHandler);
+            connection.close();
+            return reportsList;
         } catch (SQLException e) {
             e.printStackTrace();
             return Collections.emptyList();

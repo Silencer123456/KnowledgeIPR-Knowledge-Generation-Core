@@ -1,6 +1,5 @@
 package kiv.zcu.knowledgeipr.core.database.repository;
 
-import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
 import kiv.zcu.knowledgeipr.core.database.specification.Specification;
 import kiv.zcu.knowledgeipr.core.database.specification.SqlSpecification;
@@ -23,25 +22,24 @@ public class QueryRepository implements IRepository<QueryDto> {
     }
 
     @Override
-    public long add(QueryDto item) {
-        return add(Collections.singletonList(item));
+    public long add(Connection connection, QueryDto item) {
+        return add(connection, Collections.singletonList(item));
     }
 
     @Override
-    public long add(Iterable<QueryDto> items) {
+    public long add(Connection connection, Iterable<QueryDto> items) {
         long newId = -1;
 
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
         String insertQuery = "INSERT INTO query (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
         try {
-            final Connection connection = DataSourceUtils.getConnection();
-
             for (QueryDto query : items) {
                 newId = runner.insert(connection, insertQuery, scalarHandler,
                         query.getHash(), query.getRawText(), query.getNormalizedText());
                 // TODO: check if success ...
             }
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -50,25 +48,24 @@ public class QueryRepository implements IRepository<QueryDto> {
     }
 
     @Override
-    public void update(QueryDto item) {
+    public void update(Connection connection, QueryDto item) {
 
     }
 
     @Override
-    public void remove(QueryDto item) {
+    public void remove(Connection connection, QueryDto item) {
 
     }
 
     @Override
-    public void remove(Specification specification) {
+    public void remove(Connection connection, Specification specification) {
 
     }
 
     @Override
-    public void removeAll() {
+    public void removeAll(Connection connection) {
         String query = "DELETE FROM query";
         try {
-            final Connection connection = DataSourceUtils.getConnection();
             runner.update(connection, query);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -81,7 +78,7 @@ public class QueryRepository implements IRepository<QueryDto> {
     }
 
     @Override
-    public List<QueryDto> query(Specification specification) {
+    public List<QueryDto> query(Connection connection, Specification specification) {
         final SqlSpecification sqlSpecification = (SqlSpecification) specification;
 
         BeanListHandler<QueryDto> beanListHandler
@@ -91,8 +88,9 @@ public class QueryRepository implements IRepository<QueryDto> {
 
         List<QueryDto> queriesList = new ArrayList<>();
         try {
-            final Connection connection = DataSourceUtils.getConnection();
             queriesList = runner.query(connection, queryString, beanListHandler);
+
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

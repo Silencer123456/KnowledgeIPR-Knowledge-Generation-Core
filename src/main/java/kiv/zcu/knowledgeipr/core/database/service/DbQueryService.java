@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.core.database.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
+import kiv.zcu.knowledgeipr.core.database.dbconnection.DBCPDataSource;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
 import kiv.zcu.knowledgeipr.core.database.mapper.QueryToQueryDtoMapper;
@@ -17,6 +17,7 @@ import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,7 @@ public class DbQueryService {
      * @param search - The search instance
      * @param report - The report to be saved and associated to the query
      */
-    // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
+    // TODO: HANDLE CONNECTION CLOSING + transactions - autocomimit false and commit!!!!!!!!
     public void cacheQuery(Search search, DataReport report) {
         LOGGER.info("Saving query " + search.getQuery().hashCode() + "; limit: " + search.getLimit() + "; page: " + search.getPage());
         try {
@@ -54,9 +55,11 @@ public class DbQueryService {
                 return;
             }
 
-            DataSourceUtils.startTransaction();
+            //DataSourceUtils.startTransaction();
 
-            long queryId = queryRepository.add(queryDto);
+            Connection connection = DBCPDataSource.getConnection();
+
+            long queryId = queryRepository.add(connection, queryDto);
             if (queryId == -1) {
                 LOGGER.warning("Could not save query to database.");
             }
@@ -65,38 +68,55 @@ public class DbQueryService {
             ReportDto reportDto = new ReportToReportDtoMapper(search.getPage(), search.getLimit(), queryId).map(report);
 
             reportDto.setQueryId(queryId);
-            long reportId = reportsRepository.add(reportDto);
+            long reportId = reportsRepository.add(connection, reportDto);
 
-            DataSourceUtils.commitAndClose();
+            //DataSourceUtils.commitAndClose();
 
-        } catch (ObjectSerializationException | SQLException e) {
+            LOGGER.info("Query " + search.getQuery().hashCode() + " saved successfully.");
+
+            connection.close();
+        } catch (ObjectSerializationException e) {
             LOGGER.warning("Query could not be saved: " + e.getMessage());
             e.printStackTrace();
 
-            DataSourceUtils.rollbackAndClose();
+            //DataSourceUtils.rollbackAndClose();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     public void invalidateCache() {
+        //DataSourceUtils.startTransaction();
+
+        Connection connection;
         try {
-            DataSourceUtils.startTransaction();
+            connection = DBCPDataSource.getConnection();
+            reportsRepository.removeAll(connection);
+            queryRepository.removeAll(connection);
 
-            reportsRepository.removeAll();
-            queryRepository.removeAll();
-
-            DataSourceUtils.commitAndClose();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        LOGGER.info("Cache INVALIDATED");
+        //DataSourceUtils.commitAndClose();
+        LOGGER.info("CACHE INVALIDATED");
     }
 
     public Query getByHash(int hashCode) {
         Query resultQuery = null;
-        List<QueryDto> queryDtoList = queryRepository.query(new QueryByHashCodeSpecification(hashCode));
-        if (queryDtoList.size() >= 1) {
-            QueryDto tmp = queryDtoList.get(0);
-            resultQuery = new Query("", new HashMap<>(), new HashMap<>(), new HashMap<>());
+        try {
+            Connection connection = DBCPDataSource.getConnection();
+
+            List<QueryDto> queryDtoList = queryRepository.query(connection, new QueryByHashCodeSpecification(hashCode));
+            if (queryDtoList.size() >= 1) {
+                QueryDto tmp = queryDtoList.get(0);
+                resultQuery = new Query("", new HashMap<>(), new HashMap<>(), new HashMap<>());
+            }
+
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return resultQuery;
@@ -110,20 +130,31 @@ public class DbQueryService {
      */
     // TODO: refactor, later instead of deserializing to report, use only the json
     public DataReport getCachedReport(Search search) {
-        List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(search.getQuery(), search.getPage(), search.getLimit()));
-        if (reportDtoList == null || reportDtoList.isEmpty()) {
-            return null;
+        Connection connection;
+        DataReport dataReport = null;
+        try {
+            connection = DBCPDataSource.getConnection();
+            List<ReportDto> reportDtoList = reportsRepository.query(connection, new ReportsForQuerySpecification(search.getQuery(), search.getPage(), search.getLimit()));
+            if (reportDtoList == null || reportDtoList.isEmpty()) {
+                return null;
+            }
+
+            ReportDto reportDto = reportDtoList.get(0);
+            try {
+                dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
+                LOGGER.info("Cached report found for query: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
+            } catch (IOException e) {
+                LOGGER.info("No cached report found");
+                e.printStackTrace();
+                dataReport = null;
+            }
+
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        ReportDto reportDto = reportDtoList.get(0);
-        try {
-            DataReport dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
-            LOGGER.info("Cached report found for query: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
-            return dataReport;
-        } catch (IOException e) {
-            LOGGER.info("No cached report found");
-            e.printStackTrace();
-            return null;
-        }
+        return dataReport;
     }
 }
