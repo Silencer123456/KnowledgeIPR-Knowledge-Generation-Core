@@ -11,23 +11,12 @@ import java.util.List;
 
 public class DefaultSearchStrategy extends SearchStrategy {
 
-    /**
-     * A database service class which manipulates the SQL database. Mainly used for caching queries, reports...
-     */
-    private DbQueryService queryService;
-
     public DefaultSearchStrategy(IDataSearcher dataSearcher, DbQueryService queryService) {
-        super(dataSearcher);
-        this.queryService = queryService;
+        super(dataSearcher, queryService);
     }
 
     /**
-     * Initiates the execution of the query on the target database and gets a list of
-     * results. Finally generates a report instance from the returned results.
-     *
-     * @param search - Search instance containing info necessary for searching
-     * @return Created report from the retrieved results
-     * @throws UserQueryException - In case the query is malformed
+     * {@inheritDoc}
      */
     @Override
     public DataReport search(Search search) throws UserQueryException {
@@ -45,7 +34,7 @@ public class DefaultSearchStrategy extends SearchStrategy {
 
         report = new DataReport(records);
 
-        queryService.cacheQuery(search, report);
+        cacheSearch(search, report);
 
         return report;
     }

@@ -6,6 +6,7 @@ import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.query.category.data.Category;
 import kiv.zcu.knowledgeipr.core.query.category.data.CategoryHandler;
 import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
@@ -57,7 +58,8 @@ public class CategoryRestService {
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
-        StandardResponse standardResponse = dataAccessController.generateResponseFromSearch(searchStrategy, query, page, 20, true);
+        StandardResponse standardResponse = dataAccessController.search(searchStrategy,
+                new Search(query, page, 20, true));
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

@@ -7,6 +7,7 @@ import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
@@ -125,7 +126,9 @@ public class SearchRestService {
             throw new ApiException(e.getMessage());
         }
 
-        StandardResponse standardResponse = dataAccessController.generateResponseFromSearch(searchStrategy, query, 1, limit, true);
+        StandardResponse standardResponse = dataAccessController.search(searchStrategy,
+                new Search(query, 1, limit, true)
+        );
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }
@@ -144,7 +147,8 @@ public class SearchRestService {
         }
 
         int limit = 20;
-        StandardResponse standardResponse = dataAccessController.generateResponseFromSearch(searchStrategy, query, page, limit, advancedSearch);
+        StandardResponse standardResponse = dataAccessController.search(searchStrategy,
+                new Search(query, page, limit, advancedSearch));
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

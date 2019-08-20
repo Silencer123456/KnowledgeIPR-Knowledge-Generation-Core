@@ -4,7 +4,7 @@ import kiv.zcu.knowledgeipr.core.database.specification.Specification;
 
 import java.util.List;
 
-// TODO: !!!CHANGE connection parameters
+// TODO: !!! Create generic repository
 public interface IRepository<T> {
     /**
      * Adds an item to the repository.

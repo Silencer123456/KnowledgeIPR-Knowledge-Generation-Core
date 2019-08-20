@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.core.controller;
 
 import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IDataSearcher;
+import kiv.zcu.knowledgeipr.core.database.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
@@ -9,22 +10,31 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 
 import java.util.List;
 
+/**
+ * Provides implementation of search using a category search strategy.
+ */
 public class CategorySearchStrategy extends SearchStrategy {
 
-    private DbQueryService queryService;
-
     public CategorySearchStrategy(IDataSearcher dataSearcher, DbQueryService queryService) {
-        super(dataSearcher);
-        this.queryService = queryService;
+        super(dataSearcher, queryService);
     }
 
-    //TODO: get from SQL database confirmed records, take the rest from Mongo
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataReport search(Search search) throws UserQueryException {
         DataReport report = queryService.getCachedReport(search);
         if (report != null) {
             return report;
         }
+
+        //TODO: !!! get from SQL database confirmed records for the specific category, take the rest from Mongo
+
+        List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory("rims"); //TODO: get the category name from the user's request
+
+        //TODO:  Retrieve actual documents from the references from target database
+
 
         List<DbRecord> records;
         if (search.isAdvancedSearch()) {
@@ -35,7 +45,7 @@ public class CategorySearchStrategy extends SearchStrategy {
 
         report = new DataReport(records);
 
-        queryService.cacheQuery(search, report);
+        cacheSearch(search, report);
 
         return report;
     }

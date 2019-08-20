@@ -4,7 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Category {
+    /**
+     * The name of the category
+     */
     private String name;
+
+    /**
+     * The list of keywords associated with this category
+     */
     private List<String> keywords;
 
     public Category(String name, List<String> keywords) {

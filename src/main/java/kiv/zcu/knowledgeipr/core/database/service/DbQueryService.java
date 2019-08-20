@@ -3,13 +3,16 @@ package kiv.zcu.knowledgeipr.core.database.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
+import kiv.zcu.knowledgeipr.core.database.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
 import kiv.zcu.knowledgeipr.core.database.mapper.QueryToQueryDtoMapper;
 import kiv.zcu.knowledgeipr.core.database.mapper.ReportToReportDtoMapper;
 import kiv.zcu.knowledgeipr.core.database.repository.IRepository;
 import kiv.zcu.knowledgeipr.core.database.repository.QueryRepository;
+import kiv.zcu.knowledgeipr.core.database.repository.ReferenceRepository;
 import kiv.zcu.knowledgeipr.core.database.repository.ReportRepository;
 import kiv.zcu.knowledgeipr.core.database.specification.QueryByHashCodeSpecification;
+import kiv.zcu.knowledgeipr.core.database.specification.RecordsWithConfirmedCategorySpecification;
 import kiv.zcu.knowledgeipr.core.database.specification.ReportsForQuerySpecification;
 import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.Search;
@@ -18,6 +21,7 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -30,10 +34,39 @@ public class DbQueryService {
 
     private IRepository<QueryDto> queryRepository;
     private IRepository<ReportDto> reportsRepository;
+    private IRepository<ReferenceDto> referenceRepository;
 
     public DbQueryService() {
         queryRepository = new QueryRepository();
         reportsRepository = new ReportRepository();
+        referenceRepository = new ReferenceRepository();
+    }
+
+    /**
+     * Retrieves a list of document records from the target database which are confirmed
+     * to fall under the specified category.
+     *
+     * @param categoryName - The category for which to search document records.
+     */
+    public List<ReferenceDto> getConfirmedRecordsForCategory(String categoryName) {
+        LOGGER.info("Retrieving confirmed records for category: " + categoryName);
+        try {
+            DataSourceUtils.startTransaction();
+
+            List<ReferenceDto> referenceDtos = referenceRepository.query(new RecordsWithConfirmedCategorySpecification(categoryName));
+
+            DataSourceUtils.commitAndClose();
+
+            return referenceDtos;
+
+        } catch (SQLException e) {
+            LOGGER.warning("Could not retrieve confirmed records: " + e.getMessage());
+            e.printStackTrace();
+
+            DataSourceUtils.rollbackAndClose();
+        }
+
+        return Collections.emptyList();
     }
 
     /**

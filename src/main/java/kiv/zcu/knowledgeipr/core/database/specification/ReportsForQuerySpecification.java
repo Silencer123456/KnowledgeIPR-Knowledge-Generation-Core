@@ -20,21 +20,11 @@ public class ReportsForQuerySpecification implements SqlSpecification {
     // TODO: replace hardcoded strings
     @Override
     public SqlQuery toSqlQuery() {
-
         List<Object> parameters = new ArrayList<>();
         parameters.add(query.hashCode());
         parameters.add(page);
         parameters.add(limit);
-
         return new SqlQuery(parameters, "SELECT * FROM report INNER JOIN query ON report.queryId = query.queryId " +
                 "WHERE query.hash = ? AND page = ? AND docsPerPage = ?");
-
-//        return String.format("SELECT * FROM %1$s INNER JOIN %2$s ON report.queryId = query.queryId " +
-//                        "WHERE query.hash = %3$s AND page = %4$s AND docsPerPage = %5$s",
-//                "report",
-//                "query",
-//                query.hashCode(),
-//                page,
-//                limit);
     }
 }

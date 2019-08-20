@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
-import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
 import kiv.zcu.knowledgeipr.core.query.ChartQuery;
-import kiv.zcu.knowledgeipr.core.query.Query;
 import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.report.ChartReport;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
@@ -48,32 +46,31 @@ public class DataAccessController {
      */
     private IQueryRunner queryRunner;
 
-    private TextSummarizer summarizer;
+    //private TextSummarizer summarizer;
 
     public DataAccessController() {
         reportCreator = new ReportCreator(new FileRepository());
         queryRunner = new MongoQueryRunner();
-        summarizer = new TextSummarizer();
+        //summarizer = new TextSummarizer();
     }
 
     /**
+     * Initiates the search on the target database according to the search strategy selected.
      * Generates a response to be sent back to the client from the returned results.
      *
-     * @param query - query to process
-     * @param page  - page number to display
+     * @param search - The Search instance
      * @return BaseResponse object encapsulating the report.
      */
-    public StandardResponse generateResponseFromSearch(SearchStrategy searchStrategy, Query query, int page, int limit, boolean advanced) {
-        Search search = new Search(query, page, limit, advanced);
+    public StandardResponse search(SearchStrategy searchStrategy, Search search) {
 
         StandardResponse response;
         try {
             DataReport report = searchStrategy.search(search);
 
             response = new StandardResponse(StatusResponse.SUCCESS, "OK", report);
-            response.setSearchedCount(getCountForDataSource(query.getSourceType()));
-            response.setCount(limit);
-            response.setPage(page);
+            response.setSearchedCount(getCountForDataSource(search.getQuery().getSourceType()));
+            response.setCount(search.getLimit());
+            response.setPage(search.getPage());
             //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
 
         } catch (MongoQueryException | UserQueryException e) {

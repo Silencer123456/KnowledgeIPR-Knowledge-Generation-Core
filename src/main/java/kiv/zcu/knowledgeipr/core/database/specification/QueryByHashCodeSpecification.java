@@ -15,12 +15,6 @@ public class QueryByHashCodeSpecification implements SqlSpecification {
     public SqlQuery toSqlQuery() {
         List<Object> parameters = new ArrayList<>();
         parameters.add(hash);
-
         return new SqlQuery(parameters, "SELECT * FROM query WHERE hashCode = ?");
-//
-//        return String.format("SELECT * FROM %1$s WHERE `%2$s` = `%3$s`",
-//                "query",
-//                "hashCode",
-//                hash);
     }
 }
