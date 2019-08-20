@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core.database.repository;
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.ReportDto;
 import kiv.zcu.knowledgeipr.core.database.specification.Specification;
+import kiv.zcu.knowledgeipr.core.database.specification.SqlQuery;
 import kiv.zcu.knowledgeipr.core.database.specification.SqlSpecification;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -90,7 +91,9 @@ public class ReportRepository implements IRepository<ReportDto> {
         BeanListHandler<ReportDto> beanListHandler = new BeanListHandler<>(ReportDto.class);
         try {
             final Connection connection = DataSourceUtils.getConnection();
-            return runner.query(connection, sqlSpecification.toSqlQuery(), beanListHandler);
+            SqlQuery sqlQuery = sqlSpecification.toSqlQuery();
+
+            return runner.query(connection, sqlQuery.getQueryText(), beanListHandler, sqlQuery.getParameters().toArray());
         } catch (SQLException e) {
             e.printStackTrace();
             return Collections.emptyList();

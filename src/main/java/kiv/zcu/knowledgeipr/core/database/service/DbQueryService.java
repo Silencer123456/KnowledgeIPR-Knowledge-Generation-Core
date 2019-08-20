@@ -34,7 +34,6 @@ public class DbQueryService {
     public DbQueryService() {
         queryRepository = new QueryRepository();
         reportsRepository = new ReportRepository();
-
     }
 
     /**
@@ -110,20 +109,33 @@ public class DbQueryService {
      */
     // TODO: refactor, later instead of deserializing to report, use only the json
     public DataReport getCachedReport(Search search) {
-        List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(search.getQuery(), search.getPage(), search.getLimit()));
-        if (reportDtoList == null || reportDtoList.isEmpty()) {
-            return null;
+        DataReport dataReport = null;
+        try {
+            DataSourceUtils.startTransaction();
+
+            List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(search.getQuery(), search.getPage(), search.getLimit()));
+            if (reportDtoList == null || reportDtoList.isEmpty()) {
+                DataSourceUtils.closeCurrent();
+                return null;
+            }
+
+            ReportDto reportDto = reportDtoList.get(0);
+            try {
+                dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
+                LOGGER.info("Cached report found for query: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
+            } catch (IOException e) {
+                LOGGER.info("Cached report could not be parsed.");
+                e.printStackTrace();
+            }
+
+            DataSourceUtils.closeCurrent();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            DataSourceUtils.rollbackAndClose();
         }
 
-        ReportDto reportDto = reportDtoList.get(0);
-        try {
-            DataReport dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
-            LOGGER.info("Cached report found for query: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
-            return dataReport;
-        } catch (IOException e) {
-            LOGGER.info("No cached report found");
-            e.printStackTrace();
-            return null;
-        }
+        return dataReport;
     }
 }

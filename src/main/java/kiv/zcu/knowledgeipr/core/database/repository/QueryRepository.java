@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core.database.repository;
 import kiv.zcu.knowledgeipr.core.database.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
 import kiv.zcu.knowledgeipr.core.database.specification.Specification;
+import kiv.zcu.knowledgeipr.core.database.specification.SqlQuery;
 import kiv.zcu.knowledgeipr.core.database.specification.SqlSpecification;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -87,12 +88,12 @@ public class QueryRepository implements IRepository<QueryDto> {
         BeanListHandler<QueryDto> beanListHandler
                 = new BeanListHandler<>(QueryDto.class);
 
-        String queryString = sqlSpecification.toSqlQuery();
+        SqlQuery sqlQuery = sqlSpecification.toSqlQuery();
 
         List<QueryDto> queriesList = new ArrayList<>();
         try {
             final Connection connection = DataSourceUtils.getConnection();
-            queriesList = runner.query(connection, queryString, beanListHandler);
+            queriesList = runner.query(connection, sqlQuery.getQueryText(), beanListHandler, sqlQuery.getParameters().toArray());
         } catch (SQLException e) {
             e.printStackTrace();
         }

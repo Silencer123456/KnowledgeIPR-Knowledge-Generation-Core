@@ -174,6 +174,20 @@ public class DataSourceUtils {
         getConnection().setAutoCommit(false);
     }
 
+    public static void closeCurrent() {
+        Connection conn;
+        try {
+            conn = getConnection();
+            // close the resource
+            conn.close();
+            // Unbind
+            tl.remove();
+        } catch (SQLException e) {
+            LOGGER.warning("COMMIT failed with error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Transaction commits and releases the connection
      */
