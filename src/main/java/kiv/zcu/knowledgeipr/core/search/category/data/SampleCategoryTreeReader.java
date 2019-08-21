@@ -1,6 +1,6 @@
-package kiv.zcu.knowledgeipr.core.query.category.data;
+package kiv.zcu.knowledgeipr.core.search.category.data;
 
-import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
+import kiv.zcu.knowledgeipr.core.search.category.tree.TreeNode;
 
 import java.util.ArrayList;
 

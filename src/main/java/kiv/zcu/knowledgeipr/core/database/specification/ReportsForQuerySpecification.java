@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.core.database.specification;
 
-import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.search.Query;
 
 import java.util.ArrayList;
 import java.util.List;

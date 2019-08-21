@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query;
+package kiv.zcu.knowledgeipr.core.search;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import kiv.zcu.knowledgeipr.rest.errorhandling.QueryOptionsValidationException;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a single query
+ * Represents a single search
  */
 @JsonDeserialize(using = QueryDeserializer.class)
 public class Query {

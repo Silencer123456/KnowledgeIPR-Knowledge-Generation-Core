@@ -1,13 +1,13 @@
-package kiv.zcu.knowledgeipr.core.query;
+package kiv.zcu.knowledgeipr.core.search;
 
 /**
- * Represents an instance of a single search, including the query to be run
+ * Represents an instance of a single search, including the search to be run
  * and other information about the search.
  */
 public class Search {
 
     /**
-     * The main query containing filters and conditions
+     * The main search containing filters and conditions
      */
     private Query query;
 

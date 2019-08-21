@@ -1,14 +1,14 @@
-package kiv.zcu.knowledgeipr.core.query.chartquery;
+package kiv.zcu.knowledgeipr.core.search.chartquery;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
-import kiv.zcu.knowledgeipr.core.query.ChartQuery;
+import kiv.zcu.knowledgeipr.core.search.ChartQuery;
 
 import java.util.List;
 
 /**
- * Manages the creation of a query returning evolution of patents ownership by a specified company (owner)
+ * Manages the creation of a search returning evolution of patents ownership by a specified company (owner)
  * in a specified category
  * TODO: Use prepared statements!!
  */
@@ -21,7 +21,7 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Integer, Integer> 
     private String category;
 
     /**
-     * @param queryCreator - The implementation of the query creator, responsible for creating and executing the query
+     * @param queryCreator - The implementation of the search creator, responsible for creating and executing the search
      * @param ownersName - Name of the owner to search
      * @param category - Name of the category to search
      */

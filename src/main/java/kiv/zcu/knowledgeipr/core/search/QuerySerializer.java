@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query;
+package kiv.zcu.knowledgeipr.core.search;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;

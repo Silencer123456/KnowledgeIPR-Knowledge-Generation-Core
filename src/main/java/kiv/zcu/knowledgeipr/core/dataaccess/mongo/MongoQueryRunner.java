@@ -58,7 +58,7 @@ public class MongoQueryRunner implements IQueryRunner {
      */
     @Override
     public List<Pair<String, Integer>> countByArrayField(DataSourceType collectionName, ResponseField field) {
-        LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
+        LOGGER.info("Running search on field " + field.value + " on " + collectionName + " collection.");
 
         List<Pair<String, Integer>> fieldToCounts = new ArrayList<>();
 
@@ -76,7 +76,7 @@ public class MongoQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     public List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field) {
-        LOGGER.info("Running query on field " + field.value + " on " + collectionName + " collection.");
+        LOGGER.info("Running search on field " + field.value + " on " + collectionName + " collection.");
 
         List<Pair<String, Integer>> fieldToCounts = new ArrayList<>();
 
@@ -95,7 +95,7 @@ public class MongoQueryRunner implements IQueryRunner {
      */
     @Override
     public List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
-        LOGGER.info("Running getPatentOwnershipEvolutionQuery query on " + owner + " owner and " + category + " category on " + collectionName + " collection.");
+        LOGGER.info("Running getPatentOwnershipEvolutionQuery search on " + owner + " owner and " + category + " category on " + collectionName + " collection.");
 
         String field = ResponseField.YEAR.value;
         List<Pair<Integer, Integer>> fieldToCounts = new ArrayList<>();

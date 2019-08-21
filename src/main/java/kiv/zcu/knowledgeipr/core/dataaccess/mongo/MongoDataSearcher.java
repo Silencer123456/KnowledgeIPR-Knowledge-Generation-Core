@@ -7,7 +7,7 @@ import com.mongodb.client.model.Filters;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
-import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.search.Query;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 
 /**
  * Class enables access to Mongo database and runs search queries on it.
- * Uses the <code>Query</code> class to extract filters from the query and transforms them to
- * the MongoDB's query format.
+ * Uses the <code>Query</code> class to extract filters from the search and transforms them to
+ * the MongoDB's search format.
  */
 public class MongoDataSearcher implements IDataSearcher {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -49,22 +49,22 @@ public class MongoDataSearcher implements IDataSearcher {
         }
 
         if (filterContainsIndex(query.getFilters())) {
-            LOGGER.info("Running quick query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+            LOGGER.info("Running quick search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
             try {
                 List<DbRecord> results = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
-                // If something was found, we do not need to runAggregation the second query
+                // If something was found, we do not need to runAggregation the second search
                 if (!results.isEmpty()) {
                     return results;
                 }
             } catch (MongoExecutionTimeoutException e) {
-                LOGGER.info("Nothing found during quick query");
+                LOGGER.info("Nothing found during quick search");
             }
         }
 
         filter = addAllFilters(query, true, true);
 
-        LOGGER.info("Running extended query: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
-        // Run second query
+        LOGGER.info("Running extended search: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
+        // Run second search
         return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }
 
@@ -86,11 +86,11 @@ public class MongoDataSearcher implements IDataSearcher {
         List<DbRecord> records = new ArrayList<>();
 
         if (filterContainsIndex(query.getFilters())) {
-            LOGGER.info("Running 1. query: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+            LOGGER.info("Running 1. search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
             try {
                 records = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
             } catch (MongoExecutionTimeoutException e) {
-                LOGGER.info("Nothing found during quick query");
+                LOGGER.info("Nothing found during quick search");
             }
         }
 
@@ -98,7 +98,7 @@ public class MongoDataSearcher implements IDataSearcher {
     }
 
     /**
-     * Adds all filters from the query and creates a bson document from them
+     * Adds all filters from the search and creates a bson document from them
      *
      * @param query - Query instance from which to extract the filters
      * @return Bson document containing all the filters
@@ -126,9 +126,9 @@ public class MongoDataSearcher implements IDataSearcher {
     }
 
     /**
-     * Creates Mongo filters according to the specified query
+     * Creates Mongo filters according to the specified search
      *
-     * @param filters      - list of filters from the query, which will be converted to Mongo filters
+     * @param filters      - list of filters from the search, which will be converted to Mongo filters
      * @param bsonDocument - Bson document, to which add the created filters
      */
     private void addFilters(Map<String, String> filters, BsonDocument bsonDocument, boolean useRegex, boolean useFullText) {
@@ -151,7 +151,7 @@ public class MongoDataSearcher implements IDataSearcher {
             }
 
             Bson tmp;
-            // If the text filter was not specified in the query, we create one from the current field
+            // If the text filter was not specified in the search, we create one from the current field
             if (useFullText && !textFilterCreated && isKeyTextIndexed(filterEntry.getKey())) {
                 tmp = Filters.text(filterEntry.getValue());
                 appendBsonDoc(bsonDocument, tmp, "$text");
@@ -218,7 +218,7 @@ public class MongoDataSearcher implements IDataSearcher {
     }
 
     /**
-     * Creates condition filters from the query.
+     * Creates condition filters from the search.
      * Like gt, lt
      *
      * @param conditions   - List of conditions to be converted to the dataaccess filters

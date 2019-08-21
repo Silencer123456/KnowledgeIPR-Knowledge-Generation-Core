@@ -8,12 +8,12 @@ import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
-import kiv.zcu.knowledgeipr.core.query.ChartQuery;
-import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.report.ChartReport;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.core.report.FileRepository;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
+import kiv.zcu.knowledgeipr.core.search.ChartQuery;
+import kiv.zcu.knowledgeipr.core.search.Search;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
@@ -55,14 +55,14 @@ public class DataAccessController {
     }
 
     /**
-     * Initiates the search on the target database according to the search strategy selected.
-     * Generates a response to be sent back to the client from the returned results.
-     *
-     * @param search - The Search instance
-     * @return BaseResponse object encapsulating the report.
+     *  Initiates the search on the target database according to the search strategy selected.
+     *      * Generates a response to be sent back to the client from the returned results.
+     * @param searchStrategy - The search strategy to use
+     * @param search - The search instance containing relevant search information
+     * @param <T> - Type of search according to the search strategy being used
+     * @return Response object containing the generated report with results and other info
      */
-    public StandardResponse search(SearchStrategy searchStrategy, Search search) {
-
+    public <T extends Search> StandardResponse search(SearchStrategy<T> searchStrategy, T search) {
         StandardResponse response;
         try {
             DataReport report = searchStrategy.search(search);
@@ -86,14 +86,14 @@ public class DataAccessController {
     }
 
     /**
-     * Runs a chart query on the target database. First a cache is checked, if the report is not already generated.
-     * In case a cached version is found, it is returned immediately. If the cache does not exist, a query to the
+     * Runs a chart search on the target database. First a cache is checked, if the report is not already generated.
+     * In case a cached version is found, it is returned immediately. If the cache does not exist, a search to the
      * target database is constructed and run. The results are collected and a report instance is constructed.
      * Finally a response object is created with the report and returned.
      *
-     * @param chartQuery     The query instance which will create the query and retrieve the results
+     * @param chartQuery     The search instance which will create the search and retrieve the results
      * @param filename       - The filename under which the final report should be saved, TODO: replace
-     * @param collectionName - Name of the collection, on which to run the query (patents or publications)
+     * @param collectionName - Name of the collection, on which to run the search (patents or publications)
      * @param overwrite      - Flag specifying whether to overwrite the file TODO: change
      * @param <T>            - The X value data type on the result chart
      * @param <V>            - The Y value data type on the result chart

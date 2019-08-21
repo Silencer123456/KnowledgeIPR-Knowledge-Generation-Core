@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query.category.data;
+package kiv.zcu.knowledgeipr.core.search.category.data;
 
 import java.io.Serializable;
 

@@ -6,8 +6,8 @@ import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
-import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.query.Search;
+import kiv.zcu.knowledgeipr.core.search.Query;
+import kiv.zcu.knowledgeipr.core.search.Search;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
@@ -29,7 +29,7 @@ public class SearchRestService {
 
     private DataAccessController dataAccessController;
 
-    private SearchStrategy searchStrategy;
+    private SearchStrategy<Search> searchStrategy;
 
     public SearchRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
         this.dataAccessController = dataAccessController;
@@ -37,10 +37,10 @@ public class SearchRestService {
     }
 
     /**
-     * Accepts a query, processes it and returns a set of results as JSON to the caller.
+     * Accepts a search, processes it and returns a set of results as JSON to the caller.
      *
      * @param page      - page of results to return
-     * @param queryJson - request query json
+     * @param queryJson - request search json
      * @return JSON response
      * @throws ApiException - In case of user api errors
      */
@@ -134,7 +134,7 @@ public class SearchRestService {
     }
 
     /**
-     * Initiates the processing of the query
+     * Initiates the processing of the search
      *
      * @param query - Query to process
      * @param page  - Tha page to return
@@ -143,7 +143,7 @@ public class SearchRestService {
      */
     private javax.ws.rs.core.Response processQueryInit(Query query, int page, boolean advancedSearch) throws ApiException {
         if (query.getFilters() == null || query.getFilters().isEmpty() || query.getSourceType() == null) {
-            throw new ApiException("Wrong query format.");
+            throw new ApiException("Wrong search format.");
         }
 
         int limit = 20;

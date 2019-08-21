@@ -1,7 +1,7 @@
-package kiv.zcu.knowledgeipr.core.query.category.data;
+package kiv.zcu.knowledgeipr.core.search.category.data;
 
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
-import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
+import kiv.zcu.knowledgeipr.core.search.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.utils.AppConstants;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;

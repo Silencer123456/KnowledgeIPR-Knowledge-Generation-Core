@@ -5,11 +5,11 @@ import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.query.Search;
-import kiv.zcu.knowledgeipr.core.query.category.data.Category;
-import kiv.zcu.knowledgeipr.core.query.category.data.CategoryHandler;
-import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
+import kiv.zcu.knowledgeipr.core.search.CategorySearch;
+import kiv.zcu.knowledgeipr.core.search.Query;
+import kiv.zcu.knowledgeipr.core.search.category.data.Category;
+import kiv.zcu.knowledgeipr.core.search.category.data.CategoryHandler;
+import kiv.zcu.knowledgeipr.core.search.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
@@ -25,7 +25,7 @@ public class CategoryRestService {
 
     private DataAccessController dataAccessController;
 
-    private SearchStrategy searchStrategy;
+    private SearchStrategy<CategorySearch> searchStrategy;
 
     public CategoryRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
         this.dataAccessController = dataAccessController;
@@ -59,7 +59,7 @@ public class CategoryRestService {
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
         StandardResponse standardResponse = dataAccessController.search(searchStrategy,
-                new Search(query, page, 20, true));
+                new CategorySearch(query, page, 20, true, category.data.getName()));
 
         return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
     }

@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.core.database.dbconnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+// !!!NOT IN USE!!!
 public interface ConnectionPool {
     Connection getConnection() throws SQLException;
 

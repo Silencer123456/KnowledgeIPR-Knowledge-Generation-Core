@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query;
+package kiv.zcu.knowledgeipr.core.search;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
@@ -6,7 +6,7 @@ import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import java.util.List;
 
 /**
- * Abstract class representing a specific query, which returns chart data
+ * Abstract class representing a specific search, which returns chart data
  *
  * @param <T> - The x axis data type
  * @param <V> - The y axis data type
@@ -26,7 +26,7 @@ public abstract class ChartQuery<T, V> {
     }
 
     /**
-     * Creates the query and gets the results
+     * Creates the search and gets the results
      * @return - Chart data in form of list of pair values
      */
     public abstract List<Pair<T, V>> get();

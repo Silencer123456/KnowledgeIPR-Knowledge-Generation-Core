@@ -67,7 +67,7 @@ public class QueryRepository implements IRepository<QueryDto> {
 
     @Override
     public void removeAll() {
-        String query = "DELETE FROM query";
+        String query = "DELETE FROM search";
         try {
             final Connection connection = DataSourceUtils.getConnection();
             runner.update(connection, query);

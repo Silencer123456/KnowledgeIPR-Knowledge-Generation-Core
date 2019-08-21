@@ -13,19 +13,19 @@ import java.util.List;
 public interface IQueryRunner {
 
     /**
-     * Creates a query which runs an count aggregation on the specified simple field.
+     * Creates a search which runs an count aggregation on the specified simple field.
      *
-     * @param collectionName - Name of the collection on which to run the query
+     * @param collectionName - Name of the collection on which to run the search
      * @param field          - Field on which to perform the count aggregation
      * @return - Graph data as a list of 'String, Integer' pairs
      */
     List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field);
 
     /**
-     * Creates a query which runs an count aggregation on the specified field. in this case, the field is an array
+     * Creates a search which runs an count aggregation on the specified field. in this case, the field is an array
      * containing a list of values. E.g. keywords, fos...
      *
-     * @param collectionName - Name of the collection on which to run the query
+     * @param collectionName - Name of the collection on which to run the search
      * @param field - Field on which to perform the count aggregation
      * @return - Graph data as a list of 'String, Integer' pairs
      */
@@ -51,10 +51,10 @@ public interface IQueryRunner {
     List<Pair<String, Integer>> activePeople(DataSourceType collectionName, String type, int limit);
 
     /**
-     * Creates a query returning evolution of patents ownership by a specified company (owner)
+     * Creates a search returning evolution of patents ownership by a specified company (owner)
      * in a specified category.
      *
-     * @param collectionName - Name of the collection on which the query should be runAggregation
+     * @param collectionName - Name of the collection on which the search should be runAggregation
      * @param owner          - The owner of the patents to search for
      * @param category       - Category, which should be used as filter
      * @return Chart data

@@ -3,13 +3,13 @@ package kiv.zcu.knowledgeipr.core.controller;
 import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
-import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
+import kiv.zcu.knowledgeipr.core.search.Search;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 
 import java.util.List;
 
-public class DefaultSearchStrategy extends SearchStrategy {
+public class DefaultSearchStrategy extends SearchStrategy<Search> {
 
     public DefaultSearchStrategy(IDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService);

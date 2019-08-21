@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.core.database.mapper;
 
 import kiv.zcu.knowledgeipr.core.database.dto.QueryDto;
-import kiv.zcu.knowledgeipr.core.query.Query;
+import kiv.zcu.knowledgeipr.core.search.Query;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 

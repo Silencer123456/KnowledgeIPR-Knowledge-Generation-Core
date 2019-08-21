@@ -39,20 +39,20 @@ public class CommonMongoRunner {
     }
 
     /**
-     * Performs the actual execution of the query
+     * Performs the actual execution of the search
      *
-     * @param collectionName - Name of the collection on which to perform the query
-     * @param list           - List of Bson documents with the query
+     * @param collectionName - Name of the collection on which to perform the search
+     * @param list           - List of Bson documents with the search
      * @return - Iterator of retrieved documents
      */
     AggregateIterable<Document> runAggregation(DataSourceType collectionName, List<Bson> list) {
-        LOGGER.info("MongoDB query: " + Arrays.toString(list.toArray()));
+        LOGGER.info("MongoDB search: " + Arrays.toString(list.toArray()));
         MongoCollection<Document> collection = database.getCollection(collectionName.value);
         return collection.aggregate(list).allowDiskUse(true);
     }
 
     /**
-     * Runs a query performing a sum accumulation
+     * Runs a search performing a sum accumulation
      * This method should be used if the sum is performed on a list of arrays,
      * an unwind operation is performed
      *
@@ -77,7 +77,7 @@ public class CommonMongoRunner {
     }
 
     /**
-     * Runs a query performing a sum accumulation.
+     * Runs a search performing a sum accumulation.
      * From the <code>runCountUnwindAggregation</code> method, this method should
      * be used on a regular field without an array
      *
@@ -99,7 +99,7 @@ public class CommonMongoRunner {
     }
 
     /**
-     * Runs a query on a Mongo collection on the text index.
+     * Runs a search on a Mongo collection on the text index.
      * Returns a list of results limited by the specified limit.
      * The returned result list contains only projected fields relevant to the response.
      *

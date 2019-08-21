@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query.category.tree;
+package kiv.zcu.knowledgeipr.core.search.category.tree;
 
 class SampleData {
 

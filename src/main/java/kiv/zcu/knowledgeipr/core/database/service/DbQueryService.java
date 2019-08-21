@@ -14,9 +14,9 @@ import kiv.zcu.knowledgeipr.core.database.repository.ReportRepository;
 import kiv.zcu.knowledgeipr.core.database.specification.QueryByHashCodeSpecification;
 import kiv.zcu.knowledgeipr.core.database.specification.RecordsWithConfirmedCategorySpecification;
 import kiv.zcu.knowledgeipr.core.database.specification.ReportsForQuerySpecification;
-import kiv.zcu.knowledgeipr.core.query.Query;
-import kiv.zcu.knowledgeipr.core.query.Search;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
+import kiv.zcu.knowledgeipr.core.search.Query;
+import kiv.zcu.knowledgeipr.core.search.Search;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 
 import java.io.IOException;
@@ -70,19 +70,19 @@ public class DbQueryService {
     }
 
     /**
-     * Saves query to the database and associates a report with it.
+     * Saves search to the database and associates a report with it.
      *
      * @param search - The search instance
-     * @param report - The report to be saved and associated to the query
+     * @param report - The report to be saved and associated to the search
      */
     // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
     public void cacheQuery(Search search, DataReport report) {
-        LOGGER.info("Saving query " + search.getQuery().hashCode() + "; limit: " + search.getLimit() + "; page: " + search.getPage());
+        LOGGER.info("Saving search " + search.getQuery().hashCode() + "; limit: " + search.getLimit() + "; page: " + search.getPage());
         try {
             QueryDto queryDto = new QueryToQueryDtoMapper().map(search.getQuery());
 
             if (getCachedReport(search) != null) {
-                LOGGER.info("Report for query already exists, saving skipped");
+                LOGGER.info("Report for search already exists, saving skipped");
                 return;
             }
 
@@ -90,7 +90,7 @@ public class DbQueryService {
 
             long queryId = queryRepository.add(queryDto);
             if (queryId == -1) {
-                LOGGER.warning("Could not save query to database.");
+                LOGGER.warning("Could not save search to database.");
             }
             queryDto.setId(queryId);
 
@@ -135,7 +135,7 @@ public class DbQueryService {
     }
 
     /**
-     * Returns a report associated with the specified query, where page and limit match
+     * Returns a report associated with the specified search, where page and limit match
      *
      * @param search - Search instance, for which to search reports
      * @return - Found cached report or null if nothing is found
@@ -155,7 +155,7 @@ public class DbQueryService {
             ReportDto reportDto = reportDtoList.get(0);
             try {
                 dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
-                LOGGER.info("Cached report found for query: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
+                LOGGER.info("Cached report found for search: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
             } catch (IOException e) {
                 LOGGER.info("Cached report could not be parsed.");
                 e.printStackTrace();

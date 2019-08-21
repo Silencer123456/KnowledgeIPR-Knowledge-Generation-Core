@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.query;
+package kiv.zcu.knowledgeipr.core.search;
 
 import kiv.zcu.knowledgeipr.rest.errorhandling.QueryOptionsValidationException;
 
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manages query options
+ * Manages search options
  */
 public class QueryOptions {
 
@@ -63,4 +63,27 @@ public class QueryOptions {
     public Map<String, Object> getOptions() {
         return options;
     }
+
+    enum Options {
+        /**
+         * Specifies if the returned documents should be sorted by their score
+         */
+        SCORE("score");
+
+        final String value;
+
+        Options(String value) {
+            this.value = value;
+        }
+
+        public boolean equalsName(String otherValue) {
+            // (otherName == null) check is not needed because name.equals(null) returns false
+            return value.equals(otherValue);
+        }
+
+        public String toString() {
+            return this.value;
+        }
+    }
+
 }

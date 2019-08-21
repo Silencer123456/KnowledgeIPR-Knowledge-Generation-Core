@@ -15,6 +15,14 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+/**
+ * - Enables access to the pool of connections to the SQL database.
+ * - Uses thread scoping for connections.
+ * - Supports transaction operations and rollbacks.
+ * In order for the connection to be closed properly,
+ * the startTransaction() method has to be called before performing any actions on the database
+ * and commitAndClose() or rollback() have to be called after the actions were performed
+ */
 public class DataSourceUtils {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);

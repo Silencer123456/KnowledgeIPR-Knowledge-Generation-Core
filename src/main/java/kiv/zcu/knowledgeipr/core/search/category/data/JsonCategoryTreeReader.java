@@ -1,8 +1,8 @@
-package kiv.zcu.knowledgeipr.core.query.category.data;
+package kiv.zcu.knowledgeipr.core.search.category.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kiv.zcu.knowledgeipr.core.query.category.tree.TreeNode;
+import kiv.zcu.knowledgeipr.core.search.category.tree.TreeNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
