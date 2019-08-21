@@ -109,6 +109,9 @@ public class DbQueryService {
         }
     }
 
+    /**
+     * Invalidates the existing database cache.
+     */
     public void invalidateCache() {
         try {
             DataSourceUtils.startTransaction();
@@ -118,6 +121,8 @@ public class DbQueryService {
 
             DataSourceUtils.commitAndClose();
         } catch (SQLException e) {
+            LOGGER.warning(e.getMessage());
+            LOGGER.warning("Cache NOT INVALIDATED");
             e.printStackTrace();
         }
         LOGGER.info("Cache INVALIDATED");

@@ -18,7 +18,7 @@ public class RecordsWithConfirmedCategorySpecification implements SqlSpecificati
         return new SqlQuery(parameters,
                 "SELECT ref.* FROM reference as ref " +
                         "INNER JOIN categoryreferences " +
-                        "ON categoryreferences.referenceId = ref. referenceId " +
+                        "ON categoryreferences.referenceId = ref.referenceId " +
                         "INNER JOIN category " +
                         "ON category.categoryId = categoryreferences.categoryId " +
                         "WHERE category.name = ?");

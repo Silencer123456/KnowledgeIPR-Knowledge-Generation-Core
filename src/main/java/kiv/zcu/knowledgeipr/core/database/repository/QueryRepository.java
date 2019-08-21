@@ -17,6 +17,8 @@ import java.util.List;
 
 public class QueryRepository implements IRepository<QueryDto> {
 
+    private static final String QUERY_TABLE_NAME = "query";
+
     private QueryRunner runner;
 
     public QueryRepository() {
@@ -34,7 +36,7 @@ public class QueryRepository implements IRepository<QueryDto> {
 
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
-        String insertQuery = "INSERT INTO query (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
+        String insertQuery = "INSERT INTO " + QUERY_TABLE_NAME + " (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
         try {
             final Connection connection = DataSourceUtils.getConnection();
 
@@ -67,7 +69,7 @@ public class QueryRepository implements IRepository<QueryDto> {
 
     @Override
     public void removeAll() {
-        String query = "DELETE FROM search";
+        String query = "DELETE FROM " + QUERY_TABLE_NAME;
         try {
             final Connection connection = DataSourceUtils.getConnection();
             runner.update(connection, query);

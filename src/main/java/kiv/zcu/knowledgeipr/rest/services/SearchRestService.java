@@ -12,7 +12,9 @@ import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.QueryOptionsValidationException;
+import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
 import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
 
 import javax.ws.rs.*;
@@ -106,6 +108,15 @@ public class SearchRestService {
         WordNetResponse response = dataAccessController.getSynonyms(word);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @POST
+    @Path("/invalidateCache")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response invalidateCache() throws ObjectSerializationException {
+        dataAccessController.invalidateCache(searchStrategy);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(new BaseResponse(StatusResponse.SUCCESS, "OK"))).build();
     }
 
     @POST

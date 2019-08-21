@@ -16,6 +16,8 @@ import java.util.List;
 
 public class ReportRepository implements IRepository<ReportDto> {
 
+    private static final String TABLE_NAME = "report";
+
     private QueryRunner runner;
 
     public ReportRepository() {
@@ -34,7 +36,7 @@ public class ReportRepository implements IRepository<ReportDto> {
 
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
-        String insertQuery = "INSERT INTO report (queryId, docsPerPage, reportText, page) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO " + TABLE_NAME + " (queryId, docsPerPage, reportText, page) VALUES (?, ?, ?, ?)";
         try {
             final Connection connection = DataSourceUtils.getConnection();
             for (ReportDto report : items) {
@@ -69,7 +71,7 @@ public class ReportRepository implements IRepository<ReportDto> {
 
     @Override
     public void removeAll() {
-        String query = "DELETE FROM report";
+        String query = "DELETE FROM " + TABLE_NAME;
         try {
             final Connection connection = DataSourceUtils.getConnection();
             runner.update(connection, query);

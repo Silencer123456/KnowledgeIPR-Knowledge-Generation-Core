@@ -11,6 +11,9 @@ public class ReportDto {
     private Timestamp dateUpdated;
     private int page;
 
+    /**
+     * Needs empty constructor for the serialization from the database
+     */
     public ReportDto() {
     }
 

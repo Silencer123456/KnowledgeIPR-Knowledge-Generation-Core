@@ -49,4 +49,11 @@ public abstract class SearchStrategy<T extends Search> {
     public void cacheSearch(T search, DataReport dataReport) {
         queryService.cacheQuery(search, dataReport);
     }
+
+    /**
+     * Invalidates the cached searches
+     */
+    public void invalidateCache() {
+        queryService.invalidateCache();
+    }
 }

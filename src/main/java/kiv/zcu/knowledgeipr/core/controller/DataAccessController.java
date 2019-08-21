@@ -124,6 +124,10 @@ public class DataAccessController {
         return chartQuery(chartQuery, filename, collectionName, false);
     }
 
+    public void invalidateCache(SearchStrategy searchStrategy) {
+        searchStrategy.invalidateCache();
+    }
+
     public WordNetResponse getSynonyms(String word) {
         List<String> synonyms = WordNet.getInstance().getSynonymsForWord(word);
         List<String> hypernyms = WordNet.getInstance().getHypernymsForWord(word);
