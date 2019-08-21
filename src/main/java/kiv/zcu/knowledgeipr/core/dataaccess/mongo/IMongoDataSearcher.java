@@ -2,18 +2,18 @@ package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
-import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.database.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.search.Query;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 
 import java.util.List;
 
 /**
- * Classes implementing this interface are able to run searches on the target database using the provided
+ * Classes implementing this interface are able to run searches on the Mongo database using the provided
  *
  * @see Query instance.
  */
-public interface IDataSearcher {
+public interface IMongoDataSearcher {
 
     /**
      * Runs an advanced search on the MongoDB database and returns a result set.
@@ -42,4 +42,12 @@ public interface IDataSearcher {
      * @throws MongoExecutionTimeoutException - If the timeout is reached without no results returned
      */
     List<DbRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException;
+
+    /**
+     * Searches for document records identified by the references.
+     *
+     * @param references - The list of references containing urls of the documents to retrieve
+     * @return - The list of documents from Mongo associated with the references
+     */
+    List<DbRecord> searchByReferences(List<ReferenceDto> references);
 }

@@ -1,6 +1,5 @@
-package kiv.zcu.knowledgeipr.core.controller;
+package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.core.search.Search;
@@ -11,6 +10,7 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
  * Each search strategy can implement various process of searching (for example,
  * category search strategy first fetches confirmed results from the database etc.)
  */
+// TODO: add another generic parameter specifying type of database data searcher (Mongo, Elastic...)
 public abstract class SearchStrategy<T extends Search> {
 
     /**
@@ -22,9 +22,10 @@ public abstract class SearchStrategy<T extends Search> {
     /**
      * Provides methods for searching the target database for data
      */
-    protected IDataSearcher dataSearcher;
+    // TODO Use generic interface NOT specific to Mongo
+    protected IMongoDataSearcher dataSearcher;
 
-    public SearchStrategy(IDataSearcher dataSearcher, DbQueryService queryService) {
+    public SearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
         this.dataSearcher = dataSearcher;
         this.queryService = queryService;
     }
@@ -37,7 +38,7 @@ public abstract class SearchStrategy<T extends Search> {
      * @return Created report from the retrieved results
      * @throws UserQueryException - In case the search is malformed
      */
-    abstract DataReport search(T search) throws UserQueryException;
+    public abstract DataReport search(T search) throws UserQueryException;
 
     /**
      * Saves the data report along with the search to the database to be used as cache,
@@ -51,7 +52,7 @@ public abstract class SearchStrategy<T extends Search> {
     }
 
     /**
-     * Invalidates the cached searches
+     * Invalidates the cached searches from the database
      */
     public void invalidateCache() {
         queryService.invalidateCache();

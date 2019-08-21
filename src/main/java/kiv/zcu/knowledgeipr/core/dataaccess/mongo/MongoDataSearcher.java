@@ -5,12 +5,13 @@ import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.client.model.Filters;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.database.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.search.Query;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,13 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Class enables access to Mongo database and runs search queries on it.
  * Uses the <code>Query</code> class to extract filters from the search and transforms them to
  * the MongoDB's search format.
  */
-public class MongoDataSearcher implements IDataSearcher {
+public class MongoDataSearcher implements IMongoDataSearcher {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private CommonMongoRunner mongoRunner;
@@ -33,9 +35,6 @@ public class MongoDataSearcher implements IDataSearcher {
         this.mongoRunner = CommonMongoRunner.getInstance();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<DbRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
         LOGGER.info("Running advanced search");
@@ -68,9 +67,6 @@ public class MongoDataSearcher implements IDataSearcher {
         return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<DbRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
         LOGGER.info("Running simple search");
@@ -95,6 +91,26 @@ public class MongoDataSearcher implements IDataSearcher {
         }
 
         return records;
+    }
+
+    @Override
+    public List<DbRecord> searchByReferences(List<ReferenceDto> references) {
+        // To list of ObjectIds
+        List<ObjectId> urls = references
+                .stream()
+                .filter(object -> ObjectId.isValid(object.getUrl()))
+                .map(object -> new ObjectId(object.getUrl()))
+                .collect(Collectors.toList());
+
+        if (urls.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        BsonDocument filter = new BsonDocument();
+        Bson bson = Filters.in("_id", urls);
+        appendBsonDoc(filter, bson, "_id");
+
+        return mongoRunner.doSearch(DataSourceType.PATENT.value, filter, references.size(), 1, 10);
     }
 
     /**
@@ -208,7 +224,7 @@ public class MongoDataSearcher implements IDataSearcher {
      *
      * @param bsonDocument - Bson document to which we want to append
      * @param bson         - bson which we want to append to the document
-     * @param key          - key that we want to add to the bson document
+     * @param key          - key under which we want to add to the bson document
      */
     private void appendBsonDoc(BsonDocument bsonDocument, Bson bson, String key) {
         BsonDocument docToAppend = bson.toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());

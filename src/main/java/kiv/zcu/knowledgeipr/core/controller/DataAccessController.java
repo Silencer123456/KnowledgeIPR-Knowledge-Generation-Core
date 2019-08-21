@@ -8,6 +8,7 @@ import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.report.ChartReport;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.core.report.FileRepository;

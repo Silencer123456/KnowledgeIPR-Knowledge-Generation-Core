@@ -3,7 +3,7 @@ package kiv.zcu.knowledgeipr.analysis.summarizer;
 import kiv.zcu.knowledgeipr.analysis.summarizer.lib.SentenceBuilder;
 import kiv.zcu.knowledgeipr.analysis.summarizer.lib.Summarizer;
 import kiv.zcu.knowledgeipr.analysis.summarizer.lib.WordBuilder;
-import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.DbRecord;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,6 +2,10 @@ package kiv.zcu.knowledgeipr.core.database.dto;
 
 import java.sql.Timestamp;
 
+/**
+ * Report Data Transfer Object, representing a table
+ * in the SQL database.
+ */
 public class ReportDto {
     private long reportId;
     private long queryId;

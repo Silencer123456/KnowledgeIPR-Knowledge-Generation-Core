@@ -3,7 +3,7 @@ package kiv.zcu.knowledgeipr.core.report;
 import com.fasterxml.jackson.databind.JsonNode;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
-import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.DbRecord;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 
 import java.util.List;

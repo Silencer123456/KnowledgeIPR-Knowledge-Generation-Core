@@ -7,7 +7,6 @@ import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Collation;
 import com.mongodb.client.model.CollationStrength;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dataaccess.DbRecord;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
 import org.bson.Document;
 import org.bson.conversions.Bson;

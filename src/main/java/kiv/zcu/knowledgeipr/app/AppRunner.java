@@ -1,11 +1,7 @@
 package kiv.zcu.knowledgeipr.app;
 
-import kiv.zcu.knowledgeipr.core.controller.CategorySearchStrategy;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
-import kiv.zcu.knowledgeipr.core.controller.DefaultSearchStrategy;
-import kiv.zcu.knowledgeipr.core.controller.SearchStrategy;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IDataSearcher;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoDataSearcher;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.*;
 import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
@@ -30,7 +26,7 @@ public class AppRunner extends Application {
      */
     public AppRunner() {
 
-        IDataSearcher dataSearcher = new MongoDataSearcher();
+        IMongoDataSearcher dataSearcher = new MongoDataSearcher();
 
         DbQueryService dbQueryService = new DbQueryService();
 

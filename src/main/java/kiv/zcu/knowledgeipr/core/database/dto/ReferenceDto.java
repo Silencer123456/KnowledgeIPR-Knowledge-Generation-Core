@@ -2,6 +2,10 @@ package kiv.zcu.knowledgeipr.core.database.dto;
 
 import java.sql.Timestamp;
 
+/**
+ * Reference Data Transfer Object, representing a table
+ * in the SQL database.
+ */
 public class ReferenceDto {
 
     private long id;
