@@ -6,12 +6,14 @@ import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.core.search.CategorySearch;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Provides implementation of the searching process using a category search strategy in the Mongo database.
+ * Provides implementation of the searching process using a category search strategy in the MONGO database.
  */
-public class CategorySearchStrategy extends SearchStrategy<CategorySearch> {
+public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMongoDataSearcher> {
 
     public CategorySearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService);
@@ -31,19 +33,22 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch> {
             return report;
         }
 
-        List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
+        // TODO: Count for the case when there are more than 20 confirmed records - more pages
+        List<DbRecord> records = new ArrayList<>();
+        if (search.isFirstPage()) { // Get confirmed only if the first page is requested
+            List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
+            if (!referenceDtos.isEmpty()) {
+                records = dataSearcher.searchByReferences(referenceDtos);
+            }
+        }
 
-        List<DbRecord> records;
-        records = dataSearcher.searchByReferences(referenceDtos);
-
-//        if (search.isAdvancedSearch()) {
-//            records = dataSearcher.runSearchAdvanced(search.getQuery(), search.getPage(), search.getLimit());
-//        } else {
-//            records = dataSearcher.runSearchSimple(search.getQuery(), search.getPage(), search.getLimit());
-//        }
+        // TODO:  Ensure there are no duplicate records
+        if (records.size() < search.getLimit()) {
+            List<DbRecord> searchedRecords = dataSearcher.runSearchAdvanced(search.getQuery(), search.getPage(), search.getLimit() - records.size()); // Search the rest in Mongo
+            Optional.ofNullable(searchedRecords).ifPresent(records::addAll);
+        }
 
         report = new DataReport(records);
-
         cacheSearch(search, report);
 
         return report;

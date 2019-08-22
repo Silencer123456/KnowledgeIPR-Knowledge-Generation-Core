@@ -41,6 +41,10 @@ public class Search {
         return page;
     }
 
+    public boolean isFirstPage() {
+        return page == 1;
+    }
+
     public int getLimit() {
         return limit;
     }

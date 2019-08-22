@@ -7,7 +7,7 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 
 import java.util.List;
 
-public class DefaultSearchStrategy extends SearchStrategy<Search> {
+public class DefaultSearchStrategy extends SearchStrategy<Search, IMongoDataSearcher> {
 
     public DefaultSearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService);

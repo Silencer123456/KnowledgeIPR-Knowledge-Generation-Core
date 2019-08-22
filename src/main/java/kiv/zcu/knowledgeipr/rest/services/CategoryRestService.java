@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IMongoDataSearcher;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.search.CategorySearch;
 import kiv.zcu.knowledgeipr.core.search.Query;
@@ -25,7 +26,7 @@ public class CategoryRestService {
 
     private DataAccessController dataAccessController;
 
-    private SearchStrategy<CategorySearch> searchStrategy;
+    private SearchStrategy<CategorySearch, IMongoDataSearcher> searchStrategy;
 
     public CategoryRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
         this.dataAccessController = dataAccessController;

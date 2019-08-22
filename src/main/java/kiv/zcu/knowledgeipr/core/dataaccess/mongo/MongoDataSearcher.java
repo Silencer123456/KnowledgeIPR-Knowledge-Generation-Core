@@ -103,7 +103,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
                 .collect(Collectors.toList());
 
         if (urls.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         BsonDocument filter = new BsonDocument();

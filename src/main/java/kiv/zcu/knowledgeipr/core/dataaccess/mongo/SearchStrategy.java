@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
+import kiv.zcu.knowledgeipr.core.dataaccess.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.core.search.Search;
@@ -10,22 +11,20 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
  * Each search strategy can implement various process of searching (for example,
  * category search strategy first fetches confirmed results from the database etc.)
  */
-// TODO: add another generic parameter specifying type of database data searcher (Mongo, Elastic...)
-public abstract class SearchStrategy<T extends Search> {
+public abstract class SearchStrategy<T extends Search, V extends IDataSearcher> {
 
     /**
      * A database service class which manipulates the SQL database by implementing various functions.
      */
     //TODO: Use interface instead
-    protected DbQueryService queryService;
+    DbQueryService queryService;
 
     /**
      * Provides methods for searching the target database for data
      */
-    // TODO Use generic interface NOT specific to Mongo
-    protected IMongoDataSearcher dataSearcher;
+    V dataSearcher;
 
-    public SearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
+    SearchStrategy(V dataSearcher, DbQueryService queryService) {
         this.dataSearcher = dataSearcher;
         this.queryService = queryService;
     }
@@ -47,7 +46,7 @@ public abstract class SearchStrategy<T extends Search> {
      * @param search     - The Search instance to be saved to the database
      * @param dataReport - The DataReport instance to be saved to the database with the search
      */
-    public void cacheSearch(T search, DataReport dataReport) {
+    void cacheSearch(T search, DataReport dataReport) {
         queryService.cacheQuery(search, dataReport);
     }
 

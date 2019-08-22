@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
+import kiv.zcu.knowledgeipr.core.dataaccess.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.database.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.search.Query;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
@@ -13,13 +14,13 @@ import java.util.List;
  *
  * @see Query instance.
  */
-public interface IMongoDataSearcher {
+public interface IMongoDataSearcher extends IDataSearcher {
 
     /**
      * Runs an advanced search on the MongoDB database and returns a result set.
-     * First a quick search is runAggregation, performing an exact match search, which should be very fast when proper index is used.
+     * First a quick search is performed, doing an exact match search, which should be very fast when proper indexes are used.
      * This search is limited to just a few seconds of execution.
-     * If no results are returned by that time, the second main search is run with user
+     * If no results are returned after the timeout, the second more thorough search is run with user
      * specified timeout.
      *
      * @param query - knowledgeipr.Query to be run
@@ -33,7 +34,7 @@ public interface IMongoDataSearcher {
      * Runs a simple search on the MongoDB database. The simple search consists of a single search
      * which only finds results using an exact match if the text search is not specified.
      *
-     * @param query - knowledgeipr.Query to be run
+     * @param query - Query to be run
      * @param page  - Page to return
      * @param limit - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.

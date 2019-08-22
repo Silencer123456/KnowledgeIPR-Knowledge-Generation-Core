@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IMongoDataSearcher;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.search.Query;
 import kiv.zcu.knowledgeipr.core.search.Search;
@@ -31,7 +32,7 @@ public class SearchRestService {
 
     private DataAccessController dataAccessController;
 
-    private SearchStrategy<Search> searchStrategy;
+    private SearchStrategy<Search, IMongoDataSearcher> searchStrategy;
 
     public SearchRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
         this.dataAccessController = dataAccessController;

@@ -6,6 +6,7 @@ import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
+import kiv.zcu.knowledgeipr.core.dataaccess.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.SearchStrategy;
@@ -63,7 +64,7 @@ public class DataAccessController {
      * @param <T> - Type of search according to the search strategy being used
      * @return Response object containing the generated report with results and other info
      */
-    public <T extends Search> StandardResponse search(SearchStrategy<T> searchStrategy, T search) {
+    public <T extends Search, V extends IDataSearcher> StandardResponse search(SearchStrategy<T, V> searchStrategy, T search) {
         StandardResponse response;
         try {
             DataReport report = searchStrategy.search(search);
