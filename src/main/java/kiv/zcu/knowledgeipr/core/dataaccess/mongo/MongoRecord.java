@@ -1,20 +1,17 @@
 package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.bson.Document;
 
-// TODO: TEMPORARY CLASS!!! Will be made abstract, implementations will be created for concrete dbs
 /**
  * Wrapper for MongoDB's document object
  */
-@JsonIgnoreProperties(value = {"_id"})
-public class DbRecord {
+public class MongoRecord {
     private Document document;
 
-    public DbRecord() {
+    public MongoRecord() {
     }
 
-    public DbRecord(Document document) {
+    public MongoRecord(Document document) {
         this.document = document;
     }
 
@@ -35,11 +32,11 @@ public class DbRecord {
             return true;
         }
 
-        if (!(obj instanceof DbRecord)) {
+        if (!(obj instanceof MongoRecord)) {
             return false;
         }
 
-        DbRecord dbRecord = (DbRecord) obj;
-        return dbRecord.getDocument().get("_id").toString().equals(this.document.get("_id").toString());
+        MongoRecord mongoRecord = (MongoRecord) obj;
+        return mongoRecord.getDocument().get("_id").toString().equals(this.document.get("_id").toString());
     }
 }

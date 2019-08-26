@@ -107,13 +107,13 @@ public class CommonMongoRunner {
      * @param filter         - The search parameter filter
      * @param collectionName - Name of the Mongo collection in which to runAggregation the search
      * @param limit          - Limit of the returned results
-     * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
+     * @return - Result list of <code>knowledgeipr.MongoRecord</code> instances.
      */
-    List<DbRecord> doSearch(String collectionName, Bson filter, int limit, int page, int timeout)
+    List<MongoRecord> doSearch(String collectionName, Bson filter, int limit, int page, int timeout)
             throws MongoQueryException, MongoExecutionTimeoutException {
 
         MongoCollection<Document> collection = database.getCollection(collectionName);
-        List<DbRecord> dbRecords = new ArrayList<>();
+        List<MongoRecord> mongoRecords = new ArrayList<>();
 
         FindIterable<Document> iterable = collection
                 .find(filter)
@@ -126,11 +126,11 @@ public class CommonMongoRunner {
         try (MongoCursor<Document> cursor = iterable.iterator()) { // Automatically closes the cursor
             while (cursor.hasNext()) {
                 Document document = cursor.next();
-                dbRecords.add(new DbRecord(document));
+                mongoRecords.add(new MongoRecord(document));
             }
         }
 
-        return dbRecords;
+        return mongoRecords;
     }
 
     /**
@@ -155,7 +155,6 @@ public class CommonMongoRunner {
                             ResponseField.LANG.toString(),
                             ResponseField.STATUS.toString(),
                             ResponseField.COUNTRY.toString()
-
                     ));
         } else {
             return fields(

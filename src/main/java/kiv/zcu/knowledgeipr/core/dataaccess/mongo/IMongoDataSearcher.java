@@ -28,9 +28,9 @@ public interface IMongoDataSearcher extends IDataSearcher {
      * @param query - knowledgeipr.Query to be run
      * @param page  - Page to return
      * @param limit - Limit of the returned results
-     * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
+     * @return - Result list of <code>knowledgeipr.MongoRecord</code> instances.
      */
-    List<DbRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException;
+    List<MongoRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException;
 
     /**
      * Runs a simple search on the MongoDB database. The simple search consists of a single search
@@ -39,12 +39,12 @@ public interface IMongoDataSearcher extends IDataSearcher {
      * @param query - Query to be run
      * @param page  - Page to return
      * @param limit - Limit of the returned results
-     * @return - Result list of <code>knowledgeipr.DbRecord</code> instances.
+     * @return - Result list of <code>knowledgeipr.MongoRecord</code> instances.
      * @throws MongoQueryException            - If there is a problem with a search execution
      * @throws UserQueryException             - If the user search is not in correct format
      * @throws MongoExecutionTimeoutException - If the timeout is reached without no results returned
      */
-    List<DbRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException;
+    List<MongoRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException;
 
     /**
      * Searches for document records identified by the references.
@@ -52,5 +52,5 @@ public interface IMongoDataSearcher extends IDataSearcher {
      * @param references - The list of references containing urls of the documents to retrieve
      * @return - The list of documents from Mongo associated with the references
      */
-    List<DbRecord> searchByReferences(List<ReferenceDto> references);
+    List<MongoRecord> searchByReferences(List<ReferenceDto> references);
 }

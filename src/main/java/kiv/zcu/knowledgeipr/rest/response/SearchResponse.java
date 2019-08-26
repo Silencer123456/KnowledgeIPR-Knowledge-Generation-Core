@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.rest.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import kiv.zcu.knowledgeipr.core.report.DataReport;
+import kiv.zcu.knowledgeipr.core.report.SearchReport;
 
 /**
  * Holds the data for the response to the user's search request.
@@ -33,9 +33,9 @@ public class SearchResponse {
     private int page;
 
     @JsonProperty("report")
-    private DataReport report;
+    private SearchReport report;
 
-    public SearchResponse(StatusResponse status, String msg, DataReport report) {
+    public SearchResponse(StatusResponse status, String msg, SearchReport report) {
         this.msg = msg;
         this.status = status;
         this.report = report;
@@ -49,7 +49,7 @@ public class SearchResponse {
         return status;
     }
 
-    public DataReport getReport() {
+    public SearchReport getReport() {
         return report;
     }
 

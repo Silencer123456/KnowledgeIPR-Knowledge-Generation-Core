@@ -35,10 +35,10 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     @Override
-    public List<DbRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
+    public List<MongoRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
         LOGGER.info("--- ADVANCED SEARCH ---");
 
-        List<DbRecord> results = runSearchSimple(query, page, limit);
+        List<MongoRecord> results = runSearchSimple(query, page, limit);
         if (!results.isEmpty()) {
             return results;
         }
@@ -51,7 +51,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     @Override
-    public List<DbRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
+    public List<MongoRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
         String sourceType = query.getSourceType();
         isValidSourceType(sourceType);
 
@@ -60,7 +60,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
             return new ArrayList<>();
         }
 
-        List<DbRecord> records = new ArrayList<>();
+        List<MongoRecord> records = new ArrayList<>();
 
         if (filterContainsIndex(query.getFilters())) {
             LOGGER.info("Running quick search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
@@ -75,7 +75,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     @Override
-    public List<DbRecord> searchByReferences(List<ReferenceDto> references) {
+    public List<MongoRecord> searchByReferences(List<ReferenceDto> references) {
         // To list of ObjectIds
         List<ObjectId> urls = references
                 .stream()

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * DataReport holding chart data
+ * SearchReport holding chart data
  * TODO: implement generic interface for all reports
  */
 public class ChartReport<X, Y> implements IReport {

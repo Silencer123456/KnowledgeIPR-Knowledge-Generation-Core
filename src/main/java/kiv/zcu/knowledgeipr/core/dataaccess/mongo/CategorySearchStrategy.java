@@ -2,7 +2,7 @@ package kiv.zcu.knowledgeipr.core.dataaccess.mongo;
 
 import kiv.zcu.knowledgeipr.core.database.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
-import kiv.zcu.knowledgeipr.core.report.DataReport;
+import kiv.zcu.knowledgeipr.core.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.search.CategorySearch;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 
@@ -26,14 +26,14 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
      * The rest of the results are retrieved by regular search.
      */
     @Override
-    public DataReport search(CategorySearch search) throws UserQueryException {
-        DataReport report = queryService.getCachedReport(search);
+    public SearchReport search(CategorySearch search) throws UserQueryException {
+        SearchReport report = queryService.getCachedReport(search);
         if (report != null) {
             return report;
         }
 
         // TODO: Count for the case when there are more than 20 confirmed records - more pages
-        List<DbRecord> records = new ArrayList<>();
+        List<MongoRecord> records = new ArrayList<>();
 
         List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
         if (search.isFirstPage()) { // Get confirmed only if the first page is requested
@@ -43,13 +43,13 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
         }
 
         if (records.size() < search.getLimit()) {
-            List<DbRecord> searchedRecords = dataSearcher.runSearchAdvanced(search.getQuery(), search.getPage(), search.getLimit());
+            List<MongoRecord> searchedRecords = dataSearcher.runSearchAdvanced(search.getQuery(), search.getPage(), search.getLimit());
 
             // remove records already found in confirmed results in db
             searchedRecords.removeAll(records);
 
             // Add searched documents after the confirmed ones, but only until the specified limit is reached
-            for (DbRecord record : searchedRecords) {
+            for (MongoRecord record : searchedRecords) {
                 if (records.size() >= search.getLimit()) {
                     break;
                 }
@@ -57,7 +57,12 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
             }
         }
 
-        report = new DataReport(records);
+        for (MongoRecord record : records) {
+            //TODO: Removes the id field from the document so it is not returned back to the user. !!! TMP solution
+            record.getDocument().remove("_id");
+        }
+
+        report = new SearchReport(records);
         cacheSearch(search, report);
 
         return report;

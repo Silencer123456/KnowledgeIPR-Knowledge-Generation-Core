@@ -14,7 +14,7 @@ import kiv.zcu.knowledgeipr.core.database.repository.ReportRepository;
 import kiv.zcu.knowledgeipr.core.database.specification.QueryByHashCodeSpecification;
 import kiv.zcu.knowledgeipr.core.database.specification.RecordsWithConfirmedCategorySpecification;
 import kiv.zcu.knowledgeipr.core.database.specification.ReportsForQuerySpecification;
-import kiv.zcu.knowledgeipr.core.report.DataReport;
+import kiv.zcu.knowledgeipr.core.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.search.Query;
 import kiv.zcu.knowledgeipr.core.search.Search;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
@@ -78,7 +78,7 @@ public class DbQueryService {
      * @param search - The search instance containing the query to be saved
      * @param report - The report to be saved and associated with the query
      */
-    public void cacheQuery(Search search, DataReport report) {
+    public void cacheQuery(Search search, SearchReport report) {
         LOGGER.info("Saving search " + search.getQuery().hashCode() + "; limit: " + search.getLimit() + "; page: " + search.getPage());
         try {
             QueryDto queryDto = new QueryToQueryDtoMapper().map(search.getQuery());
@@ -149,8 +149,8 @@ public class DbQueryService {
      * @return - Found cached report or null if nothing is found
      */
     // TODO: refactor, later instead of deserializing to report, use only the json
-    public DataReport getCachedReport(Search search) {
-        DataReport dataReport = null;
+    public SearchReport getCachedReport(Search search) {
+        SearchReport searchReport = null;
         try {
             DataSourceUtils.startTransaction();
 
@@ -162,7 +162,7 @@ public class DbQueryService {
 
             ReportDto reportDto = reportDtoList.get(0);
             try {
-                dataReport = new ObjectMapper().readValue(reportDto.getReportText(), DataReport.class);
+                searchReport = new ObjectMapper().readValue(reportDto.getReportText(), SearchReport.class);
                 LOGGER.info("Cached report found for search: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
             } catch (IOException e) {
                 LOGGER.info("Cached report could not be parsed.");
@@ -177,6 +177,6 @@ public class DbQueryService {
             DataSourceUtils.rollbackAndClose();
         }
 
-        return dataReport;
+        return searchReport;
     }
 }

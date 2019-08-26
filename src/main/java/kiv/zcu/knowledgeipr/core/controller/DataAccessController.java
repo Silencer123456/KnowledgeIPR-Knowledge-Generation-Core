@@ -11,9 +11,9 @@ import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
 import kiv.zcu.knowledgeipr.core.dataaccess.mongo.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.report.ChartReport;
-import kiv.zcu.knowledgeipr.core.report.DataReport;
 import kiv.zcu.knowledgeipr.core.report.FileRepository;
 import kiv.zcu.knowledgeipr.core.report.ReportCreator;
+import kiv.zcu.knowledgeipr.core.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.search.ChartQuery;
 import kiv.zcu.knowledgeipr.core.search.Search;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
@@ -67,7 +67,7 @@ public class DataAccessController {
     public <T extends Search, V extends IDataSearcher> SearchResponse search(SearchStrategy<T, V> searchStrategy, T search) {
         SearchResponse response;
         try {
-            DataReport report = searchStrategy.search(search);
+            SearchReport report = searchStrategy.search(search);
 
             response = new SearchResponse(StatusResponse.SUCCESS, "OK", report);
             response.setSearchedCount(getCountForDataSource(search.getQuery().getSourceType()));
@@ -77,10 +77,10 @@ public class DataAccessController {
 
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
-            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
+            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new SearchReport(Collections.emptyList()));
             LOGGER.warning("Query processing was prematurely terminated: " + e.getMessage());
         } catch (MongoExecutionTimeoutException e) {
-            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
+            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new SearchReport(Collections.emptyList()));
             LOGGER.info(e.getMessage());
         }
 

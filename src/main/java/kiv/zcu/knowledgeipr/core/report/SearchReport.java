@@ -1,27 +1,27 @@
 package kiv.zcu.knowledgeipr.core.report;
 
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.DbRecord;
+import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoRecord;
 
 import java.util.List;
 
 /**
- * Contains the returned data ready to be sent to the client.
+ * Wraps the returned search results along with some additional in.
  * Plus contains summary etc.
  */
-public class DataReport {
+public class SearchReport {
     private String summary = "Data Report";
-    private List<DbRecord> records;
+    private List<MongoRecord> records;
 
-    public DataReport() {
+    public SearchReport() {
     }
 
-    public DataReport(List<DbRecord> records) {
-        for (DbRecord record : records) {
+    public SearchReport(List<MongoRecord> records) {
+        for (MongoRecord record : records) {
             //TODO: Removes the id field from the document so it is not returned back to the user. !!! TMP solution
             record.getDocument().remove("_id");
         }
         this.records = records;
-//        for (DbRecord dbRecord : records) {
+//        for (MongoRecord dbRecord : records) {
         // TODO: make generic to patents or publications...
 //            PatentSearchResult searchResult = new PatentSearchResult();
 //
@@ -46,7 +46,7 @@ public class DataReport {
 //        }
     }
 
-    public List<DbRecord> getRecords() {
+    public List<MongoRecord> getRecords() {
         return records;
     }
 

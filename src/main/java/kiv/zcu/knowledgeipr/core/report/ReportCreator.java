@@ -3,7 +3,6 @@ package kiv.zcu.knowledgeipr.core.report;
 import com.fasterxml.jackson.databind.JsonNode;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.app.AppServletContextListener;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.DbRecord;
 import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 
 import java.util.List;
@@ -17,16 +16,6 @@ public class ReportCreator {
 
     public ReportCreator(IReportRepository reportRepository) {
         this.reportRepository = reportRepository;
-    }
-
-    /**
-     * Creates a report from the provided record list.
-     * @param recordList - List of records
-     * @return - The generated report
-     */
-    public DataReport createReport(List<DbRecord> recordList) {
-
-        return new DataReport(recordList);
     }
 
     public <X, Y> ChartReport<X, Y> createChartReport(String title, String xLabel, String yLabel, List<Pair<X, Y>> data) {
