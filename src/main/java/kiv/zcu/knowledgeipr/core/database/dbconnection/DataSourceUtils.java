@@ -92,7 +92,7 @@ public class DataSourceUtils {
     }
 
     /**
-     * Take the data source
+     * Takes the data source
      *
      * @return
      */
@@ -101,7 +101,7 @@ public class DataSourceUtils {
     }
 
     /**
-     * Release resources
+     * Releases resources
      *
      * @param st
      * @param rs
@@ -112,7 +112,7 @@ public class DataSourceUtils {
     }
 
     /**
-     * Release resources
+     * Releases resources
      *
      * @param conn
      * @param st
@@ -142,7 +142,7 @@ public class DataSourceUtils {
     }
 
     /**
-     * release statement
+     * releases statement
      *
      * @param st
      */
@@ -158,7 +158,7 @@ public class DataSourceUtils {
     }
 
     /**
-     * Release the result set
+     * Releases the result set
      *
      * @param rs
      */
@@ -174,7 +174,7 @@ public class DataSourceUtils {
     }
 
     /**
-     * Open the transaction
+     * Opens the transaction
      *
      * @throws SQLException
      */
@@ -182,7 +182,7 @@ public class DataSourceUtils {
         getConnection().setAutoCommit(false);
     }
 
-    public static void closeCurrent() {
+    public static void close() {
         Connection conn;
         try {
             conn = getConnection();
@@ -191,13 +191,13 @@ public class DataSourceUtils {
             // Unbind
             tl.remove();
         } catch (SQLException e) {
-            LOGGER.warning("COMMIT failed with error: " + e.getMessage());
+            LOGGER.warning("CLOSE failed with error: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * Transaction commits and releases the connection
+     * Transaction is committed and the connection is released
      */
     public static void commitAndClose() {
         LOGGER.info("Initiating COMMIT");
@@ -240,5 +240,4 @@ public class DataSourceUtils {
 
         LOGGER.info("ROLLBACK SUCCESS");
     }
-
 }

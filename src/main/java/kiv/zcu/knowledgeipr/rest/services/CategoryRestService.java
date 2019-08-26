@@ -13,7 +13,7 @@ import kiv.zcu.knowledgeipr.core.search.category.data.CategoryHandler;
 import kiv.zcu.knowledgeipr.core.search.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
-import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import kiv.zcu.knowledgeipr.rest.response.SearchResponse;
 
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -59,10 +59,10 @@ public class CategoryRestService {
 
         Query query = new Query(DataSourceType.PATENT.value, filters, new HashMap<>(), new HashMap<>());
 
-        StandardResponse standardResponse = dataAccessController.search(searchStrategy,
+        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
                 new CategorySearch(query, page, 20, true, category.data.getName()));
 
-        return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
+        return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(searchResponse)).build();
     }
 
     /**

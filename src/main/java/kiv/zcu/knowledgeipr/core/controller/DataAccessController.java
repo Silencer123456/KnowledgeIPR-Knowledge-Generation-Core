@@ -20,7 +20,7 @@ import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
-import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import kiv.zcu.knowledgeipr.rest.response.SearchResponse;
 import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
 
@@ -64,12 +64,12 @@ public class DataAccessController {
      * @param <T> - Type of search according to the search strategy being used
      * @return Response object containing the generated report with results and other info
      */
-    public <T extends Search, V extends IDataSearcher> StandardResponse search(SearchStrategy<T, V> searchStrategy, T search) {
-        StandardResponse response;
+    public <T extends Search, V extends IDataSearcher> SearchResponse search(SearchStrategy<T, V> searchStrategy, T search) {
+        SearchResponse response;
         try {
             DataReport report = searchStrategy.search(search);
 
-            response = new StandardResponse(StatusResponse.SUCCESS, "OK", report);
+            response = new SearchResponse(StatusResponse.SUCCESS, "OK", report);
             response.setSearchedCount(getCountForDataSource(search.getQuery().getSourceType()));
             response.setCount(search.getLimit());
             response.setPage(search.getPage());
@@ -77,10 +77,10 @@ public class DataAccessController {
 
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
-            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
+            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.warning("Query processing was prematurely terminated: " + e.getMessage());
         } catch (MongoExecutionTimeoutException e) {
-            response = new StandardResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
+            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new DataReport(Collections.emptyList()));
             LOGGER.info(e.getMessage());
         }
 

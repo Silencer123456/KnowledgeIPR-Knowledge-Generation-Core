@@ -14,7 +14,6 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -37,52 +36,34 @@ public class MongoDataSearcher implements IMongoDataSearcher {
 
     @Override
     public List<DbRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
-        LOGGER.info("Running advanced search");
+        LOGGER.info("--- ADVANCED SEARCH ---");
 
-        String sourceType = query.getSourceType();
-        isValidSourceType(sourceType);
-
-        BsonDocument filter = addAllFilters(query, false, false);
-        if (filter.isEmpty()) {
-            return Collections.emptyList();
+        List<DbRecord> results = runSearchSimple(query, page, limit);
+        if (!results.isEmpty()) {
+            return results;
         }
 
-        if (filterContainsIndex(query.getFilters())) {
-            LOGGER.info("Running quick search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
-            try {
-                List<DbRecord> results = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
-                // If something was found, we do not need to runAggregation the second search
-                if (!results.isEmpty()) {
-                    return results;
-                }
-            } catch (MongoExecutionTimeoutException e) {
-                LOGGER.info("Nothing found during quick search");
-            }
-        }
-
-        filter = addAllFilters(query, true, true);
-
+        BsonDocument filter = addAllFilters(query, true, true);
         LOGGER.info("Running extended search: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
         // Run second search
+        String sourceType = query.getSourceType();
         return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
     }
 
     @Override
     public List<DbRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
-        LOGGER.info("Running simple search");
-
         String sourceType = query.getSourceType();
         isValidSourceType(sourceType);
 
         BsonDocument filter = addAllFilters(query, false, false);
         if (filter.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<DbRecord> records = new ArrayList<>();
 
         if (filterContainsIndex(query.getFilters())) {
-            LOGGER.info("Running 1. search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+            LOGGER.info("Running quick search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
             try {
                 records = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
             } catch (MongoExecutionTimeoutException e) {

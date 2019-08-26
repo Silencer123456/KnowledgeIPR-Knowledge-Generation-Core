@@ -18,7 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Projections.fields;
+import static com.mongodb.client.model.Projections.include;
 
 /**
  * A singleton class running common Mongo queries.
@@ -102,7 +103,7 @@ public class CommonMongoRunner {
      * Returns a list of results limited by the specified limit.
      * The returned result list contains only projected fields relevant to the response.
      *
-     * TODO: Solve performance while sorting by meta text score + add collation for searching case insensitive index
+     * TODO: Solve performance while sorting by meta text score
      * @param filter         - The search parameter filter
      * @param collectionName - Name of the Mongo collection in which to runAggregation the search
      * @param limit          - Limit of the returned results
@@ -140,7 +141,7 @@ public class CommonMongoRunner {
     private Bson getProjectionFields(String collectionName) {
         if (collectionName.equals(DataSourceType.PATENT.value)) {
             return fields(
-                    exclude("_id"),
+                    //exclude("_id"),
                     //Projections.metaTextScore("score"),
                     include(
                             ResponseField.TITLE.toString(),
@@ -158,7 +159,7 @@ public class CommonMongoRunner {
                     ));
         } else {
             return fields(
-                    exclude("_id"),
+                    //exclude("_id"),
                     include(
                             //Projections.metaTextScore("score"),
                             ResponseField.TITLE.toString(),

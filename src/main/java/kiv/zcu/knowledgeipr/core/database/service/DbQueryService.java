@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Class enables access to the SQL database.
+ * Class enables interaction with SQL database. It provides various methods
+ * manipulating the database tables and getting data from that database.
  */
 public class DbQueryService {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -70,12 +71,13 @@ public class DbQueryService {
     }
 
     /**
-     * Saves search to the database and associates a report with it.
+     * Creates a cached version of the query by storing it in the SQL database
+     * under a unique hash key. A report is also saved to the database and
+     * associated to the query.
      *
-     * @param search - The search instance
-     * @param report - The report to be saved and associated to the search
+     * @param search - The search instance containing the query to be saved
+     * @param report - The report to be saved and associated with the query
      */
-    // TODO: add reports, create relationships; Accept DAO classes instead of DTO and use a mapper to convert them
     public void cacheQuery(Search search, DataReport report) {
         LOGGER.info("Saving search " + search.getQuery().hashCode() + "; limit: " + search.getLimit() + "; page: " + search.getPage());
         try {
@@ -110,7 +112,8 @@ public class DbQueryService {
     }
 
     /**
-     * Invalidates the existing database cache.
+     * Invalidates the existing database cache by removing everything
+     * from report and query tables.
      */
     public void invalidateCache() {
         try {
@@ -153,7 +156,7 @@ public class DbQueryService {
 
             List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(search.getQuery(), search.getPage(), search.getLimit()));
             if (reportDtoList == null || reportDtoList.isEmpty()) {
-                DataSourceUtils.closeCurrent();
+                DataSourceUtils.close();
                 return null;
             }
 
@@ -166,7 +169,7 @@ public class DbQueryService {
                 e.printStackTrace();
             }
 
-            DataSourceUtils.closeCurrent();
+            DataSourceUtils.close();
 
         } catch (SQLException e) {
             e.printStackTrace();

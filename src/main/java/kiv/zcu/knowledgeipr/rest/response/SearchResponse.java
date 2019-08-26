@@ -4,25 +4,38 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import kiv.zcu.knowledgeipr.core.report.DataReport;
 
 /**
- * Holds the data for the response
+ * Holds the data for the response to the user's search request.
  */
-public class StandardResponse {
+public class SearchResponse {
+    /**
+     * Description text of the response
+     */
+    private String msg;
+
     /**
      * Status of the response. OK or ERROR
      */
-    private String msg;
     private StatusResponse status;
-    private int requestTime;
-    private int searchedCount;
-    private int count;
-    private int page;
 
-    private String summary;
+    /**
+     * Number of searched documents
+     */
+    private int searchedCount;
+
+    /**
+     * Number of returned results
+     */
+    private int count;
+
+    /**
+     * Page number of the results
+     */
+    private int page;
 
     @JsonProperty("report")
     private DataReport report;
 
-    public StandardResponse(StatusResponse status, String msg, DataReport report) {
+    public SearchResponse(StatusResponse status, String msg, DataReport report) {
         this.msg = msg;
         this.status = status;
         this.report = report;
@@ -40,10 +53,6 @@ public class StandardResponse {
         return report;
     }
 
-    public void setRequestTime(int requestTime) {
-        this.requestTime = requestTime;
-    }
-
     public void setSearchedCount(int searchedCount) {
         this.searchedCount = searchedCount;
     }
@@ -54,9 +63,5 @@ public class StandardResponse {
 
     public void setPage(int page) {
         this.page = page;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
     }
 }

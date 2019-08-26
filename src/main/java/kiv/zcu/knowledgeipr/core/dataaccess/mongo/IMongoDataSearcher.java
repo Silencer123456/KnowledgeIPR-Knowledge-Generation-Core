@@ -23,6 +23,8 @@ public interface IMongoDataSearcher extends IDataSearcher {
      * If no results are returned after the timeout, the second more thorough search is run with user
      * specified timeout.
      *
+     * Returns empty list if
+     *
      * @param query - knowledgeipr.Query to be run
      * @param page  - Page to return
      * @param limit - Limit of the returned results

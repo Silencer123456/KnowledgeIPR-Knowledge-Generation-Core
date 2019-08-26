@@ -1,7 +1,6 @@
 package kiv.zcu.knowledgeipr.rest.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
 import kiv.zcu.knowledgeipr.core.dataaccess.ResponseField;
@@ -14,7 +13,7 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.rest.errorhandling.QueryOptionsValidationException;
 import kiv.zcu.knowledgeipr.rest.response.BaseResponse;
-import kiv.zcu.knowledgeipr.rest.response.StandardResponse;
+import kiv.zcu.knowledgeipr.rest.response.SearchResponse;
 import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
 import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
 
@@ -51,7 +50,7 @@ public class SearchRestService {
     @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response search(@QueryParam("page") int page, String queryJson) throws ApiException {
+    public javax.ws.rs.core.Response search(@QueryParam("page") int page, String queryJson) throws ApiException, ObjectSerializationException {
         isPageValid(page);
 
         Query query;
@@ -81,7 +80,7 @@ public class SearchRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response ownersSearch(@QueryParam("page") int page,
                                                   @QueryParam("owner") String ownerName,
-                                                  @QueryParam("year") int year) throws ApiException {
+                                                  @QueryParam("year") int year) throws ApiException, ObjectSerializationException {
         isPageValid(page);
 
         Map<String, String> filters = new HashMap<>();
@@ -124,7 +123,7 @@ public class SearchRestService {
     @Path("/limited/{limit}")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response queryWithLimit(@PathParam("limit") int limit, String queryJson) throws ApiException {
+    public javax.ws.rs.core.Response queryWithLimit(@PathParam("limit") int limit, String queryJson) throws ApiException, ObjectSerializationException {
         if (limit > 1000) {
             throw new ApiException("Limit cannot exceed 1000");
         }
@@ -138,11 +137,11 @@ public class SearchRestService {
             throw new ApiException(e.getMessage());
         }
 
-        StandardResponse standardResponse = dataAccessController.search(searchStrategy,
+        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
                 new Search(query, 1, limit, true)
         );
 
-        return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }
 
     /**
@@ -153,16 +152,16 @@ public class SearchRestService {
      * @return Formatted response containing the serialized report as json
      * @throws ApiException
      */
-    private javax.ws.rs.core.Response processQueryInit(Query query, int page, boolean advancedSearch) throws ApiException {
+    private javax.ws.rs.core.Response processQueryInit(Query query, int page, boolean advancedSearch) throws ApiException, ObjectSerializationException {
         if (query.getFilters() == null || query.getFilters().isEmpty() || query.getSourceType() == null) {
             throw new ApiException("Wrong search format.");
         }
 
         int limit = 20;
-        StandardResponse standardResponse = dataAccessController.search(searchStrategy,
+        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
                 new Search(query, page, limit, advancedSearch));
 
-        return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(standardResponse)).build();
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }
 
     /**

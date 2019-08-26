@@ -8,7 +8,6 @@ import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Provides implementation of the searching process using a category search strategy in the MONGO database.
@@ -35,17 +34,27 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
 
         // TODO: Count for the case when there are more than 20 confirmed records - more pages
         List<DbRecord> records = new ArrayList<>();
+
+        List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
         if (search.isFirstPage()) { // Get confirmed only if the first page is requested
-            List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
             if (!referenceDtos.isEmpty()) {
                 records = dataSearcher.searchByReferences(referenceDtos);
             }
         }
 
-        // TODO:  Ensure there are no duplicate records
         if (records.size() < search.getLimit()) {
-            List<DbRecord> searchedRecords = dataSearcher.runSearchAdvanced(search.getQuery(), search.getPage(), search.getLimit() - records.size()); // Search the rest in Mongo
-            Optional.ofNullable(searchedRecords).ifPresent(records::addAll);
+            List<DbRecord> searchedRecords = dataSearcher.runSearchAdvanced(search.getQuery(), search.getPage(), search.getLimit());
+
+            // remove records already found in confirmed results in db
+            searchedRecords.removeAll(records);
+
+            // Add searched documents after the confirmed ones, but only until the specified limit is reached
+            for (DbRecord record : searchedRecords) {
+                if (records.size() >= search.getLimit()) {
+                    break;
+                }
+                records.add(record);
+            }
         }
 
         report = new DataReport(records);
