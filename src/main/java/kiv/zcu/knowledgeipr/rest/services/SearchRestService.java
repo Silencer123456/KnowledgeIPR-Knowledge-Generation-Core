@@ -101,6 +101,31 @@ public class SearchRestService {
         return processQueryInit(query, page, false);
     }
 
+    /**
+     * Fetches patent data about a specified patent number.
+     *
+     * @param patentNumber - The number of the patent
+     * @return response with patent data with the specified patent number
+     * @throws ApiException
+     * @throws ObjectSerializationException
+     */
+    @POST
+    @Path("/number")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response patentNumberSearch(@QueryParam("number") String patentNumber) throws ApiException, ObjectSerializationException {
+        Map<String, String> filters = new HashMap<>();
+        filters.put(ResponseField.DOCUMENT_ID.value, patentNumber);
+        Map<String, Map<String, Integer>> conditions = new HashMap<>();
+
+        Map<String, Object> options = new HashMap<>();
+        options.put("timeout", 50);
+
+        Query query = new Query(DataSourceType.PATENT.value, filters, conditions, options);
+
+        return processQueryInit(query, 1, false);
+    }
+
     @GET
     @Path("/synonyms/{word}")
     @Produces("application/json")
