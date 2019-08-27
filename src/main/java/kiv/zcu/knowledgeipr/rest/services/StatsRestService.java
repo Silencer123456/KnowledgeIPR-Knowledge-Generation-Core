@@ -23,6 +23,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/activeAuthorsPatents")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ObjectSerializationException {
@@ -34,6 +35,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/activeOwnersPatents")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveOwnersPatents() throws ObjectSerializationException {
@@ -56,6 +58,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/countsByFos")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByFosPublications() throws ObjectSerializationException {
@@ -69,6 +72,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/prolificPublishers")
     @Produces("application/json")
     public javax.ws.rs.core.Response getProlificPublishers() throws ObjectSerializationException {
@@ -82,6 +86,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/prolificVenues")
     @Produces("application/json")
     public javax.ws.rs.core.Response getProlificVenues() throws ObjectSerializationException {
@@ -95,6 +100,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/countsByKeywords")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountByKeywords() throws ObjectSerializationException {
@@ -108,6 +114,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/countsByYearPublications")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByYearPublications() throws ObjectSerializationException {
@@ -121,6 +128,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/countsByLang")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByLangPublication() throws ObjectSerializationException {
@@ -134,6 +142,7 @@ public class StatsRestService {
     }
 
     @GET
+    @Logged
     @Path("/patentOwnershipEvolution/{owner}/{category}")
     @Produces("application/json")
     public javax.ws.rs.core.Response getPatentOwnershipEvolution(@PathParam("owner") String ownersName,
@@ -151,6 +160,7 @@ public class StatsRestService {
     }
 
     @POST
+    @Logged
     @Path("/generateStats/{overwrite}")
     public javax.ws.rs.core.Response generateStats(@PathParam("overwrite") boolean overwrite) throws ObjectSerializationException {
         // Active author patents

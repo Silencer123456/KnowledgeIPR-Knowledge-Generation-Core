@@ -2,11 +2,13 @@ package kiv.zcu.knowledgeipr.core.search.category.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import kiv.zcu.knowledgeipr.core.search.category.tree.TreeNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -14,7 +16,9 @@ import java.util.logging.Logger;
  * the filesystem.
  */
 public class JsonCategoryTreeReader implements ICategoryTreeReader {
-    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
     private String json;
@@ -43,10 +47,12 @@ public class JsonCategoryTreeReader implements ICategoryTreeReader {
      */
     @Override
     public TreeNode<Category> read() throws CategoryReadException {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode json = objectMapper.readTree(this.json);
-            TreeNode<Category> treeRoot = new TreeNode<>(new Category(json.get("name").textValue()));
+
+            Category category = new Category(json.get("name").textValue(), extractKeywords(json));
+
+            TreeNode<Category> treeRoot = new TreeNode<>(category);
 
             readTree(json, treeRoot);
 
@@ -64,12 +70,16 @@ public class JsonCategoryTreeReader implements ICategoryTreeReader {
      * @param jsonNode - Json node to process
      * @return - TreeNode instance
      */
-    private void readTree(JsonNode jsonNode, TreeNode<Category> treeNode) {
+    private void readTree(JsonNode jsonNode, TreeNode<Category> treeNode) throws IOException {
         JsonNode children = jsonNode.get("children"); // Must be an array
         for (JsonNode child : children) {
             String categoryName = child.get("name").textValue();
-            TreeNode<Category> childNode = treeNode.addChild(new Category(categoryName));
+            TreeNode<Category> childNode = treeNode.addChild(new Category(categoryName, extractKeywords(child)));
             readTree(child, childNode);
         }
+    }
+
+    private List<String> extractKeywords(JsonNode json) throws IOException {
+        return objectMapper.readValue(json.get("keywords").toString(), TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
     }
 }

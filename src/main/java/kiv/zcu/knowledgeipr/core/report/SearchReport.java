@@ -20,6 +20,7 @@ public class SearchReport {
             //TODO: Removes the id field from the document so it is not returned back to the user. !!! TMP solution
             record.getDocument().remove("_id");
         }
+
         this.records = records;
 //        for (MongoRecord dbRecord : records) {
         // TODO: make generic to patents or publications...
@@ -31,7 +32,6 @@ public class SearchReport {
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
-//
 //
 //            String number = dbRecord.getDocument().getString(ResponseField.DOCUMENT_ID.value);
 //            String title = dbRecord.getDocument().getString(ResponseField.TITLE.value);

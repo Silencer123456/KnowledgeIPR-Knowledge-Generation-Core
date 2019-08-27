@@ -57,11 +57,6 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
             }
         }
 
-        for (MongoRecord record : records) {
-            //TODO: Removes the id field from the document so it is not returned back to the user. !!! TMP solution
-            record.getDocument().remove("_id");
-        }
-
         report = new SearchReport(records);
         cacheSearch(search, report);
 

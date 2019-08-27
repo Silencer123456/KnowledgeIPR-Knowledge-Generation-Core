@@ -28,7 +28,7 @@ public class CategoryRestService {
 
     private SearchStrategy<CategorySearch, IMongoDataSearcher> searchStrategy;
 
-    public CategoryRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
+    public CategoryRestService(DataAccessController dataAccessController, SearchStrategy<CategorySearch, IMongoDataSearcher> searchStrategy) {
         this.dataAccessController = dataAccessController;
 
         this.searchStrategy = searchStrategy;
@@ -37,14 +37,15 @@ public class CategoryRestService {
     private CategoryHandler categories = new CategoryHandler();
 
     /**
-     * Returns a set of results by a category name.
+     * Returns a set of patent  by a category name.
      * Does a search of the database for the specified text.
      *
      * @param categoryName - Name of the category
      * @return
-     * @throws ApiException If the category name is not valid, an errorhandling is thrown
+     * @throws ApiException If the category name is not valid, an error is thrown
      */
     @GET
+    @Logged
     @Path("/get/{categoryName}/{page}")
     @Produces("application/json")
     public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName, @PathParam("page") int page) throws ApiException {
@@ -73,6 +74,7 @@ public class CategoryRestService {
      * @throws ObjectSerializationException If the response cannot be serialized
      */
     @GET
+    @Logged
     @Path("/tree")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCategoryTree(@QueryParam("level") int treeLevel) throws ObjectSerializationException {
@@ -95,6 +97,7 @@ public class CategoryRestService {
      * @throws ObjectSerializationException If the response cannot be serialized
      */
     @GET
+    @Logged
     @Path("/tree/plaintext")
     public javax.ws.rs.core.Response getCategoryTreeFromNameAsPlaintext(@QueryParam("name") String categoryName) {
         String treeString = categories.getSubtreeAsString(categoryName);
@@ -103,6 +106,7 @@ public class CategoryRestService {
     }
 
     @GET
+    @Logged
     @Path("/tree/json")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCategoryTreeFromNameAsJson(@QueryParam("name") String categoryName) throws ObjectSerializationException {

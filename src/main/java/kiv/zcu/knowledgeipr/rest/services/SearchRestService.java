@@ -26,6 +26,7 @@ import java.util.Map;
  * Service for handling incoming REST requests
  */
 // todo: Create parent class containing common fields
+@Logged
 @Path("/search/")
 public class SearchRestService {
 
@@ -47,6 +48,7 @@ public class SearchRestService {
      * @throws ApiException - In case of user api errors
      */
     @POST
+    @Logged
     @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
@@ -75,6 +77,7 @@ public class SearchRestService {
      * @throws ApiException
      */
     @POST
+    @Logged
     @Path("/owners")
     @Consumes("application/json")
     @Produces("application/json")
@@ -110,6 +113,7 @@ public class SearchRestService {
      * @throws ObjectSerializationException
      */
     @POST
+    @Logged
     @Path("/number")
     @Consumes("application/json")
     @Produces("application/json")
@@ -127,6 +131,7 @@ public class SearchRestService {
     }
 
     @GET
+    @Logged
     @Path("/synonyms/{word}")
     @Produces("application/json")
     public javax.ws.rs.core.Response getSynonymsForWord(@PathParam("word") String word) throws ObjectSerializationException {
@@ -136,6 +141,7 @@ public class SearchRestService {
     }
 
     @POST
+    @Logged
     @Path("/invalidateCache")
     @Produces("application/json")
     public javax.ws.rs.core.Response invalidateCache() throws ObjectSerializationException {
@@ -145,6 +151,7 @@ public class SearchRestService {
     }
 
     @POST
+    @Logged
     @Path("/limited/{limit}")
     @Consumes("application/json")
     @Produces("application/json")

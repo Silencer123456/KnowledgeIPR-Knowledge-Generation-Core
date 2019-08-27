@@ -17,8 +17,9 @@ public class Category {
     public Category(String name, List<String> keywords) {
         this.name = name;
         this.keywords = keywords;
-
-        this.keywords.add(name);
+        if (!keywords.contains(name)) {
+            this.keywords.add(name);
+        }
     }
 
     public Category(String name) {
