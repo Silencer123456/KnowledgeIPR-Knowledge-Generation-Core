@@ -1,18 +1,21 @@
 package kiv.zcu.knowledgeipr.app;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.ApiExceptionHandler;
+import kiv.zcu.knowledgeipr.api.errorhandling.GenericExceptionHandler;
+import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationExceptionHandler;
+import kiv.zcu.knowledgeipr.api.filter.RequestLoggingFilter;
+import kiv.zcu.knowledgeipr.api.services.CategoryRestService;
+import kiv.zcu.knowledgeipr.api.services.DataRestService;
+import kiv.zcu.knowledgeipr.api.services.SearchRestService;
+import kiv.zcu.knowledgeipr.api.services.StatsRestService;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.*;
-import kiv.zcu.knowledgeipr.core.database.service.DbQueryService;
-import kiv.zcu.knowledgeipr.core.search.CategorySearch;
+import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
+import kiv.zcu.knowledgeipr.core.model.report.FileRepository;
+import kiv.zcu.knowledgeipr.core.model.report.ReportHandler;
+import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.*;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
-import kiv.zcu.knowledgeipr.rest.errorhandling.ApiExceptionHandler;
-import kiv.zcu.knowledgeipr.rest.errorhandling.GenericExceptionHandler;
-import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationExceptionHandler;
-import kiv.zcu.knowledgeipr.rest.filter.RequestLoggingFilter;
-import kiv.zcu.knowledgeipr.rest.services.CategoryRestService;
-import kiv.zcu.knowledgeipr.rest.services.DataRestService;
-import kiv.zcu.knowledgeipr.rest.services.SearchRestService;
-import kiv.zcu.knowledgeipr.rest.services.StatsRestService;
 
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -38,7 +41,7 @@ public class AppRunner extends Application {
         SearchStrategy<CategorySearch, IMongoDataSearcher> categorySearchStrategy = new CategorySearchStrategy(dataSearcher, dbQueryService);
         SearchStrategy defaultSearchStrategy = new DefaultSearchStrategy(dataSearcher, dbQueryService);
 
-        DataAccessController reportGenerator = new DataAccessController();
+        DataAccessController reportGenerator = new DataAccessController(new MongoQueryRunner(), new ReportHandler(new FileRepository()));
 
         singletons.add(new SearchRestService(reportGenerator, defaultSearchStrategy));
         singletons.add(new StatsRestService(reportGenerator));
