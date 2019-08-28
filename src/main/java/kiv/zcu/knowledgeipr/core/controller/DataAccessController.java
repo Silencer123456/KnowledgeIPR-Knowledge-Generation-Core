@@ -5,24 +5,22 @@ import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
-import kiv.zcu.knowledgeipr.core.dataaccess.DataSourceType;
-import kiv.zcu.knowledgeipr.core.dataaccess.IDataSearcher;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.IQueryRunner;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.MongoQueryRunner;
-import kiv.zcu.knowledgeipr.core.dataaccess.mongo.SearchStrategy;
-import kiv.zcu.knowledgeipr.core.report.ChartReport;
-import kiv.zcu.knowledgeipr.core.report.FileRepository;
-import kiv.zcu.knowledgeipr.core.report.ReportCreator;
-import kiv.zcu.knowledgeipr.core.report.SearchReport;
-import kiv.zcu.knowledgeipr.core.search.ChartQuery;
-import kiv.zcu.knowledgeipr.core.search.Search;
-import kiv.zcu.knowledgeipr.core.utils.SerializationUtils;
-import kiv.zcu.knowledgeipr.rest.errorhandling.ObjectSerializationException;
-import kiv.zcu.knowledgeipr.rest.errorhandling.UserQueryException;
-import kiv.zcu.knowledgeipr.rest.response.ChartResponse;
-import kiv.zcu.knowledgeipr.rest.response.SearchResponse;
-import kiv.zcu.knowledgeipr.rest.response.StatusResponse;
-import kiv.zcu.knowledgeipr.rest.response.WordNetResponse;
+import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
+import kiv.zcu.knowledgeipr.api.response.ChartResponse;
+import kiv.zcu.knowledgeipr.api.response.SearchResponse;
+import kiv.zcu.knowledgeipr.api.response.StatusResponse;
+import kiv.zcu.knowledgeipr.api.response.WordNetResponse;
+import kiv.zcu.knowledgeipr.core.model.report.ChartReport;
+import kiv.zcu.knowledgeipr.core.model.report.ReportHandler;
+import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
+import kiv.zcu.knowledgeipr.core.model.search.ChartQuery;
+import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
+import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +39,7 @@ public class DataAccessController {
     /**
      * Instantiates reports instances
      */
-    private ReportCreator reportCreator;
+    private ReportHandler reportHandler;
 
     /**
      * Provides methods for running concrete queries on the target database
@@ -50,9 +48,9 @@ public class DataAccessController {
 
     //private TextSummarizer summarizer;
 
-    public DataAccessController() {
-        reportCreator = new ReportCreator(new FileRepository());
-        queryRunner = new MongoQueryRunner();
+    public DataAccessController(IQueryRunner queryRunner, ReportHandler reportHandler) {
+        this.reportHandler = reportHandler;
+        this.queryRunner = queryRunner;
         //summarizer = new TextSummarizer();
     }
 
@@ -104,7 +102,7 @@ public class DataAccessController {
      */
     public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName, boolean overwrite)
             throws ObjectSerializationException {
-        JsonNode cachedReport = reportCreator.loadReportToJsonFromFile(collectionName + "\\" + filename);
+        JsonNode cachedReport = reportHandler.loadReportToJsonFromFile(collectionName + "\\" + filename);
         if (cachedReport != null && !overwrite) {
             LOGGER.info("Cached report found for " + filename);
             return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
@@ -113,7 +111,7 @@ public class DataAccessController {
         LOGGER.info("Querying database for: " + chartQuery.getTitle());
 
         List<Pair<T, V>> list = chartQuery.get();
-        ChartReport<T, V> report = reportCreator.createChartReport(chartQuery.getTitle(), chartQuery.getxLabel(), chartQuery.getyLabel(), list);
+        ChartReport<T, V> report = reportHandler.createChartReport(chartQuery.getTitle(), chartQuery.getxLabel(), chartQuery.getyLabel(), list);
 
         report.save(collectionName + "\\" + filename);
 
