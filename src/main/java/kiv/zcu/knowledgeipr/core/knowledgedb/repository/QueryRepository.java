@@ -3,31 +3,18 @@ package kiv.zcu.knowledgeipr.core.knowledgedb.repository;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dbconnection.DataSourceUtils;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.QueryDto;
 import kiv.zcu.knowledgeipr.core.knowledgedb.specification.Specification;
-import kiv.zcu.knowledgeipr.core.knowledgedb.specification.SqlQuery;
-import kiv.zcu.knowledgeipr.core.knowledgedb.specification.SqlSpecification;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class QueryRepository implements IRepository<QueryDto> {
+public class QueryRepository extends BasicRepository<QueryDto> {
 
-    private static final String QUERY_TABLE_NAME = "query";
-
-    private QueryRunner runner;
+    private static final String TABLE_NAME = "query";
 
     public QueryRepository() {
-        runner = new QueryRunner();
-    }
-
-    @Override
-    public long add(QueryDto item) {
-        return add(Collections.singletonList(item));
+        super(TABLE_NAME);
     }
 
     @Override
@@ -36,7 +23,7 @@ public class QueryRepository implements IRepository<QueryDto> {
 
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
-        String insertQuery = "INSERT INTO " + QUERY_TABLE_NAME + " (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
+        String insertQuery = "INSERT INTO " + TABLE_NAME + " (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
         try {
             final Connection connection = DataSourceUtils.getConnection();
 
@@ -68,38 +55,12 @@ public class QueryRepository implements IRepository<QueryDto> {
     }
 
     @Override
-    public void removeAll() {
-        String query = "DELETE FROM " + QUERY_TABLE_NAME;
-        try {
-            final Connection connection = DataSourceUtils.getConnection();
-            runner.update(connection, query);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public QueryDto getById(int id) {
         return null;
     }
 
     @Override
     public List<QueryDto> query(Specification specification) {
-        final SqlSpecification sqlSpecification = (SqlSpecification) specification;
-
-        BeanListHandler<QueryDto> beanListHandler
-                = new BeanListHandler<>(QueryDto.class);
-
-        SqlQuery sqlQuery = sqlSpecification.toSqlQuery();
-
-        List<QueryDto> queriesList = new ArrayList<>();
-        try {
-            final Connection connection = DataSourceUtils.getConnection();
-            queriesList = runner.query(connection, sqlQuery.getQueryText(), beanListHandler, sqlQuery.getParameters().toArray());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return queriesList;
+        return queryGeneric(specification, QueryDto.class);
     }
 }

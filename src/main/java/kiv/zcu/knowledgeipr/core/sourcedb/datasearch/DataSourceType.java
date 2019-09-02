@@ -5,7 +5,7 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch;
  */
 public enum DataSourceType {
 
-    PUBLICATION("publication"),
+    PUBLICATION("test2"),
     PATENT("patent");
 
     public final String value;

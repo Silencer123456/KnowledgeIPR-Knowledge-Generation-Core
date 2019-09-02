@@ -22,6 +22,9 @@ public interface IRepository<T> {
 
     void remove(Specification specification);
 
+    /**
+     * Removes all data from the table in database
+     */
     void removeAll();
 
     T getById(int id);

@@ -60,6 +60,7 @@ public class Query {
     @Override
     public int hashCode() {
         int result = 17;
+        result = 31 * result + sourceType.hashCode();
         if (filters != null) {
             result = 31 * result + filters.hashCode();
         }

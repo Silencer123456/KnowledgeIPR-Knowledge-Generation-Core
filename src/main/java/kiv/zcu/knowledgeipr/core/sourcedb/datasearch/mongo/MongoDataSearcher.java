@@ -118,7 +118,11 @@ public class MongoDataSearcher implements IMongoDataSearcher {
      */
     private void isValidSourceType(String sourceType) throws UserQueryException {
         if (!DataSourceType.containsField(sourceType)) {
-            throw new UserQueryException("Unknown data source type: " + sourceType + ". Only 'patent' and 'publication' allowed");
+            StringBuilder sb = new StringBuilder();
+            for (DataSourceType type : DataSourceType.values()) {
+                sb.append("'").append(type.value).append("'").append(", ");
+            }
+            throw new UserQueryException("Unknown data source type: " + sourceType + ". Only " + sb.substring(0, sb.toString().length() - 2) + " allowed.");
         }
     }
 
