@@ -1,6 +1,6 @@
 package kiv.zcu.knowledgeipr.api.errorhandling;
 
-import com.google.gson.Gson;
+import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -16,10 +16,17 @@ abstract class BaseExceptionHandler<T extends Throwable> implements ExceptionMap
         errorMessage.setMessage(message);
         //StringWriter errorStackTrace = new StringWriter();
         //ex.printStackTrace(new PrintWriter(errorStackTrace));
+        String content;
+        try {
+            content = SerializationUtils.serializeObject(errorMessage);
+        } catch (ObjectSerializationException e) {
+            content = e.getMessage();
+        }
 
         return Response.status(errorMessage.getStatus())
-                .entity(new Gson().toJson(errorMessage))
+                .entity(content)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
+
     }
 }

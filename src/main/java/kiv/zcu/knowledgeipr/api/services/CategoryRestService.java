@@ -1,7 +1,6 @@
 package kiv.zcu.knowledgeipr.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import kiv.zcu.knowledgeipr.api.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.api.filter.Logged;
@@ -15,6 +14,7 @@ import kiv.zcu.knowledgeipr.core.model.search.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
+import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -49,7 +49,8 @@ public class CategoryRestService {
     @Logged
     @Path("/get/{categoryName}/{page}")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName, @PathParam("page") int page) throws ApiException {
+    public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName, @PathParam("page") int page)
+            throws ApiException, ObjectSerializationException {
         if (!categories.containsCategory(categoryName)) {
             throw new ApiException("Wrong category name.");
         }
@@ -64,7 +65,7 @@ public class CategoryRestService {
         SearchResponse searchResponse = dataAccessController.search(searchStrategy,
                 new CategorySearch(query, page, 20, true, category.data.getName()));
 
-        return javax.ws.rs.core.Response.ok().entity(new Gson().toJson(searchResponse)).build();
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }
 
     /**

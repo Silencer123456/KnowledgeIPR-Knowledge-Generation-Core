@@ -1,6 +1,5 @@
 package kiv.zcu.knowledgeipr.api.errorhandling;
 
-import com.google.gson.Gson;
 import com.mongodb.MongoCommandException;
 
 import javax.ws.rs.core.Response;
@@ -13,6 +12,8 @@ public class MongoExceptionHandler implements ExceptionMapper<MongoCommandExcept
     @Override
     public Response toResponse(MongoCommandException e) {
         String response = e.getMessage();
-        return Response.serverError().entity(new Gson().toJson(response)).build();
+
+
+        return Response.serverError().entity(response).build();
     }
 }

@@ -2,10 +2,12 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch;
 
 /**
  * Enumeration specifying the types of data stored
+ * Changing the names of the collections is not recommended, some functions will not work properly
  */
 public enum DataSourceType {
 
-    PUBLICATION("test2"),
+    PUBLICATION("publication"),
+    TEST("test2"),
     PATENT("patent");
 
     public final String value;
