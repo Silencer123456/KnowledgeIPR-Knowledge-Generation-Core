@@ -1,7 +1,7 @@
 package kiv.zcu.knowledgeipr.core.model.search;
 
 /**
- * Represents an instance of a single search, including the search to be run
+ * Represents an instance of a single search, including the query to be run
  * and other information about the search.
  */
 public class Search {

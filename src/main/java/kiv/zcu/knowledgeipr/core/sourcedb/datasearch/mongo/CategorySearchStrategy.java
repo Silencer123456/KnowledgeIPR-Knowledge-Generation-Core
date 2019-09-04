@@ -8,6 +8,7 @@ import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,10 +38,9 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
         List<MongoRecord> records = new ArrayList<>();
 
         List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
-        if (search.isFirstPage()) { // Get confirmed only if the first page is requested
-            if (!referenceDtos.isEmpty()) {
-                records = dataSearcher.searchByReferences(referenceDtos);
-            }
+        referenceDtos = getReferencesListFromRange(referenceDtos, search.getPage(), search.getLimit());
+        if (!referenceDtos.isEmpty()) {
+            records = dataSearcher.searchByReferences(referenceDtos);
         }
 
         if (records.size() < search.getLimit()) {
@@ -62,5 +62,23 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
         cacheSearch(search, report);
 
         return report;
+    }
+
+    /**
+     * Returns a list of references from a specified range, indicated by page and limit parameters
+     *
+     * @param referenceDtos - The original list from which to extract a new list in range
+     * @param page          - The starting number of the range
+     * @param limit         - The size of the range
+     * @return List constructed from the original references list containing only the elements from the calculated range
+     */
+    private List<ReferenceDto> getReferencesListFromRange(List<ReferenceDto> referenceDtos, int page, int limit) {
+        int beginIndex = (page - 1) * limit;
+        int endIndex = beginIndex + limit;
+        if (referenceDtos.size() < beginIndex) {
+            return Collections.emptyList();
+        }
+
+        return referenceDtos.subList(beginIndex, Math.min(referenceDtos.size(), endIndex));
     }
 }
