@@ -1,28 +1,20 @@
 package kiv.zcu.knowledgeipr.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import kiv.zcu.knowledgeipr.analysis.wordnet.AnalyzedWord;
 
 import java.util.List;
 
 public class WordNetResponse {
 
-    @JsonProperty("synonyms")
-    private List<String> synonyms;
+    @JsonProperty("analysis")
+    private List<AnalyzedWord> synonyms;
 
-    @JsonProperty("hypernyms")
-    private List<String> hypernyms;
-
-
-    public WordNetResponse(List<String> synonyms, List<String> hypernyms) {
-        this.synonyms = synonyms;
-        this.hypernyms = hypernyms;
+    public WordNetResponse(List<AnalyzedWord> words) {
+        this.synonyms = words;
     }
 
-    public List<String> getSynonyms() {
+    public List<AnalyzedWord> getSynonyms() {
         return synonyms;
-    }
-
-    public List<String> getHypernyms() {
-        return hypernyms;
     }
 }

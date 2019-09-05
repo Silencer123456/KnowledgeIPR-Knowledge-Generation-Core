@@ -141,6 +141,36 @@ public class SearchRestService {
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
 
+    @GET
+    @Logged
+    @Path("/hypernyms/{word}")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getHypernymsForWord(@PathParam("word") String word) throws ObjectSerializationException {
+        WordNetResponse response = dataAccessController.getHypernyms(word);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Logged
+    @Path("/hyponyms/{word}")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getHyponymsForWord(@PathParam("word") String word) throws ObjectSerializationException {
+        WordNetResponse response = dataAccessController.getHyponyms(word);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Logged
+    @Path("/antonyms/{word}")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getAntonymsForWord(@PathParam("word") String word) throws ObjectSerializationException {
+        WordNetResponse response = dataAccessController.getAntonyms(word);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
     @POST
     @Logged
     @Path("/invalidateCache")

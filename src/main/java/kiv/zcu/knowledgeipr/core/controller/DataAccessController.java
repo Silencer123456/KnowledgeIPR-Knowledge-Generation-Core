@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.analysis.wordnet.AnalyzedWord;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
@@ -129,9 +130,23 @@ public class DataAccessController {
     }
 
     public WordNetResponse getSynonyms(String word) {
-        List<String> synonyms = WordNet.getInstance().getSynonymsForWord(word);
-        List<String> hypernyms = WordNet.getInstance().getHypernymsForWord(word);
-        return new WordNetResponse(synonyms, hypernyms);
+        List<AnalyzedWord> synonyms = WordNet.getInstance().getSynonymsForWord(word);
+        return new WordNetResponse(synonyms);
+    }
+
+    public WordNetResponse getHypernyms(String word) {
+        List<AnalyzedWord> hypernyms = WordNet.getInstance().getHypernymsForWord(word);
+        return new WordNetResponse(hypernyms);
+    }
+
+    public WordNetResponse getHyponyms(String word) {
+        List<AnalyzedWord> hyponyms = WordNet.getInstance().getHyponymsForWord(word);
+        return new WordNetResponse(hyponyms);
+    }
+
+    public WordNetResponse getAntonyms(String word) {
+        List<AnalyzedWord> antonyms = WordNet.getInstance().getAntonymsForWord(word);
+        return new WordNetResponse(antonyms);
     }
 
     // TODO: Temp solution
