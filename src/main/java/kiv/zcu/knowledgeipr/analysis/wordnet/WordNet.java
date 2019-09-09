@@ -161,7 +161,18 @@ public class WordNet {
 
     private List<Synset> getWordSenses(String word) throws JWNLException {
         IndexWord indexWord = dictionary.getIndexWord(POS.NOUN, word);
-        if (indexWord == null) return Collections.emptyList();
+        if (indexWord == null) {
+            indexWord = dictionary.getIndexWord(POS.VERB, word);
+            if (indexWord == null) {
+                indexWord = dictionary.getIndexWord(POS.ADJECTIVE, word);
+                if (indexWord == null) {
+                    indexWord = dictionary.getIndexWord(POS.ADVERB, word);
+                    if (indexWord == null) {
+                        return Collections.emptyList();
+                    }
+                }
+            }
+        }
 
         return indexWord.getSenses();
     }
