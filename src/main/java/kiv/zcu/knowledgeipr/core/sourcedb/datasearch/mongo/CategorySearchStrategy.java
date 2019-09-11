@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
@@ -28,7 +29,7 @@ public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMong
      * The rest of the results are retrieved by regular search.
      */
     @Override
-    public MongoSearchReport search(CategorySearch search) throws UserQueryException {
+    public MongoSearchReport search(CategorySearch search) throws UserQueryException, QueryExecutionException {
         MongoSearchReport report = (MongoSearchReport) queryService.getCachedReport(search, MongoSearchReport.class);
         if (report != null) {
             return report;

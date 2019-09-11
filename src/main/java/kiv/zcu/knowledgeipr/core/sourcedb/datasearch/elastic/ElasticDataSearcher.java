@@ -13,6 +13,8 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ElasticDataSearcher implements IElasticDataSearcher {
@@ -29,7 +31,9 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     }
 
     @Override
-    public void searchData(Query query) {
+    public List<ElasticRecord> searchData(Query query) {
+
+        List<ElasticRecord> records = new ArrayList<>();
 
         // MatchAll search
         SearchRequest searchRequest = new SearchRequest("knowingipr.patent");
@@ -44,12 +48,14 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
             SearchHit[] searchHits = hits.getHits();
             for (SearchHit hit : searchHits) {
                 Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+                records.add(new ElasticRecord(sourceAsMap)); // TODO: move to separate query runner class
             }
-
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return records;
 
 //        GetRequest getRequest = new GetRequest("knowingipr.patent", "5d2dc2795c81a41214c5e362");
 //

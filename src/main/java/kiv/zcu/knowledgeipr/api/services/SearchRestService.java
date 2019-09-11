@@ -14,8 +14,8 @@ import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
@@ -33,9 +33,10 @@ public class SearchRestService {
 
     private DataAccessController dataAccessController;
 
-    private SearchStrategy<Search, IMongoDataSearcher> searchStrategy;
+    //TODO: change that generic parameter can be changed dynamically
+    private SearchStrategy<Search, IElasticDataSearcher> searchStrategy;
 
-    public SearchRestService(DataAccessController dataAccessController, SearchStrategy<Search, IMongoDataSearcher> searchStrategy) {
+    public SearchRestService(DataAccessController dataAccessController, SearchStrategy<Search, IElasticDataSearcher> searchStrategy) {
         this.dataAccessController = dataAccessController;
         this.searchStrategy = searchStrategy;
     }
