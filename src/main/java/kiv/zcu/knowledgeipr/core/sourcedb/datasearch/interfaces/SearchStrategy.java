@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
@@ -36,14 +37,14 @@ public abstract class SearchStrategy<T extends Search, V extends IDataSearcher> 
      * @return Created report from the retrieved results
      * @throws UserQueryException - In case the search is malformed
      */
-    public abstract SearchReport search(T search) throws UserQueryException;
+    public abstract SearchReport search(T search) throws UserQueryException, QueryExecutionException;
 
     /**
      * Saves the data report along with the search to the database to be used as cache,
      * so that next time the same search is performed, it is fetched from the database.
      *
      * @param search     - The Search instance to be saved to the database
-     * @param searchReport - The SearchReport instance to be saved to the database with the search
+     * @param searchReport - The MongoSearchReport instance to be saved to the database with the search
      */
     protected void cacheSearch(T search, SearchReport searchReport) {
         queryService.cacheQuery(search, searchReport);

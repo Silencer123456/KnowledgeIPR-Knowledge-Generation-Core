@@ -1,7 +1,6 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo;
 
-import com.mongodb.MongoExecutionTimeoutException;
-import com.mongodb.MongoQueryException;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
@@ -30,7 +29,7 @@ public interface IMongoDataSearcher extends IDataSearcher {
      * @param limit - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.MongoRecord</code> instances.
      */
-    List<MongoRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException;
+    List<MongoRecord> runSearchAdvanced(Query query, int page, final int limit) throws UserQueryException, QueryExecutionException;
 
     /**
      * Runs a simple search on the MongoDB database. The simple search consists of a single search
@@ -40,11 +39,9 @@ public interface IMongoDataSearcher extends IDataSearcher {
      * @param page  - Page to return
      * @param limit - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.MongoRecord</code> instances.
-     * @throws MongoQueryException            - If there is a problem with a search execution
      * @throws UserQueryException             - If the user search is not in correct format
-     * @throws MongoExecutionTimeoutException - If the timeout is reached without no results returned
      */
-    List<MongoRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException;
+    List<MongoRecord> runSearchSimple(Query query, int page, final int limit) throws UserQueryException, QueryExecutionException;
 
     /**
      * Searches for document records identified by the references.

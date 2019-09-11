@@ -1,8 +1,9 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
-import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
+import kiv.zcu.knowledgeipr.core.model.report.MongoSearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 
@@ -18,8 +19,8 @@ public class DefaultSearchStrategy extends SearchStrategy<Search, IMongoDataSear
      * {@inheritDoc}
      */
     @Override
-    public SearchReport search(Search search) throws UserQueryException {
-        SearchReport report = queryService.getCachedReport(search);
+    public MongoSearchReport search(Search search) throws UserQueryException, QueryExecutionException {
+        MongoSearchReport report = (MongoSearchReport) queryService.getCachedReport(search, MongoSearchReport.class);
         if (report != null) {
             return report;
         }
@@ -31,7 +32,12 @@ public class DefaultSearchStrategy extends SearchStrategy<Search, IMongoDataSear
             records = dataSearcher.runSearchSimple(search.getQuery(), search.getPage(), search.getLimit());
         }
 
-        report = new SearchReport(records);
+        for (MongoRecord record : records) {
+            //TODO: Removes the id field from the document so it is not returned back to the user. !!! TMP solution
+            record.getDocument().remove("_id");
+        }
+
+        report = new MongoSearchReport(records);
 
         cacheSearch(search, report);
 

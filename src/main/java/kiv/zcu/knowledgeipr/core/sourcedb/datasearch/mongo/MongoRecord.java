@@ -1,11 +1,12 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo;
 
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDbRecord;
 import org.bson.Document;
 
 /**
  * Wrapper for MongoDB's document object
  */
-public class MongoRecord {
+public class MongoRecord implements IDbRecord {
     private Document document;
 
     public MongoRecord() {

@@ -13,6 +13,9 @@ import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.FileRepository;
 import kiv.zcu.knowledgeipr.core.model.report.ReportHandler;
 import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
+import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.ElasticDataSearcher;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.*;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
@@ -35,14 +38,17 @@ public class AppRunner extends Application {
     public AppRunner() {
 
         IMongoDataSearcher dataSearcher = new MongoDataSearcher();
+        IElasticDataSearcher elasticDataSearcher = new ElasticDataSearcher();
 
         DbQueryService dbQueryService = new DbQueryService();
 
         SearchStrategy<CategorySearch, IMongoDataSearcher> categorySearchStrategy = new CategorySearchStrategy(dataSearcher, dbQueryService);
-        SearchStrategy defaultSearchStrategy = new DefaultSearchStrategy(dataSearcher, dbQueryService);
+
 
         DataAccessController reportGenerator = new DataAccessController(new MongoQueryRunner(), new ReportHandler(new FileRepository()));
 
+        SearchStrategy<Search, IMongoDataSearcher> defaultSearchStrategy = new DefaultSearchStrategy(dataSearcher, dbQueryService);
+        //SearchStrategy<Search, IElasticDataSearcher> elasticStrategy = new DefaultElasticSearchStrategy(elasticDataSearcher, dbQueryService);
         singletons.add(new SearchRestService(reportGenerator, defaultSearchStrategy));
         singletons.add(new StatsRestService(reportGenerator));
         singletons.add(new CategoryRestService(reportGenerator, categorySearchStrategy));

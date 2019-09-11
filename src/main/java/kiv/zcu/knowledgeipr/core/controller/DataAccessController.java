@@ -1,20 +1,20 @@
 package kiv.zcu.knowledgeipr.core.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.mongodb.MongoExecutionTimeoutException;
-import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.AnalysisType;
 import kiv.zcu.knowledgeipr.analysis.wordnet.AnalyzedWord;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.api.response.ChartResponse;
 import kiv.zcu.knowledgeipr.api.response.SearchResponse;
 import kiv.zcu.knowledgeipr.api.response.StatusResponse;
 import kiv.zcu.knowledgeipr.api.response.WordNetResponse;
 import kiv.zcu.knowledgeipr.core.model.report.ChartReport;
+import kiv.zcu.knowledgeipr.core.model.report.EmptySearchReport;
 import kiv.zcu.knowledgeipr.core.model.report.ReportHandler;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.ChartQuery;
@@ -25,7 +25,6 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -76,13 +75,9 @@ public class DataAccessController {
             response.setPage(search.getPage());
             //report.setSummary(summarizer.summarizeTextMongo(report.getRecords()).toString());
 
-        } catch (MongoQueryException | UserQueryException e) {
-            e.printStackTrace();
-            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new SearchReport(Collections.emptyList()));
+        } catch (UserQueryException | QueryExecutionException e) {
             LOGGER.warning("Query processing was prematurely terminated: " + e.getMessage());
-        } catch (MongoExecutionTimeoutException e) {
-            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new SearchReport(Collections.emptyList()));
-            LOGGER.info(e.getMessage());
+            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new EmptySearchReport());
         }
 
         return response;

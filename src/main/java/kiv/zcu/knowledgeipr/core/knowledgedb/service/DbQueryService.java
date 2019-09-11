@@ -83,7 +83,7 @@ public class DbQueryService {
         try {
             QueryDto queryDto = new QueryToQueryDtoMapper().map(search.getQuery());
 
-            if (getCachedReport(search) != null) {
+            if (getCachedReport(search, report.getClass()) != null) {
                 LOGGER.info("Report for search already exists, saving skipped");
                 return;
             }
@@ -143,13 +143,14 @@ public class DbQueryService {
     }
 
     /**
-     * Returns a report associated with the specified search, where page and limit match
+     * Returns a report associated with the specified search, where page and limit match.
      *
      * @param search - Search instance, for which to search reports
+     * @param clazz - Class type specifying the type of report to be created
      * @return - Found cached report or null if nothing is found
      */
     // TODO: refactor, later instead of deserializing to report, use only the json
-    public SearchReport getCachedReport(Search search) {
+    public <T extends SearchReport> SearchReport getCachedReport(Search search, Class<T> clazz) {
         SearchReport searchReport = null;
         try {
             DataSourceUtils.startTransaction();
@@ -162,7 +163,7 @@ public class DbQueryService {
 
             ReportDto reportDto = reportDtoList.get(0);
             try {
-                searchReport = new ObjectMapper().readValue(reportDto.getReportText(), SearchReport.class);
+                searchReport = new ObjectMapper().readValue(reportDto.getReportText(), clazz);
                 LOGGER.info("Cached report found for search: " + search.getQuery().hashCode() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
             } catch (IOException e) {
                 LOGGER.info("Cached report could not be parsed.");

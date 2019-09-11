@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import com.mongodb.client.model.Filters;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
@@ -35,7 +36,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     @Override
-    public List<MongoRecord> runSearchAdvanced(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
+    public List<MongoRecord> runSearchAdvanced(Query query, int page, final int limit) throws UserQueryException, QueryExecutionException {
         LOGGER.info("--- ADVANCED SEARCH ---");
 
         List<MongoRecord> results = runSearchSimple(query, page, limit);
@@ -47,11 +48,20 @@ public class MongoDataSearcher implements IMongoDataSearcher {
         LOGGER.info("Running extended search: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
         // Run second search
         String sourceType = query.getSourceType();
-        return mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
+
+        List<MongoRecord> records;
+        try {
+            records = mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
+        } catch (MongoExecutionTimeoutException | MongoQueryException e) {
+            LOGGER.info(e.getMessage());
+            throw new QueryExecutionException(e.getMessage());
+        }
+
+        return records;
     }
 
     @Override
-    public List<MongoRecord> runSearchSimple(Query query, int page, final int limit) throws MongoQueryException, UserQueryException, MongoExecutionTimeoutException {
+    public List<MongoRecord> runSearchSimple(Query query, int page, final int limit) throws UserQueryException, QueryExecutionException {
         String sourceType = query.getSourceType();
         isValidSourceType(sourceType);
 
@@ -66,8 +76,10 @@ public class MongoDataSearcher implements IMongoDataSearcher {
             LOGGER.info("Running quick search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
             try {
                 records = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
-            } catch (MongoExecutionTimeoutException e) {
-                LOGGER.info("Nothing found during quick search");
+            } catch (MongoExecutionTimeoutException | MongoQueryException e) {
+                LOGGER.info("Nothing found during quick search: " + e.getMessage());
+
+                throw new QueryExecutionException(e.getMessage());
             }
         }
 

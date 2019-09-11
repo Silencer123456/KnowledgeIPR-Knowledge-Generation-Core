@@ -35,7 +35,7 @@ public class SearchRestService {
 
     private SearchStrategy<Search, IMongoDataSearcher> searchStrategy;
 
-    public SearchRestService(DataAccessController dataAccessController, SearchStrategy searchStrategy) {
+    public SearchRestService(DataAccessController dataAccessController, SearchStrategy<Search, IMongoDataSearcher> searchStrategy) {
         this.dataAccessController = dataAccessController;
         this.searchStrategy = searchStrategy;
     }
