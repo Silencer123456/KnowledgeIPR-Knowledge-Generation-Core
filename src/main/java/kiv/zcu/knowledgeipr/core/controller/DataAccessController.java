@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoQueryException;
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.analysis.summarizer.TextSummarizer;
 import kiv.zcu.knowledgeipr.analysis.wordnet.AnalysisType;
 import kiv.zcu.knowledgeipr.analysis.wordnet.AnalyzedWord;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
@@ -48,12 +49,12 @@ public class DataAccessController {
      */
     private IQueryRunner queryRunner;
 
-    //private TextSummarizer summarizer;
+    private TextSummarizer summarizer;
 
     public DataAccessController(IQueryRunner queryRunner, ReportHandler reportHandler) {
         this.reportHandler = reportHandler;
         this.queryRunner = queryRunner;
-        //summarizer = new TextSummarizer();
+        summarizer = new TextSummarizer();
     }
 
     /**
@@ -73,7 +74,7 @@ public class DataAccessController {
             response.setSearchedCount(getCountForDataSource(search.getQuery().getSourceType()));
             response.setCount(search.getLimit());
             response.setPage(search.getPage());
-            //response.setSummary(summarizer.summarizeTextMongo(dbRecordList).toString());
+            //report.setSummary(summarizer.summarizeTextMongo(report.getRecords()).toString());
 
         } catch (MongoQueryException | UserQueryException e) {
             e.printStackTrace();
@@ -141,6 +142,11 @@ public class DataAccessController {
         return new WordNetResponse(synonyms, AnalysisType.SYNONYM);
     }
 
+    public WordNetResponse getAntonyms(String word) {
+        List<AnalyzedWord> antonyms = WordNet.getInstance().getAntonymsForWord(word);
+        return new WordNetResponse(antonyms, AnalysisType.ANTONYM);
+    }
+
     public WordNetResponse getHypernyms(String word) {
         List<AnalyzedWord> hypernyms = WordNet.getInstance().getHypernymsForWord(word);
         return new WordNetResponse(hypernyms, AnalysisType.HYPERNYM);
@@ -149,11 +155,6 @@ public class DataAccessController {
     public WordNetResponse getHyponyms(String word) {
         List<AnalyzedWord> hyponyms = WordNet.getInstance().getHyponymsForWord(word);
         return new WordNetResponse(hyponyms, AnalysisType.HYPONYM);
-    }
-
-    public WordNetResponse getAntonyms(String word) {
-        List<AnalyzedWord> antonyms = WordNet.getInstance().getAntonymsForWord(word);
-        return new WordNetResponse(antonyms, AnalysisType.ANTONYM);
     }
 
     // TODO: Temp solution
