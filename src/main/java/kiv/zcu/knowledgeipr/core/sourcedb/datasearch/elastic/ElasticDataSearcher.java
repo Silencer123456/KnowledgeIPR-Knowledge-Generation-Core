@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 
 import kiv.zcu.knowledgeipr.core.model.search.Query;
+import kiv.zcu.knowledgeipr.core.model.search.Search;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -37,7 +38,8 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     }
 
     @Override
-    public List<ElasticRecord> searchData(Query query) {
+    public List<ElasticRecord> searchData(Search search) {
+        Query query = search.getQuery();
 
         QueryBuilder queryBuilder = QueryBuilders.queryStringQuery(query.getTextFilter());
 
@@ -46,9 +48,10 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
         List<ElasticRecord> records = new ArrayList<>();
 
         // MatchAll search
-        SearchRequest searchRequest = new SearchRequest("knowingipr." + query.getSourceType());
+        SearchRequest searchRequest = new SearchRequest("knowingipr." + query.getSourceType()); // TODO: get name of db from mongo or elastic
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.timeout(new TimeValue(query.getOptions().getTimeout(), TimeUnit.SECONDS));
+        searchSourceBuilder.size(search.getLimit());
         searchSourceBuilder.query(queryBuilder);
         searchRequest.source(searchSourceBuilder);
 

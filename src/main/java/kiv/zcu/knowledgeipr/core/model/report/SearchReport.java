@@ -8,8 +8,8 @@ import java.util.List;
  * @param <T> The type of records to hold
  */
 public abstract class SearchReport<T> {
-    protected List<T> data;
     private String summary = "Data Report";
+    protected List<T> data;
 
     public SearchReport(List<T> data) {
         this.data = data;

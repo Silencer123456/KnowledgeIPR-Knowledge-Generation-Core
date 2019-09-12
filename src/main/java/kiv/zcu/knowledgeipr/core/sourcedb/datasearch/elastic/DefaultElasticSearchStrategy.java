@@ -16,10 +16,17 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
 
     @Override
     public ElasticSearchReport search(Search search) throws UserQueryException, QueryExecutionException {
-        List<ElasticRecord> records = dataSearcher.searchData(search.getQuery());
+        ElasticSearchReport report = (ElasticSearchReport) queryService.getCachedReport(search, ElasticSearchReport.class);
+        if (report != null) {
+            return report;
+        }
+
+        List<ElasticRecord> records = dataSearcher.searchData(search);
 
 
         ElasticSearchReport searchReport = new ElasticSearchReport(records);
+
+        cacheSearch(search, searchReport);
 
         return searchReport;
     }

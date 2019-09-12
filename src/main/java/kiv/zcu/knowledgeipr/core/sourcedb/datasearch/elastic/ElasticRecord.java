@@ -8,6 +8,9 @@ public class ElasticRecord implements IDbRecord {
 
     private Map<String, Object> document;
 
+    public ElasticRecord() {
+    }
+
     public ElasticRecord(Map<String, Object> document) {
         this.document = document;
     }
