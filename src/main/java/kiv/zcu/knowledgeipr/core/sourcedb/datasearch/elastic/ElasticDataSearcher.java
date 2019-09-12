@@ -7,6 +7,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -16,8 +18,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class ElasticDataSearcher implements IElasticDataSearcher {
+
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private CommonElasticRunner elasticRunner;
 
@@ -33,12 +39,17 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     @Override
     public List<ElasticRecord> searchData(Query query) {
 
+        QueryBuilder queryBuilder = QueryBuilders.queryStringQuery(query.getTextFilter());
+
+        LOGGER.info("Running : " + queryBuilder.toString());
+
         List<ElasticRecord> records = new ArrayList<>();
 
         // MatchAll search
-        SearchRequest searchRequest = new SearchRequest("knowingipr.patent");
+        SearchRequest searchRequest = new SearchRequest("knowingipr." + query.getSourceType());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        searchSourceBuilder.timeout(new TimeValue(query.getOptions().getTimeout(), TimeUnit.SECONDS));
+        searchSourceBuilder.query(queryBuilder);
         searchRequest.source(searchSourceBuilder);
 
         try {

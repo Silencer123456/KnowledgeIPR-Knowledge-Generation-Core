@@ -71,7 +71,7 @@ public class DataAccessController {
 
             response = new SearchResponse(StatusResponse.SUCCESS, "OK", report);
             response.setSearchedCount(getCountForDataSource(search.getQuery().getSourceType()));
-            response.setCount(search.getLimit());
+            response.setCount(report.getData().size());
             response.setPage(search.getPage());
             //report.setSummary(summarizer.summarizeTextMongo(report.getRecords()).toString());
 

@@ -4,16 +4,12 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.ElasticRecord;
 
 import java.util.List;
 
-public class ElasticSearchReport implements SearchReport {
-
-    private String summary = "Data Report";
-    private List<ElasticRecord> elasticRecords;
+/**
+ * Report for data coming from ElasticSearch. Holds a list of ElasticRecord instances.
+ */
+public class ElasticSearchReport extends SearchReport<ElasticRecord> {
 
     public ElasticSearchReport(List<ElasticRecord> elasticRecords) {
-        this.elasticRecords = elasticRecords;
-    }
-
-    public List<ElasticRecord> getElasticRecords() {
-        return elasticRecords;
+        super(elasticRecords);
     }
 }

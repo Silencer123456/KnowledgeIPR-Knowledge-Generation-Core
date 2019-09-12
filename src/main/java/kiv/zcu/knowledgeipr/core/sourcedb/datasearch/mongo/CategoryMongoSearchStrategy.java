@@ -15,9 +15,9 @@ import java.util.List;
 /**
  * Provides implementation of the searching process using a category search strategy in the MONGO database.
  */
-public class CategorySearchStrategy extends SearchStrategy<CategorySearch, IMongoDataSearcher> {
+public class CategoryMongoSearchStrategy extends SearchStrategy<CategorySearch, IMongoDataSearcher> {
 
-    public CategorySearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
+    public CategoryMongoSearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService);
     }
 

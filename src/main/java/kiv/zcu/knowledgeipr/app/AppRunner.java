@@ -18,10 +18,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.DefaultElasticSearc
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.ElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.CategorySearchStrategy;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.MongoDataSearcher;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.MongoQueryRunner;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.*;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 
 import javax.ws.rs.core.Application;
@@ -40,20 +37,18 @@ public class AppRunner extends Application {
      * Registers dependencies between classes.
      */
     public AppRunner() {
-
         IMongoDataSearcher dataSearcher = new MongoDataSearcher();
         IElasticDataSearcher elasticDataSearcher = new ElasticDataSearcher();
 
         DbQueryService dbQueryService = new DbQueryService();
 
-        SearchStrategy<CategorySearch, IMongoDataSearcher> categorySearchStrategy = new CategorySearchStrategy(dataSearcher, dbQueryService);
-
-
         DataAccessController reportGenerator = new DataAccessController(new MongoQueryRunner(), new ReportHandler(new FileRepository()));
 
-        //SearchStrategy<Search, IMongoDataSearcher> defaultSearchStrategy = new DefaultSearchStrategy(dataSearcher, dbQueryService);
+        SearchStrategy<CategorySearch, IMongoDataSearcher> categorySearchStrategy = new CategoryMongoSearchStrategy(dataSearcher, dbQueryService);
+        SearchStrategy<Search, IMongoDataSearcher> mongoStrategy = new DefaultMongoSearchStrategy(dataSearcher, dbQueryService);
         SearchStrategy<Search, IElasticDataSearcher> elasticStrategy = new DefaultElasticSearchStrategy(elasticDataSearcher, dbQueryService);
-        singletons.add(new SearchRestService(reportGenerator, elasticStrategy));
+
+        singletons.add(new SearchRestService(reportGenerator, elasticStrategy, mongoStrategy));
         singletons.add(new StatsRestService(reportGenerator));
         singletons.add(new CategoryRestService(reportGenerator, categorySearchStrategy));
         singletons.add(new DataRestService(reportGenerator));

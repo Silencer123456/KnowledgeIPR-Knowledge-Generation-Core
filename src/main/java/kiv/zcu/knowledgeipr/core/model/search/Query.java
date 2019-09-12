@@ -32,7 +32,7 @@ public class Query {
     }
 
     public String getTextFilter() {
-        return filters.get("text");
+        return filters.get("$text");
     }
 
     public Map<String, Map<String, Integer>> getConditions() {

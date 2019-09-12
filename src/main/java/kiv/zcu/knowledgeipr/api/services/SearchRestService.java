@@ -16,6 +16,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
@@ -27,18 +28,22 @@ import java.util.Map;
  * Service for handling incoming REST requests
  */
 // todo: Create parent class containing common fields
+// TODO: better separate Mongo and Elastic searches
 @Logged
 @Path("/search/")
 public class SearchRestService {
 
     private DataAccessController dataAccessController;
 
-    //TODO: change that generic parameter can be changed dynamically
-    private SearchStrategy<Search, IElasticDataSearcher> searchStrategy;
+    private SearchStrategy<Search, IElasticDataSearcher> elasticStrategy;
+    private SearchStrategy<Search, IMongoDataSearcher> mongoStrategy;
 
-    public SearchRestService(DataAccessController dataAccessController, SearchStrategy<Search, IElasticDataSearcher> searchStrategy) {
+    public SearchRestService(DataAccessController dataAccessController,
+                             SearchStrategy<Search, IElasticDataSearcher> elasticStrategy,
+                             SearchStrategy<Search, IMongoDataSearcher> mongoStrategy) {
         this.dataAccessController = dataAccessController;
-        this.searchStrategy = searchStrategy;
+        this.elasticStrategy = elasticStrategy;
+        this.mongoStrategy = mongoStrategy;
     }
 
     /**
@@ -86,10 +91,18 @@ public class SearchRestService {
     public javax.ws.rs.core.Response ownersSearch(@QueryParam("page") int page,
                                                   @QueryParam("owner") String ownerName,
                                                   @QueryParam("year") int year) throws ApiException, ObjectSerializationException {
+        boolean useMongo = false;
+
         isPageValid(page);
 
         Map<String, String> filters = new HashMap<>();
-        filters.put(ResponseField.OWNERS_NAME.value, ownerName);
+        if (useMongo) {
+            filters.put(ResponseField.OWNERS_NAME.value, ownerName);
+        } else {
+            String queryText = "(" + ResponseField.OWNERS_NAME + ":\"" + ownerName + "\"*) AND year:" + year;
+            filters.put("$text", queryText);
+        }
+
         Map<String, Map<String, Integer>> conditions = new HashMap<>();
 
         Map<String, Integer> yearMap = new HashMap<>();
@@ -120,8 +133,15 @@ public class SearchRestService {
     @Consumes("application/json")
     @Produces("application/json")
     public javax.ws.rs.core.Response patentNumberSearch(@QueryParam("number") String patentNumber) throws ApiException, ObjectSerializationException {
+        boolean useMongo = false;
+
         Map<String, String> filters = new HashMap<>();
-        filters.put(ResponseField.DOCUMENT_ID.value, patentNumber);
+        if (useMongo) {
+            filters.put(ResponseField.DOCUMENT_ID.value, patentNumber);
+        } else {
+            filters.put("$text", ResponseField.DOCUMENT_ID + ":(+" + patentNumber + "*)");
+        }
+
         Map<String, Map<String, Integer>> conditions = new HashMap<>();
 
         Map<String, Object> options = new HashMap<>();
@@ -177,7 +197,7 @@ public class SearchRestService {
     @Path("/invalidateCache")
     @Produces("application/json")
     public javax.ws.rs.core.Response invalidateCache() throws ObjectSerializationException {
-        dataAccessController.invalidateCache(searchStrategy);
+        dataAccessController.invalidateCache(elasticStrategy);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(new BaseResponse(StatusResponse.SUCCESS, "OK"))).build();
     }
@@ -201,7 +221,7 @@ public class SearchRestService {
             throw new ApiException(e.getMessage());
         }
 
-        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
+        SearchResponse searchResponse = dataAccessController.search(elasticStrategy,
                 new Search(query, 1, limit, true)
         );
 
@@ -222,7 +242,7 @@ public class SearchRestService {
         }
 
         int limit = 20;
-        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
+        SearchResponse searchResponse = dataAccessController.search(elasticStrategy,
                 new Search(query, page, limit, advancedSearch));
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();

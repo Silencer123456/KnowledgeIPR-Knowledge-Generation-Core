@@ -9,9 +9,9 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 
 import java.util.List;
 
-public class DefaultSearchStrategy extends SearchStrategy<Search, IMongoDataSearcher> {
+public class DefaultMongoSearchStrategy extends SearchStrategy<Search, IMongoDataSearcher> {
 
-    public DefaultSearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
+    public DefaultMongoSearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService);
     }
 

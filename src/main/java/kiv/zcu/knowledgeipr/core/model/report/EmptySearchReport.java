@@ -1,4 +1,13 @@
 package kiv.zcu.knowledgeipr.core.model.report;
 
-public class EmptySearchReport implements SearchReport {
+import java.util.ArrayList;
+
+/**
+ * Serves as an empty report - Used if error occurred for example
+ */
+public class EmptySearchReport extends SearchReport<String> {
+
+    public EmptySearchReport() {
+        super(new ArrayList<>());
+    }
 }
