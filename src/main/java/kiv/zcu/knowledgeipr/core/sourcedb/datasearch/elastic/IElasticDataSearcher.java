@@ -5,7 +5,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 
 import java.util.List;
 
-public interface IElasticDataSearcher extends IDataSearcher {
+public interface IElasticDataSearcher extends IDataSearcher<ElasticRecord> {
 
-    List<ElasticRecord> searchData(Search search);
+    List<ElasticRecord> searchData(final Search search);
 }

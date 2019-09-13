@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.core.model.search;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryOptionsValidationException;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,19 +12,19 @@ import java.util.Map;
  */
 @JsonDeserialize(using = QueryDeserializer.class)
 public class Query {
-    private String sourceType;
+    private DataSourceType sourceType;
     private Map<String, String> filters;
     private Map<String, Map<String, Integer>> conditions;
     private QueryOptions options;
 
-    public Query(String sourceType, Map<String, String> filters, Map<String, Map<String, Integer>> conditions, Map<String, Object> options) {
+    public Query(DataSourceType sourceType, Map<String, String> filters, Map<String, Map<String, Integer>> conditions, Map<String, Object> options) {
         this.sourceType = sourceType;
         this.filters = filters;
         this.conditions = conditions;
         this.options = new QueryOptions(options);
     }
 
-    public String getSourceType() {
+    public DataSourceType getSourceType() {
         return sourceType;
     }
 

@@ -27,9 +27,9 @@ public class DefaultMongoSearchStrategy extends SearchStrategy<Search, IMongoDat
 
         List<MongoRecord> records;
         if (search.isAdvancedSearch()) {
-            records = dataSearcher.runSearchAdvanced(search.getQuery(), search.getPage(), search.getLimit());
+            records = dataSearcher.runSearchAdvanced(search);
         } else {
-            records = dataSearcher.runSearchSimple(search.getQuery(), search.getPage(), search.getLimit());
+            records = dataSearcher.runSearchSimple(search);
         }
 
         for (MongoRecord record : records) {

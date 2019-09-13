@@ -153,12 +153,16 @@ public class DataAccessController {
     }
 
     // TODO: Temp solution
-    private int getCountForDataSource(String source) {
+    private int getCountForDataSource(DataSourceType source) {
         int count = 0;
-        if (source.equals("publication")) {
-            count = 166613546;
-        } else if (source.equals("patent")) {
-            count = 3645421;
+
+        switch (source) {
+            case PUBLICATION:
+                count = 166613546;
+                break;
+            case PATENT:
+                count = 3645421;
+                break;
         }
 
         return count;

@@ -200,7 +200,8 @@ public class DataSourceUtils {
      * Transaction is committed and the connection is released
      */
     public static void commitAndClose() {
-        LOGGER.info("Initiating COMMIT");
+        LOGGER.info("-------------");
+        LOGGER.info("INIT COMMIT");
         Connection conn;
         try {
             conn = getConnection();
@@ -210,19 +211,20 @@ public class DataSourceUtils {
             conn.close();
             // Unbind
             tl.remove();
+            LOGGER.info("COMMIT SUCCESS");
         } catch (SQLException e) {
-            LOGGER.warning("COMMIT failed with error: " + e.getMessage());
+            LOGGER.warning("COMMIT FAIL with error: " + e.getMessage());
             e.printStackTrace();
         }
-
-        LOGGER.info("COMMIT SUCCESS");
+        LOGGER.info("-------------");
     }
 
     /**
      * Transaction rollback and release resources
      */
     public static void rollbackAndClose() {
-        LOGGER.info("Initiating ROLLBACK");
+        LOGGER.info("-------------");
+        LOGGER.info("INIT ROLLBACK");
 
         Connection conn;
         try {
@@ -233,11 +235,13 @@ public class DataSourceUtils {
             conn.close();
             // Release the version
             tl.remove();
+            LOGGER.info("ROLLBACK SUCCESS");
+
         } catch (SQLException e) {
-            LOGGER.warning("ROLLBACK failed with error: " + e.getMessage());
+            LOGGER.warning("ROLLBACK FAIL with error: " + e.getMessage());
             e.printStackTrace();
         }
 
-        LOGGER.info("ROLLBACK SUCCESS");
+        LOGGER.info("-------------");
     }
 }

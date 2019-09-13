@@ -9,7 +9,7 @@ public class Search {
     /**
      * The main search containing filters and conditions
      */
-    private Query query;
+    protected Query query;
 
     /**
      * Which page of results is to be returned by the search

@@ -17,6 +17,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
+import kiv.zcu.knowledgeipr.utils.AppConstants;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
@@ -114,7 +115,7 @@ public class SearchRestService {
         Map<String, Object> options = new HashMap<>();
         options.put("timeout", 50);
 
-        Query query = new Query(DataSourceType.PATENT.value, filters, conditions, options);
+        Query query = new Query(DataSourceType.PATENT, filters, conditions, options);
 
         return processQueryInit(query, page, false);
     }
@@ -139,7 +140,7 @@ public class SearchRestService {
         if (useMongo) {
             filters.put(ResponseField.DOCUMENT_ID.value, patentNumber);
         } else {
-            filters.put("$text", ResponseField.DOCUMENT_ID + ":(+" + patentNumber + "*)");
+            filters.put(AppConstants.TEXT_QUERY_KEY, ResponseField.DOCUMENT_ID + ":(+" + patentNumber + "*)");
         }
 
         Map<String, Map<String, Integer>> conditions = new HashMap<>();
@@ -147,7 +148,7 @@ public class SearchRestService {
         Map<String, Object> options = new HashMap<>();
         options.put("timeout", 50);
 
-        Query query = new Query(DataSourceType.PATENT.value, filters, conditions, options);
+        Query query = new Query(DataSourceType.PATENT, filters, conditions, options);
 
         return processQueryInit(query, 1, false);
     }

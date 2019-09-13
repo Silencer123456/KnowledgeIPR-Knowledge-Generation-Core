@@ -103,6 +103,7 @@ public class CommonMongoRunner {
      * Runs a search on a Mongo collection on the text index.
      * Returns a list of results limited by the specified limit.
      * The returned result list contains only projected fields relevant to the response.
+     * If nothing is found, an empty list is returned
      *
      * TODO: Solve performance while sorting by meta text score
      * @param filter         - The search parameter filter
@@ -110,16 +111,16 @@ public class CommonMongoRunner {
      * @param limit          - Limit of the returned results
      * @return - Result list of <code>knowledgeipr.MongoRecord</code> instances.
      */
-    List<MongoRecord> doSearch(String collectionName, Bson filter, int limit, int page, int timeout)
+    List<MongoRecord> doSearch(DataSourceType collectionName, Bson filter, int limit, int page, int timeout)
             throws MongoQueryException, MongoExecutionTimeoutException {
 
-        MongoCollection<Document> collection = database.getCollection(collectionName);
+        MongoCollection<Document> collection = database.getCollection(collectionName.value);
         List<MongoRecord> mongoRecords = new ArrayList<>();
 
         FindIterable<Document> iterable = collection
                 .find(filter)
                 .skip(page > 0 ? ((page - 1) * limit) : 0)
-                .projection(getProjectionFields(collectionName))
+                .projection(getProjectionFields(collectionName.value))
                 //.sort(Sorts.metaTextScore("score"))
                 .limit(limit)
                 .maxTime(timeout, TimeUnit.SECONDS)

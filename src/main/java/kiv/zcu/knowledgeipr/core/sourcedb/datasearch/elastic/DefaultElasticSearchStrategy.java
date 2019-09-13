@@ -24,10 +24,10 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
         List<ElasticRecord> records = dataSearcher.searchData(search);
 
 
-        ElasticSearchReport searchReport = new ElasticSearchReport(records);
+        report = new ElasticSearchReport(records);
 
-        cacheSearch(search, searchReport);
+        cacheSearch(search, report);
 
-        return searchReport;
+        return report;
     }
 }

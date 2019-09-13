@@ -8,6 +8,7 @@ import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
+import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import org.bson.BsonDocument;
@@ -36,22 +37,24 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     @Override
-    public List<MongoRecord> runSearchAdvanced(Query query, int page, final int limit) throws UserQueryException, QueryExecutionException {
+    public List<MongoRecord> runSearchAdvanced(Search search) throws UserQueryException, QueryExecutionException {
+        Query query = search.getQuery();
+
         LOGGER.info("--- ADVANCED SEARCH ---");
 
-        List<MongoRecord> results = runSearchSimple(query, page, limit);
+        List<MongoRecord> results = runSearchSimple(search);
         if (!results.isEmpty()) {
             return results;
         }
 
         BsonDocument filter = addAllFilters(query, true, true);
-        LOGGER.info("Running extended search: " + filter.toJson() + ", page: " + page + ", limit: " + limit + ", timeout: " + query.getOptions().getTimeout());
+        LOGGER.info("Running extended search: " + filter.toJson() + ", page: " + search.getPage() + ", limit: " + search.getLimit() + ", timeout: " + query.getOptions().getTimeout());
         // Run second search
-        String sourceType = query.getSourceType();
+        DataSourceType sourceType = query.getSourceType();
 
         List<MongoRecord> records;
         try {
-            records = mongoRunner.doSearch(sourceType, filter, limit, page, query.getOptions().getTimeout());
+            records = mongoRunner.doSearch(sourceType, filter, search.getLimit(), search.getPage(), query.getOptions().getTimeout());
         } catch (MongoExecutionTimeoutException | MongoQueryException e) {
             LOGGER.info(e.getMessage());
             throw new QueryExecutionException(e.getMessage());
@@ -61,9 +64,11 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     @Override
-    public List<MongoRecord> runSearchSimple(Query query, int page, final int limit) throws UserQueryException, QueryExecutionException {
-        String sourceType = query.getSourceType();
-        isValidSourceType(sourceType);
+    public List<MongoRecord> runSearchSimple(Search search) throws UserQueryException, QueryExecutionException {
+        Query query = search.getQuery();
+
+        DataSourceType sourceType = query.getSourceType();
+        //isValidSourceType(sourceType);
 
         BsonDocument filter = addAllFilters(query, false, false);
         if (filter.isEmpty()) {
@@ -73,9 +78,9 @@ public class MongoDataSearcher implements IMongoDataSearcher {
         List<MongoRecord> records = new ArrayList<>();
 
         if (filterContainsIndex(query.getFilters())) {
-            LOGGER.info("Running quick search: " + filter.toJson() + ", page: " + page + ", limit: " + limit);
+            LOGGER.info("Running quick search: " + filter.toJson() + ", page: " + search.getPage() + ", limit: " + search.getLimit());
             try {
-                records = mongoRunner.doSearch(sourceType, filter, limit, page, 10);
+                records = mongoRunner.doSearch(sourceType, filter, search.getLimit(), search.getPage(), 10);
             } catch (MongoExecutionTimeoutException | MongoQueryException e) {
                 LOGGER.info("Nothing found during quick search: " + e.getMessage());
 
@@ -87,7 +92,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     @Override
-    public List<MongoRecord> searchByReferences(List<ReferenceDto> references) {
+    public List<MongoRecord> searchByReferences(List<ReferenceDto> references, Search search) {
         // To list of ObjectIds
         List<ObjectId> urls = references
                 .stream()
@@ -103,7 +108,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
         Bson bson = Filters.in("_id", urls);
         appendBsonDoc(filter, bson, "_id");
 
-        return mongoRunner.doSearch(DataSourceType.PATENT.value, filter, references.size(), 1, 10);
+        return mongoRunner.doSearch(search.getQuery().getSourceType(), filter, references.size(), 1, 10);
     }
 
     /**
@@ -123,13 +128,14 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     }
 
     /**
+     * TODO: Remove
      * Checks if the provided data source is valid or not
      *
      * @param sourceType - Source of data to check
      * @throws UserQueryException if the source type is not valid
      */
-    private void isValidSourceType(String sourceType) throws UserQueryException {
-        if (!DataSourceType.containsField(sourceType)) {
+    private void isValidSourceType(DataSourceType sourceType) throws UserQueryException {
+        if (!DataSourceType.containsField(sourceType.value)) {
             StringBuilder sb = new StringBuilder();
             for (DataSourceType type : DataSourceType.values()) {
                 sb.append("'").append(type.value).append("'").append(", ");

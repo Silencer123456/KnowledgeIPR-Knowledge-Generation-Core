@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,7 +34,13 @@ public class QueryDeserializer extends StdDeserializer<Query> {
 
         // Source type
         JsonNode sourceTypeNode = node.get("sourceType");
-        String sourceType = sourceTypeNode == null ? "" : sourceTypeNode.textValue();
+        String sourceTypeText = sourceTypeNode == null ? "" : sourceTypeNode.textValue();
+        DataSourceType sourceType;
+        try {
+            sourceType = DataSourceType.valueOf(sourceTypeText);
+        } catch (IllegalArgumentException e) {
+            sourceType = DataSourceType.PATENT; // TODO: Handle better
+        }
 
         // Filters map
         TypeReference<Map<String, String>> filterRef = new TypeReference<Map<String, String>>() {

@@ -12,17 +12,14 @@ import kiv.zcu.knowledgeipr.core.knowledgedb.repository.IRepository;
 import kiv.zcu.knowledgeipr.core.knowledgedb.repository.QueryRepository;
 import kiv.zcu.knowledgeipr.core.knowledgedb.repository.ReferenceRepository;
 import kiv.zcu.knowledgeipr.core.knowledgedb.repository.ReportRepository;
-import kiv.zcu.knowledgeipr.core.knowledgedb.specification.QueryByHashCodeSpecification;
 import kiv.zcu.knowledgeipr.core.knowledgedb.specification.RecordsWithConfirmedCategorySpecification;
 import kiv.zcu.knowledgeipr.core.knowledgedb.specification.ReportsForQuerySpecification;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
-import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -131,16 +128,16 @@ public class DbQueryService {
         LOGGER.info("Cache INVALIDATED");
     }
 
-    public Query getByHash(int hashCode) {
-        Query resultQuery = null;
-        List<QueryDto> queryDtoList = queryRepository.query(new QueryByHashCodeSpecification(hashCode));
-        if (queryDtoList.size() >= 1) {
-            QueryDto tmp = queryDtoList.get(0);
-            resultQuery = new Query("", new HashMap<>(), new HashMap<>(), new HashMap<>());
-        }
-
-        return resultQuery;
-    }
+//    public Query getByHash(int hashCode) {
+//        Query resultQuery = null;
+//        List<QueryDto> queryDtoList = queryRepository.query(new QueryByHashCodeSpecification(hashCode));
+//        if (queryDtoList.size() >= 1) {
+//            QueryDto tmp = queryDtoList.get(0);
+//            resultQuery = new Query("", new HashMap<>(), new HashMap<>(), new HashMap<>());
+//        }
+//
+//        return resultQuery;
+//    }
 
     /**
      * Returns a report associated with the specified search, where page and limit match.
