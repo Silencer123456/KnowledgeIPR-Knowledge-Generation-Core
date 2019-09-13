@@ -13,9 +13,9 @@ import kiv.zcu.knowledgeipr.utils.Common;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryElastiSearchStrategy extends SearchStrategy<CategorySearch, IElasticDataSearcher> {
+public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch, IElasticDataSearcher> {
 
-    public CategoryElastiSearchStrategy(IElasticDataSearcher dataSearcher, DbQueryService queryService) {
+    public CategoryElasticSearchStrategy(IElasticDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService);
     }
 

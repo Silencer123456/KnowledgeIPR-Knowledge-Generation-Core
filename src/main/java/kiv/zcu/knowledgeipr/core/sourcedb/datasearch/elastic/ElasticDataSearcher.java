@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 public class ElasticDataSearcher implements IElasticDataSearcher {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -41,10 +38,10 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     @Override
     public List<ElasticRecord> searchByReferences(List<ReferenceDto> references, Search search) {
         // To list of ObjectIds
-        List<ObjectId> urls = references
+        List<String> urls = references
                 .stream()
                 .filter(object -> ObjectId.isValid(object.getUrl()))
-                .map(object -> new ObjectId(object.getUrl()))
+                .map(ReferenceDto::getUrl)
                 .collect(Collectors.toList());
 
         if (urls.isEmpty()) {

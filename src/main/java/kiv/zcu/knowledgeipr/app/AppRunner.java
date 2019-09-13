@@ -14,7 +14,7 @@ import kiv.zcu.knowledgeipr.core.model.report.FileRepository;
 import kiv.zcu.knowledgeipr.core.model.report.ReportHandler;
 import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.CategoryElastiSearchStrategy;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.CategoryElasticSearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.DefaultElasticSearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.ElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
@@ -46,7 +46,7 @@ public class AppRunner extends Application {
         DataAccessController reportGenerator = new DataAccessController(new MongoQueryRunner(), new ReportHandler(new FileRepository()));
 
         SearchStrategy<CategorySearch, IMongoDataSearcher> mongoSearchStrategy = new CategoryMongoSearchStrategy(mongoDataSearcher, dbQueryService);
-        SearchStrategy<CategorySearch, IElasticDataSearcher> elastiSearchStrategy = new CategoryElastiSearchStrategy(elasticDataSearcher, dbQueryService);
+        SearchStrategy<CategorySearch, IElasticDataSearcher> elastiSearchStrategy = new CategoryElasticSearchStrategy(elasticDataSearcher, dbQueryService);
 
 
         SearchStrategy<Search, IMongoDataSearcher> mongoStrategy = new DefaultMongoSearchStrategy(mongoDataSearcher, dbQueryService);
