@@ -70,8 +70,8 @@ public class DataAccessController {
             SearchReport report = searchStrategy.search(search);
 
             response = new SearchResponse(StatusResponse.SUCCESS, "OK", report);
-            response.setDocsInCollection(getCountForDataSource(search.getQuery().getSourceType()));
-            response.setSearchedCollection(search.getQuery().getSourceType());
+            response.setDocsInCollection(getCountForDataSource(search.getDataSourceType()));
+            response.setSearchedCollection(search.getDataSourceType());
 
             response.setDocsReturned(report.getData().size());
             response.setPage(search.getPage());

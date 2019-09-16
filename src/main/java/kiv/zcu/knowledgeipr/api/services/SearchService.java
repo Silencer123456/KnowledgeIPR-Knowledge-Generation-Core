@@ -12,8 +12,10 @@ import kiv.zcu.knowledgeipr.api.response.WordNetResponse;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
+import kiv.zcu.knowledgeipr.utils.AppConstants;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
@@ -43,10 +45,17 @@ public abstract class SearchService<T extends IDataSearcher> {
      */
     @POST
     @Logged
-    @Path("/")
+    @Path("/{sourceType}")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response search(@QueryParam("page") int page, String queryJson) throws ApiException, ObjectSerializationException {
+    public javax.ws.rs.core.Response search(@PathParam("sourceType") String sourceType, @QueryParam("page") int page, String queryJson) throws ApiException, ObjectSerializationException {
+        DataSourceType dataSourceType;
+        try {
+            dataSourceType = DataSourceType.valueOf(sourceType);
+        } catch (IllegalArgumentException e) {
+            dataSourceType = DataSourceType.PATENT;
+        }
+
         isPageValid(page);
 
         Query query;
@@ -58,7 +67,7 @@ public abstract class SearchService<T extends IDataSearcher> {
             throw new ApiException(e.getMessage());
         }
 
-        return processQueryInit(query, page, true);
+        return processQueryInit(new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true));
     }
 
     /**
@@ -166,8 +175,7 @@ public abstract class SearchService<T extends IDataSearcher> {
         }
 
         SearchResponse searchResponse = dataAccessController.search(searchStrategy,
-                new Search(query, 1, limit, true)
-        );
+                new Search(query, DataSourceType.PATENT, 1, limit, true));
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }
@@ -175,19 +183,17 @@ public abstract class SearchService<T extends IDataSearcher> {
     /**
      * Initiates the processing of the search
      *
-     * @param query - Query to process
-     * @param page  - Tha page to return
+     * @param search - The search instance
      * @return Formatted response containing the serialized report as json
-     * @throws ApiException
+     * @throws ApiException if the query is malformed
      */
-    protected javax.ws.rs.core.Response processQueryInit(Query query, int page, boolean advancedSearch) throws ApiException, ObjectSerializationException {
-        if (query.getFilters() == null || query.getFilters().isEmpty() || query.getSourceType() == null) {
+    protected javax.ws.rs.core.Response processQueryInit(Search search) throws ApiException, ObjectSerializationException {
+        Query query = search.getQuery();
+        if (query.getFilters() == null || query.getFilters().isEmpty() || search.getDataSourceType() == null) {
             throw new ApiException("Wrong search format.");
         }
 
-        int limit = 20;
-        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
-                new Search(query, page, limit, advancedSearch));
+        SearchResponse searchResponse = dataAccessController.search(searchStrategy, search);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }

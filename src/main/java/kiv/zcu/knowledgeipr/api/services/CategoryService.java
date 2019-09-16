@@ -24,9 +24,9 @@ import java.util.Map;
 
 public abstract class CategoryService<T extends IDataSearcher> {
 
-    DataAccessController dataAccessController;
-    SearchStrategy<CategorySearch, T> searchStrategy;
-    CategoryHandler categories;
+    private DataAccessController dataAccessController;
+    private SearchStrategy<CategorySearch, T> searchStrategy;
+    private CategoryHandler categories;
 
     public CategoryService(DataAccessController dataAccessController, SearchStrategy<CategorySearch, T> searchStrategy) {
         this.dataAccessController = dataAccessController;
@@ -105,10 +105,10 @@ public abstract class CategoryService<T extends IDataSearcher> {
         Map<String, String> filters = new HashMap<>();
         filters.put("$text", category.data.getKeywordsSeparatedBy(" "));
 
-        Query query = new Query(DataSourceType.PATENT, filters, new HashMap<>(), new HashMap<>());
+        Query query = new Query(filters, new HashMap<>(), new HashMap<>());
 
         SearchResponse searchResponse = dataAccessController.search(searchStrategy,
-                new CategorySearch(query, page, 20, true, category.data.getName()));
+                new CategorySearch(query, DataSourceType.PATENT, page, 20, true, category.data.getName()));
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }

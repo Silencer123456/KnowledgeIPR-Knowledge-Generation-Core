@@ -32,7 +32,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
 
         LOGGER.info("Running : " + queryBuilder.toString());
 
-        return elasticRunner.runQuery(patentIndexPrefix + query.getSourceType(), queryBuilder, search);
+        return elasticRunner.runQuery(patentIndexPrefix + search.getDataSourceType(), queryBuilder, search);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
 
         QueryBuilder queryBuilder = QueryBuilders.termsQuery("_id", urls);
 
-        DbElasticReport dbReport = elasticRunner.runQuery(patentIndexPrefix + search.getQuery().getSourceType().value, queryBuilder, search);
+        DbElasticReport dbReport = elasticRunner.runQuery(patentIndexPrefix + search.getDataSourceType().value, queryBuilder, search);
 
         return dbReport.getRecords();
     }

@@ -61,6 +61,6 @@ public class QueryDeserializer extends StdDeserializer<Query> {
         JsonNode optionsNode = node.get("options");
         Map<String, Object> options = optionsNode == null ? new HashMap<>() : mapper.readValue(mapper.treeAsTokens(optionsNode), optionsRef);
 
-        return new Query(sourceType, filters, conditions, options);
+        return new Query(filters, conditions, options);
     }
 }

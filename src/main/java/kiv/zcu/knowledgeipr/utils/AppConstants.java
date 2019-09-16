@@ -10,5 +10,7 @@ public class AppConstants {
     public static final int OBJECT_SERIALIZATION_ERROR_CODE = 5002;
     public static final int API_EXCEPTION_ERROR_CODE = 5003;
 
+    // Search constants
     public static final String TEXT_QUERY_KEY = "$text";
+    public static final int RESULTS_LIMIT = 20;
 }

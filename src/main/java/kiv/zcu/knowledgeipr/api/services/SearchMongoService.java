@@ -11,6 +11,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
+import kiv.zcu.knowledgeipr.utils.AppConstants;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -44,9 +45,8 @@ public class SearchMongoService extends SearchService<IMongoDataSearcher> {
             Map<String, Object> options = new HashMap<>();
             options.put("timeout", 50);
 
-            Query query = new Query(DataSourceType.PATENT, filters, conditions, options);
-
-            return processQueryInit(query, page, false);
+            Query query = new Query(filters, conditions, options);
+            return processQueryInit(new Search(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false));
         }
     }
 
@@ -59,9 +59,9 @@ public class SearchMongoService extends SearchService<IMongoDataSearcher> {
             Map<String, Object> options = new HashMap<>();
             options.put("timeout", 50);
 
-            Query query = new Query(DataSourceType.PATENT, filters, new HashMap<>(), options);
+            Query query = new Query(filters, new HashMap<>(), options);
 
-            return processQueryInit(query, 1, false);
+            return processQueryInit(new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false));
         }
     }
 }

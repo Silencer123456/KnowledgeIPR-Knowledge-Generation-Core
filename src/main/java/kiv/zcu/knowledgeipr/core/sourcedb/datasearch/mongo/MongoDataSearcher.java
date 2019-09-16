@@ -41,16 +41,18 @@ public class MongoDataSearcher implements IMongoDataSearcher {
         Query query = search.getQuery();
 
         LOGGER.info("--- ADVANCED SEARCH ---");
+        try {
+            List<MongoRecord> results = runSearchSimple(search);
+            if (!results.isEmpty()) {
+                return results;
+            }
+        } catch (QueryExecutionException e) {
+        } // After simple search is done, we do not want to return due to timeouts, so we need to catch the exception
 
-        List<MongoRecord> results = runSearchSimple(search);
-        if (!results.isEmpty()) {
-            return results;
-        }
-
+        // Run extended search
         BsonDocument filter = addAllFilters(query, true, true);
         LOGGER.info("Running extended search: " + filter.toJson() + ", page: " + search.getPage() + ", limit: " + search.getLimit() + ", timeout: " + query.getOptions().getTimeout());
-        // Run second search
-        DataSourceType sourceType = query.getSourceType();
+        DataSourceType sourceType = search.getDataSourceType();
 
         List<MongoRecord> records;
         try {
@@ -67,7 +69,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
     public List<MongoRecord> runSearchSimple(Search search) throws UserQueryException, QueryExecutionException {
         Query query = search.getQuery();
 
-        DataSourceType sourceType = query.getSourceType();
+        DataSourceType sourceType = search.getDataSourceType();
         //isValidSourceType(sourceType);
 
         BsonDocument filter = addAllFilters(query, false, false);
@@ -108,7 +110,7 @@ public class MongoDataSearcher implements IMongoDataSearcher {
         Bson bson = Filters.in("_id", urls);
         appendBsonDoc(filter, bson, "_id");
 
-        return mongoRunner.doSearch(search.getQuery().getSourceType(), filter, references.size(), 1, 10);
+        return mongoRunner.doSearch(search.getDataSourceType(), filter, references.size(), 1, 10);
     }
 
     /**

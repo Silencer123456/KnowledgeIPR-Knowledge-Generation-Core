@@ -2,30 +2,25 @@ package kiv.zcu.knowledgeipr.core.model.search;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryOptionsValidationException;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a single search
+ * Represents a client's query to be performed on the target database
  */
 @JsonDeserialize(using = QueryDeserializer.class)
 public class Query {
-    private DataSourceType sourceType;
     private Map<String, String> filters;
     private Map<String, Map<String, Integer>> conditions;
     private QueryOptions options;
 
-    public Query(DataSourceType sourceType, Map<String, String> filters, Map<String, Map<String, Integer>> conditions, Map<String, Object> options) {
-        this.sourceType = sourceType;
+    public Query(Map<String, String> filters,
+                 Map<String, Map<String, Integer>> conditions,
+                 Map<String, Object> options) {
         this.filters = filters;
         this.conditions = conditions;
         this.options = new QueryOptions(options);
-    }
-
-    public DataSourceType getSourceType() {
-        return sourceType;
     }
 
     public Map<String, String> getFilters() {
@@ -45,9 +40,6 @@ public class Query {
     }
 
     public void validate() throws QueryOptionsValidationException {
-        if (sourceType == null) {
-            throw new QueryOptionsValidationException("Missing field sourceType.");
-        }
         if (filters == null) {
             throw new QueryOptionsValidationException("Missing filters.");
         }
@@ -61,7 +53,7 @@ public class Query {
     @Override
     public int hashCode() {
         int result = 17;
-        result = 31 * result + sourceType.hashCode();
+        //result = 31 * result + sourceType.hashCode();
         if (filters != null) {
             result = 31 * result + filters.hashCode();
         }
