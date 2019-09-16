@@ -31,7 +31,7 @@ public class SearchResponse {
     /**
      * Number of returned results
      */
-    private int count;
+    private int docsReturned;
 
     /**
      * Page number of the results
@@ -67,8 +67,8 @@ public class SearchResponse {
         this.searchedCollection = searchedCollection;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setDocsReturned(int docsReturned) {
+        this.docsReturned = docsReturned;
     }
 
     public void setPage(int page) {

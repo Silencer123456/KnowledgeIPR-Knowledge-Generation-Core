@@ -4,10 +4,7 @@ import kiv.zcu.knowledgeipr.api.errorhandling.ApiExceptionHandler;
 import kiv.zcu.knowledgeipr.api.errorhandling.GenericExceptionHandler;
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationExceptionHandler;
 import kiv.zcu.knowledgeipr.api.filter.RequestLoggingFilter;
-import kiv.zcu.knowledgeipr.api.services.CategoryElasticService;
-import kiv.zcu.knowledgeipr.api.services.CategoryMongoService;
-import kiv.zcu.knowledgeipr.api.services.SearchRestService;
-import kiv.zcu.knowledgeipr.api.services.StatsRestService;
+import kiv.zcu.knowledgeipr.api.services.*;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.FileRepository;
@@ -52,7 +49,9 @@ public class AppRunner extends Application {
         SearchStrategy<Search, IMongoDataSearcher> mongoStrategy = new DefaultMongoSearchStrategy(mongoDataSearcher, dbQueryService);
         SearchStrategy<Search, IElasticDataSearcher> elasticStrategy = new DefaultElasticSearchStrategy(elasticDataSearcher, dbQueryService);
 
-        singletons.add(new SearchRestService(reportGenerator, elasticStrategy, mongoStrategy));
+        singletons.add(new SearchElasticService(reportGenerator, elasticStrategy));
+        singletons.add(new SearchMongoService(reportGenerator, mongoStrategy));
+
         singletons.add(new StatsRestService(reportGenerator));
 
         singletons.add(new CategoryElasticService(reportGenerator, elastiSearchStrategy));

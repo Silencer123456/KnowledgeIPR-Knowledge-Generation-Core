@@ -73,7 +73,7 @@ public class DataAccessController {
             response.setDocsInCollection(getCountForDataSource(search.getQuery().getSourceType()));
             response.setSearchedCollection(search.getQuery().getSourceType());
 
-            response.setCount(report.getData().size());
+            response.setDocsReturned(report.getData().size());
             response.setPage(search.getPage());
             //report.setSummary(summarizer.summarizeTextMongo(report.getRecords()).toString());
 
