@@ -68,6 +68,16 @@ public class DbQueryService {
     }
 
     /**
+     * Returns the total number of records for the specified category.
+     *
+     * @param category - The category for which to return the total count
+     * @return - The total count of records for the category
+     */
+    public long getTotalRecordsForCategory(String category) {
+        return 0;
+    }
+
+    /**
      * Creates a cached version of the query by storing it in the SQL database
      * under a unique hash key. A report is also saved to the database and
      * associated to the query.
@@ -96,6 +106,7 @@ public class DbQueryService {
             ReportDto reportDto = new ReportToReportDtoMapper(search.getPage(), search.getLimit(), queryId).map(report);
 
             reportDto.setQueryId(queryId);
+
             long reportId = reportsRepository.add(reportDto);
 
             DataSourceUtils.commitAndClose();

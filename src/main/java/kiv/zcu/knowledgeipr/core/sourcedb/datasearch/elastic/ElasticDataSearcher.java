@@ -25,7 +25,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     }
 
     @Override
-    public List<ElasticRecord> searchData(Search search) {
+    public DbElasticReport searchData(Search search) {
         Query query = search.getQuery();
 
         QueryBuilder queryBuilder = QueryBuilders.queryStringQuery(query.getTextFilter());
@@ -37,7 +37,6 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
 
     @Override
     public List<ElasticRecord> searchByReferences(List<ReferenceDto> references, Search search) {
-        // To list of ObjectIds
         List<String> urls = references
                 .stream()
                 .filter(object -> ObjectId.isValid(object.getUrl()))
@@ -50,6 +49,8 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
 
         QueryBuilder queryBuilder = QueryBuilders.termsQuery("_id", urls);
 
-        return elasticRunner.runQuery(patentIndexPrefix + search.getQuery().getSourceType().value, queryBuilder, search);
+        DbElasticReport dbReport = elasticRunner.runQuery(patentIndexPrefix + search.getQuery().getSourceType().value, queryBuilder, search);
+
+        return dbReport.getRecords();
     }
 }

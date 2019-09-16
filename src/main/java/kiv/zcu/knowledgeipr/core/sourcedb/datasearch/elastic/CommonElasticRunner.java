@@ -37,7 +37,8 @@ public class CommonElasticRunner {
      * @param search         - The search instance
      * @return List of ElasticSearch records
      */
-    List<ElasticRecord> runQuery(String collectionName, QueryBuilder queryBuilder, final Search search) {
+    DbElasticReport runQuery(String collectionName, QueryBuilder queryBuilder, final Search search) {
+        DbElasticReport report = new DbElasticReport();
         List<ElasticRecord> records = new ArrayList<>();
 
         SearchRequest searchRequest = new SearchRequest(collectionName); // TODO: get name of db from mongo or elastic
@@ -57,10 +58,14 @@ public class CommonElasticRunner {
                 records.add(new ElasticRecord(sourceAsMap));
             }
 
+            report.setDocsCount(hits.getTotalHits().value);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return records;
+        report.setRecords(records);
+
+        return report;
     }
 }

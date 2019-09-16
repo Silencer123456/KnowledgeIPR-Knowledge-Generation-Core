@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 
 /**
  * Holds the data for the response to the user's search request.
@@ -18,9 +19,14 @@ public class SearchResponse {
     private StatusResponse status;
 
     /**
-     * Number of searched documents
+     * Searched collection
      */
-    private int searchedCount;
+    private DataSourceType searchedCollection;
+
+    /**
+     * Number of documents in the searched collection
+     */
+    private int docsInCollection;
 
     /**
      * Number of returned results
@@ -53,8 +59,12 @@ public class SearchResponse {
         return report;
     }
 
-    public void setSearchedCount(int searchedCount) {
-        this.searchedCount = searchedCount;
+    public void setDocsInCollection(int docsInCollection) {
+        this.docsInCollection = docsInCollection;
+    }
+
+    public void setSearchedCollection(DataSourceType searchedCollection) {
+        this.searchedCollection = searchedCollection;
     }
 
     public void setCount(int count) {

@@ -7,8 +7,6 @@ import kiv.zcu.knowledgeipr.core.model.report.ElasticSearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 
-import java.util.List;
-
 public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasticDataSearcher> {
     public DefaultElasticSearchStrategy(IElasticDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService);
@@ -21,10 +19,9 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
             return report;
         }
 
-        List<ElasticRecord> records = dataSearcher.searchData(search);
+        DbElasticReport dbReport = dataSearcher.searchData(search);
 
-
-        report = new ElasticSearchReport(records);
+        report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount());
 
         cacheSearch(search, report);
 

@@ -15,6 +15,12 @@ public class ElasticSearchReport extends SearchReport<ElasticRecord> {
     }
 
     public ElasticSearchReport(List<ElasticRecord> elasticRecords) {
+        this(elasticRecords, 0);
+    }
+
+    public ElasticSearchReport(List<ElasticRecord> elasticRecords, final long docsCount) {
         super(elasticRecords);
+
+        setDocsCount(docsCount);
     }
 }

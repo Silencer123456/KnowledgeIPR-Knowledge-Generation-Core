@@ -10,6 +10,8 @@ import kiv.zcu.knowledgeipr.core.model.search.Search;
  * Specifies the strategy of how the searches are performed.
  * Each search strategy can implement various process of searching (for example,
  * category search strategy first fetches confirmed results from the database etc.)
+ *
+ * The search strategy is responsible for the creation of reports.
  */
 public abstract class SearchStrategy<T extends Search, V extends IDataSearcher> {
 

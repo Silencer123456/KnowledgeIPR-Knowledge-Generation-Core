@@ -26,21 +26,24 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
             return report;
         }
 
+        DbElasticReport dbReport = new DbElasticReport();
         List<ElasticRecord> records = new ArrayList<>();
 
         List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
+        //long recordsInCategory = queryService.getTotalRecordsForCategory(search.getCategory());
+
         referenceDtos = Common.getListFromRange(referenceDtos, search.getPage(), search.getLimit());
         if (!referenceDtos.isEmpty()) {
             records = dataSearcher.searchByReferences(referenceDtos, search);
         }
 
         if (records.size() < search.getLimit()) {
-            List<ElasticRecord> searchedRecords = dataSearcher.searchData(search);
+            dbReport = dataSearcher.searchData(search);
             // remove records already found in confirmed results in db
-            searchedRecords.removeAll(records);
+            dbReport.getRecords().removeAll(records);
 
             // Add searched documents after the confirmed ones, but only until the specified limit is reached
-            for (ElasticRecord record : searchedRecords) {
+            for (ElasticRecord record : dbReport.getRecords()) {
                 if (records.size() >= search.getLimit()) {
                     break;
                 }
@@ -48,7 +51,8 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
             }
         }
 
-        report = new ElasticSearchReport(records);
+        report = new ElasticSearchReport(records, dbReport.getDocsCount());
+        //report.setDocsCount(dbReport.getDocsCount() == 0 ? recordsInCategory : dbReport.getDocsCount());
         cacheSearch(search, report);
 
         return report;

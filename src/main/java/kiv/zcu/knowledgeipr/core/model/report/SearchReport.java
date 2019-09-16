@@ -9,7 +9,12 @@ import java.util.List;
  */
 public abstract class SearchReport<T> {
     private String summary = "Data Report";
+    /**
+     * The number of documents returned
+     */
+    private long docsCount;
     protected List<T> data;
+
 
     public SearchReport(List<T> data) {
         this.data = data;
@@ -21,5 +26,13 @@ public abstract class SearchReport<T> {
 
     public String getSummary() {
         return summary;
+    }
+
+    public long getDocsCount() {
+        return docsCount;
+    }
+
+    public void setDocsCount(final long docsCount) {
+        this.docsCount = docsCount;
     }
 }
