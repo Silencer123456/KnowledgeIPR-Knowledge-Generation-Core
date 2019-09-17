@@ -4,8 +4,10 @@ import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.ElasticSearchReport;
+import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 
 public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasticDataSearcher> {
@@ -14,7 +16,9 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
     }
 
     @Override
-    public ElasticSearchReport search(Search search) throws UserQueryException, QueryExecutionException {
+    public SearchReport search(SearchSpecification<Search> searchSpecification) throws UserQueryException, QueryExecutionException {
+        Search search = searchSpecification.getSearch();
+
         ElasticSearchReport report;
         //boolean useCache = (boolean) search.getQuery().getOptions().getOption(QueryOptions.QueryOption.USE_CACHE); // TODO move to Search class as helper method
         //if (useCache) {
@@ -24,7 +28,7 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
         }
         //}
 
-        DbElasticReport dbReport = dataSearcher.searchData(search);
+        DbElasticReport dbReport = dataSearcher.search(searchSpecification);
 
         report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount());
 

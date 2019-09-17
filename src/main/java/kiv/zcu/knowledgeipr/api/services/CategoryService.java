@@ -12,7 +12,9 @@ import kiv.zcu.knowledgeipr.core.model.search.category.data.Category;
 import kiv.zcu.knowledgeipr.core.model.search.category.data.CategoryHandler;
 import kiv.zcu.knowledgeipr.core.model.search.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.TextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
@@ -107,8 +109,10 @@ public abstract class CategoryService<T extends IDataSearcher> {
 
         Query query = new Query(filters, new HashMap<>(), new HashMap<>());
 
-        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
-                new CategorySearch(query, DataSourceType.PATENT, page, 20, true, searchStrategy.getSearchEngineName(), category.data.getName()));
+        CategorySearch search = new CategorySearch(query, DataSourceType.PATENT, page, 20, true, searchStrategy.getSearchEngineName(), category.data.getName());
+        SearchSpecification<CategorySearch> specification = new TextSearchElasticSpecification<>(search);
+
+        SearchResponse searchResponse = dataAccessController.search(searchStrategy, specification);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }

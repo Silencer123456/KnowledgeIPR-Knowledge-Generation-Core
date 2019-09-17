@@ -13,4 +13,6 @@ public class AppConstants {
     // Search constants
     public static final String TEXT_QUERY_KEY = "$text";
     public static final int RESULTS_LIMIT = 20;
+
+    public static final String PATENT_ELASTIC_PREFIX = "knowingipr.";
 }

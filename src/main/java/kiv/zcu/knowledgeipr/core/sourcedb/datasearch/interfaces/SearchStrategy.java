@@ -43,7 +43,16 @@ public abstract class SearchStrategy<T extends Search, V extends IDataSearcher> 
      * @return Created report from the retrieved results
      * @throws UserQueryException - In case the search is malformed
      */
-    public abstract SearchReport search(T search) throws UserQueryException, QueryExecutionException;
+    /**
+     * Executes the search specification on the target database and gets a list of
+     * results. Final report is generated from the returned results.
+     *
+     * @param searchSpecification - The specification of the search
+     * @return - List of retrieved documents from the target database
+     * @throws UserQueryException
+     * @throws QueryExecutionException
+     */
+    public abstract SearchReport search(SearchSpecification<T> searchSpecification) throws UserQueryException, QueryExecutionException;
 
     /**
      * Saves the data report along with the search to the database to be used as cache,

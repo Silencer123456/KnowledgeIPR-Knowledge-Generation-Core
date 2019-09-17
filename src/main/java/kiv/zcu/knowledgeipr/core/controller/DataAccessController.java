@@ -22,6 +22,7 @@ import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
@@ -64,11 +65,12 @@ public class DataAccessController {
      * @param <T> - Type of search according to the search strategy being used
      * @return Response object containing the generated report with results and other info
      */
-    public <T extends Search, V extends IDataSearcher> SearchResponse search(SearchStrategy<T, V> searchStrategy, T search) {
+    public <T extends Search, V extends IDataSearcher> SearchResponse search(SearchStrategy<T, V> searchStrategy, SearchSpecification<T> searchSpecification) {
         SearchResponse response;
         try {
-            SearchReport report = searchStrategy.search(search);
+            SearchReport report = searchStrategy.search(searchSpecification);
 
+            Search search = searchSpecification.getSearch();
             response = new SearchResponse(ResponseStatus.SUCCESS, "OK", report);
             response.setDocsInCollection(getCountForDataSource(search.getDataSourceType()));
             response.setSearchedCollection(search.getDataSourceType());

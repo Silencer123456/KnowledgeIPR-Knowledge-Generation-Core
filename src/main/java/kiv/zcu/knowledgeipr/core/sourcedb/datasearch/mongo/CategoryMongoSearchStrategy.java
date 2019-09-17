@@ -5,8 +5,10 @@ import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.MongoSearchReport;
+import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
 import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.Common;
 
@@ -30,7 +32,9 @@ public class CategoryMongoSearchStrategy extends SearchStrategy<CategorySearch, 
      * The rest of the results are retrieved by regular search.
      */
     @Override
-    public MongoSearchReport search(CategorySearch search) throws UserQueryException, QueryExecutionException {
+    public SearchReport search(SearchSpecification<CategorySearch> searchSpecification) throws UserQueryException, QueryExecutionException {
+        CategorySearch search = searchSpecification.getSearch();
+
         MongoSearchReport report = (MongoSearchReport) queryService.getCachedReport(search, MongoSearchReport.class);
         if (report != null) {
             return report;

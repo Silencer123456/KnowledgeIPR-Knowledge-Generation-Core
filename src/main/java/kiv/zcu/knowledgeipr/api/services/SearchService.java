@@ -13,7 +13,9 @@ import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.TextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
@@ -65,7 +67,10 @@ public abstract class SearchService<T extends IDataSearcher> {
             throw new ApiException(e.getMessage());
         }
 
-        return processQueryInit(new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName()));
+        Search search = new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName());
+        SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);
+
+        return processQueryInit(searchSpecification);
     }
 
     /**
@@ -172,8 +177,9 @@ public abstract class SearchService<T extends IDataSearcher> {
             throw new ApiException(e.getMessage());
         }
 
-        SearchResponse searchResponse = dataAccessController.search(searchStrategy,
-                new Search(query, DataSourceType.PATENT, 1, limit, true, searchStrategy.getSearchEngineName()));
+        Search search = new Search(query, DataSourceType.PATENT, 1, limit, true, searchStrategy.getSearchEngineName());
+        SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);// TODO: Mongo does not make use of the search specifications
+        SearchResponse searchResponse = dataAccessController.search(searchStrategy, searchSpecification);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }
@@ -185,13 +191,15 @@ public abstract class SearchService<T extends IDataSearcher> {
      * @return Formatted response containing the serialized report as json
      * @throws ApiException if the query is malformed
      */
-    protected javax.ws.rs.core.Response processQueryInit(Search search) throws ApiException, ObjectSerializationException {
+    protected javax.ws.rs.core.Response processQueryInit(SearchSpecification<Search> searchSpecification) throws ApiException, ObjectSerializationException {
+        Search search = searchSpecification.getSearch();
         Query query = search.getQuery();
         if (query.getFilters() == null || query.getFilters().isEmpty() || search.getDataSourceType() == null) {
-            throw new ApiException("Wrong search format.");
+            throw new ApiException("Wrong query format.");
         }
+        //SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);// TODO: Mongo does not make use of the search specifications
 
-        SearchResponse searchResponse = dataAccessController.search(searchStrategy, search);
+        SearchResponse searchResponse = dataAccessController.search(searchStrategy, searchSpecification);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }

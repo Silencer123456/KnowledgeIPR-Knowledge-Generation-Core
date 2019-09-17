@@ -56,6 +56,7 @@ public class CommonElasticRunner {
             SearchHit[] searchHits = hits.getHits();
             for (SearchHit hit : searchHits) {
                 Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+                sourceAsMap.put("_id", hit.getId());
                 records.add(new ElasticRecord(sourceAsMap));
             }
 

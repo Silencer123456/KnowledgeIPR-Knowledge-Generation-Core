@@ -9,6 +9,8 @@ import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.TextSearchElasticSpecification;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
@@ -46,7 +48,10 @@ public class SearchMongoService extends SearchService<IMongoDataSearcher> {
             options.put("timeout", 50);
 
             Query query = new Query(filters, conditions, options);
-            return processQueryInit(new Search(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName()));
+            Search search = new Search(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
+            SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search); // TODO: Mongo does not make use of search specifications so far
+
+            return processQueryInit(searchSpecification);
         }
     }
 
@@ -60,8 +65,10 @@ public class SearchMongoService extends SearchService<IMongoDataSearcher> {
             options.put("timeout", 50);
 
             Query query = new Query(filters, new HashMap<>(), options);
+            Search search = new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
+            SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);
 
-            return processQueryInit(new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName()));
+            return processQueryInit(searchSpecification);
         }
     }
 }

@@ -8,6 +8,7 @@ import kiv.zcu.knowledgeipr.core.model.report.ElasticSearchReport;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
 import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.Common;
 
@@ -21,7 +22,9 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
     }
 
     @Override
-    public SearchReport search(CategorySearch search) throws UserQueryException, QueryExecutionException {
+    public SearchReport search(SearchSpecification<CategorySearch> searchSpecification) throws UserQueryException, QueryExecutionException {
+        CategorySearch search = searchSpecification.getSearch();
+
         ElasticSearchReport report = (ElasticSearchReport) queryService.getCachedReport(search, ElasticSearchReport.class);
         if (report != null) {
             return report;
@@ -39,7 +42,8 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
         }
 
         if (records.size() < search.getLimit()) {
-            dbReport = dataSearcher.searchData(search);
+            dbReport = dataSearcher.search(searchSpecification);
+            //dbReport = dataSearcher.searchData(search);
             // remove records already found in confirmed results in db
             dbReport.getRecords().removeAll(records);
 
