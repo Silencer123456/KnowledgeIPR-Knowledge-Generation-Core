@@ -7,6 +7,7 @@ import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.ElasticSearchReport;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
+import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.Common;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch, IElasticDataSearcher> {
 
     public CategoryElasticSearchStrategy(IElasticDataSearcher dataSearcher, DbQueryService queryService) {
-        super(dataSearcher, queryService);
+        super(dataSearcher, queryService, SearchEngineName.elastic);
     }
 
     @Override

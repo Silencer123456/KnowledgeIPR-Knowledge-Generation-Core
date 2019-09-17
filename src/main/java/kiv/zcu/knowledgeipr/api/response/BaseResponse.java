@@ -2,12 +2,12 @@ package kiv.zcu.knowledgeipr.api.response;
 
 public class BaseResponse {
 
-    private StatusResponse statusResponse;
+    private ResponseStatus responseStatus;
 
     private String message;
 
-    public BaseResponse(StatusResponse statusResponse, String msg) {
-        this.statusResponse = statusResponse;
+    public BaseResponse(ResponseStatus responseStatus, String msg) {
+        this.responseStatus = responseStatus;
         this.message = msg;
     }
 

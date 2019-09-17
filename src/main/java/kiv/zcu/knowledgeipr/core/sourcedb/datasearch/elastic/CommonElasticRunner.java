@@ -44,6 +44,7 @@ public class CommonElasticRunner {
         SearchRequest searchRequest = new SearchRequest(collectionName); // TODO: get name of db from mongo or elastic
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.timeout(new TimeValue(search.getQuery().getOptions().getTimeout(), TimeUnit.SECONDS));
+        searchSourceBuilder.from((search.getPage() - 1) * search.getLimit());
         searchSourceBuilder.size(search.getLimit());
         searchSourceBuilder.query(queryBuilder);
         searchRequest.source(searchSourceBuilder);

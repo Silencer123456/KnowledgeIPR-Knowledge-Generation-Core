@@ -12,8 +12,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 public abstract class BasicRepository<T> implements IRepository<T> {
+
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     QueryRunner runner;
 
@@ -26,7 +29,7 @@ public abstract class BasicRepository<T> implements IRepository<T> {
     }
 
     @Override
-    public long add(T item) {
+    public long add(T item) throws SQLException {
         return add(Collections.singletonList(item));
     }
 
@@ -43,12 +46,12 @@ public abstract class BasicRepository<T> implements IRepository<T> {
 
     /**
      * This additional method has to be here because of the second parameter which
-     * need to be passed in order to infer the class type. Cannot select from a generic
+     * needs to be passed in order to infer the class type. Cannot select from a generic
      * type variable because of type erasure.
      *
-     * @param specification
+     * @param specification - The Sql specification to be run
      * @param clazz         - T class type
-     * @return
+     * @return - List of instances of type T
      */
     List<T> queryGeneric(Specification specification, Class<T> clazz) {
         final SqlSpecification sqlSpecification = (SqlSpecification) specification;

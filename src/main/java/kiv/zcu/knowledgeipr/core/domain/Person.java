@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.domain;
 
+// !!!! NOT USED !!!!
 public class Person {
 
     private String name;

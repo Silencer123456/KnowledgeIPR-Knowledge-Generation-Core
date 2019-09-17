@@ -14,6 +14,8 @@ public class ReportDto {
     private Timestamp dateGenerated;
     private Timestamp dateUpdated;
     private int page;
+    private String dbEngine;
+    private String sourceType;
 
     /**
      * Needs empty constructor for the serialization from the database
@@ -21,13 +23,15 @@ public class ReportDto {
     public ReportDto() {
     }
 
-    public ReportDto(long queryId, int docsPerPage, String reportText, Timestamp dateGenerated, Timestamp dateUpdated, int page) {
+    public ReportDto(long queryId, int docsPerPage, String reportText, Timestamp dateGenerated, Timestamp dateUpdated, int page, String dbEngine, String sourceType) {
         this.queryId = queryId;
         this.docsPerPage = docsPerPage;
         this.reportText = reportText;
         this.dateGenerated = dateGenerated;
         this.dateUpdated = dateUpdated;
         this.page = page;
+        this.dbEngine = dbEngine;
+        this.sourceType = sourceType;
     }
 
     public long getReportId() {
@@ -84,5 +88,23 @@ public class ReportDto {
 
     public void setPage(int page) {
         this.page = page;
+    }
+
+    public String getDbEngine() {
+        return dbEngine;
+    }
+
+    public void setDbEngine(String dbEngine) {
+        this.dbEngine = dbEngine;
+
+
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
     }
 }

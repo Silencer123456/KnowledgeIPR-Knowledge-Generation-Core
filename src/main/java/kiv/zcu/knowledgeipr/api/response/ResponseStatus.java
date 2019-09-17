@@ -1,5 +1,5 @@
 package kiv.zcu.knowledgeipr.api.response;
 
-public enum StatusResponse {
+public enum ResponseStatus {
     SUCCESS, ERROR
 }

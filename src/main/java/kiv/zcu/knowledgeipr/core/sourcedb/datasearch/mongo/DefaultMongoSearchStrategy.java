@@ -5,6 +5,7 @@ import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.MongoSearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 public class DefaultMongoSearchStrategy extends SearchStrategy<Search, IMongoDataSearcher> {
 
     public DefaultMongoSearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
-        super(dataSearcher, queryService);
+        super(dataSearcher, queryService, SearchEngineName.mongo);
     }
 
     /**

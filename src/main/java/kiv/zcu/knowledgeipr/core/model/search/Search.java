@@ -33,12 +33,18 @@ public class Search {
      */
     private boolean advancedSearch;
 
-    public Search(Query query, DataSourceType dataSourceType, int page, int limit, boolean advancedSearch) {
+    /**
+     * Which search engine to use (Mongo, Elastic ...)
+     */
+    private SearchEngineName searchEngineName;
+
+    public Search(Query query, DataSourceType dataSourceType, int page, int limit, boolean advancedSearch, SearchEngineName searchEngineName) {
         this.query = query;
         this.dataSourceType = dataSourceType;
         this.page = page;
         this.limit = limit;
         this.advancedSearch = advancedSearch;
+        this.searchEngineName = searchEngineName;
     }
 
     public Query getQuery() {
@@ -63,5 +69,9 @@ public class Search {
 
     public DataSourceType getDataSourceType() {
         return dataSourceType;
+    }
+
+    public SearchEngineName getSearchEngineName() {
+        return searchEngineName;
     }
 }

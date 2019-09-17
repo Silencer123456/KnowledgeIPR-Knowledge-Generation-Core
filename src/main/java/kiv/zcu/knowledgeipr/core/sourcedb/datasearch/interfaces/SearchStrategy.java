@@ -5,6 +5,7 @@ import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
 
 /**
  * Specifies the strategy of how the searches are performed.
@@ -21,14 +22,17 @@ public abstract class SearchStrategy<T extends Search, V extends IDataSearcher> 
     //TODO: Use interface instead
     protected DbQueryService queryService;
 
+    protected SearchEngineName searchEngineName;
+
     /**
      * Provides methods for searching the target database for data
      */
     protected V dataSearcher;
 
-    public SearchStrategy(V dataSearcher, DbQueryService queryService) {
+    public SearchStrategy(V dataSearcher, DbQueryService queryService, SearchEngineName searchEngineName) {
         this.dataSearcher = dataSearcher;
         this.queryService = queryService;
+        this.searchEngineName = searchEngineName;
     }
 
     /**
@@ -49,7 +53,7 @@ public abstract class SearchStrategy<T extends Search, V extends IDataSearcher> 
      * @param searchReport - The MongoSearchReport instance to be saved to the database with the search
      */
     protected void cacheSearch(T search, SearchReport searchReport) {
-        queryService.cacheQuery(search, searchReport);
+        queryService.cacheQuery(search, searchReport, searchEngineName);
     }
 
     /**
@@ -57,5 +61,9 @@ public abstract class SearchStrategy<T extends Search, V extends IDataSearcher> 
      */
     public void invalidateCache() {
         queryService.invalidateCache();
+    }
+
+    public SearchEngineName getSearchEngineName() {
+        return searchEngineName;
     }
 }

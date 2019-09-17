@@ -18,22 +18,19 @@ public class QueryRepository extends BasicRepository<QueryDto> {
     }
 
     @Override
-    public long add(Iterable<QueryDto> items) {
+    public long add(Iterable<QueryDto> items) throws SQLException {
         long newId = -1;
 
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
         String insertQuery = "INSERT INTO " + TABLE_NAME + " (hash, rawQueryText, normalizedText) VALUES (?, ?, ?)";
-        try {
-            final Connection connection = DataSourceUtils.getConnection();
 
-            for (QueryDto query : items) {
-                newId = runner.insert(connection, insertQuery, scalarHandler,
-                        query.getHash(), query.getRawText(), query.getNormalizedText());
-                // TODO: check if success ...
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        final Connection connection = DataSourceUtils.getConnection();
+
+        for (QueryDto query : items) {
+            newId = runner.insert(connection, insertQuery, scalarHandler,
+                    query.getHash(), query.getRawText(), query.getNormalizedText());
+            // TODO: check if success ...
         }
 
         return newId;

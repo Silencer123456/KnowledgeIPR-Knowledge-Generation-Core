@@ -26,6 +26,16 @@ public enum DataSourceType {
         return false;
     }
 
+    public static DataSourceType getByValue(String s) {
+        for (DataSourceType field : DataSourceType.values()) {
+            if (field.value.equals(s)) {
+                return field;
+            }
+        }
+
+        return null;
+    }
+
     public boolean equalsName(String otherValue) {
         // (otherName == null) check is not needed because name.equals(null) returns false
         return value.equals(otherValue);

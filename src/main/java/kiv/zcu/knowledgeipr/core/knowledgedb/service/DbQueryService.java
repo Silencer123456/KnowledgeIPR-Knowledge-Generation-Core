@@ -16,6 +16,7 @@ import kiv.zcu.knowledgeipr.core.knowledgedb.specification.RecordsWithConfirmedC
 import kiv.zcu.knowledgeipr.core.knowledgedb.specification.ReportsForQuerySpecification;
 import kiv.zcu.knowledgeipr.core.model.report.SearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -85,7 +86,7 @@ public class DbQueryService {
      * @param search - The search instance containing the query to be saved
      * @param report - The report to be saved and associated with the query
      */
-    public void cacheQuery(Search search, SearchReport report) {
+    public void cacheQuery(Search search, SearchReport report, SearchEngineName searchEngineName) {
         LOGGER.info("Saving search " + search.getQuery().hashCode() + "; limit: " + search.getLimit() + "; page: " + search.getPage());
         try {
             QueryDto queryDto = new QueryToQueryDtoMapper().map(search.getQuery());
@@ -103,7 +104,8 @@ public class DbQueryService {
             }
             queryDto.setId(queryId);
 
-            ReportDto reportDto = new ReportToReportDtoMapper(search.getPage(), search.getLimit(), queryId).map(report);
+            ReportDto reportDto = new ReportToReportDtoMapper(search.getPage(), search.getLimit(),
+                    queryId, searchEngineName.toString(), search.getDataSourceType().value).map(report);
 
             reportDto.setQueryId(queryId);
 
@@ -163,7 +165,9 @@ public class DbQueryService {
         try {
             DataSourceUtils.startTransaction();
 
-            List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(search.getQuery(), search.getPage(), search.getLimit()));
+            List<ReportDto> reportDtoList = reportsRepository.query(new ReportsForQuerySpecification(
+                    search.getQuery(), search.getPage(), search.getLimit(),
+                    search.getSearchEngineName().toString(), search.getDataSourceType().value));
             if (reportDtoList == null || reportDtoList.isEmpty()) {
                 DataSourceUtils.close();
                 return null;

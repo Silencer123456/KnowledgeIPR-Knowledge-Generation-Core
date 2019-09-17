@@ -6,6 +6,7 @@ import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.knowledgedb.service.DbQueryService;
 import kiv.zcu.knowledgeipr.core.model.report.MongoSearchReport;
 import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
+import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.Common;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public class CategoryMongoSearchStrategy extends SearchStrategy<CategorySearch, IMongoDataSearcher> {
 
     public CategoryMongoSearchStrategy(IMongoDataSearcher dataSearcher, DbQueryService queryService) {
-        super(dataSearcher, queryService);
+        super(dataSearcher, queryService, SearchEngineName.mongo);
     }
 
     /**

@@ -9,7 +9,7 @@ public class ChartResponse {
      * Status of the response. OK or ERROR
      */
     private String msg;
-    private StatusResponse status;
+    private ResponseStatus status;
 
     /**
      * Json representation of a report to be included in the response
@@ -17,7 +17,7 @@ public class ChartResponse {
     @JsonProperty("report")
     private JsonNode reportJson;
 
-    public ChartResponse(StatusResponse status, String msg, JsonNode reportJson) {
+    public ChartResponse(ResponseStatus status, String msg, JsonNode reportJson) {
         this.msg = msg;
         this.status = status;
         this.reportJson = reportJson;
@@ -27,7 +27,7 @@ public class ChartResponse {
         return msg;
     }
 
-    public StatusResponse getStatus() {
+    public ResponseStatus getStatus() {
         return status;
     }
 

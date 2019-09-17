@@ -38,7 +38,7 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
             options.put("timeout", 50);
 
             Query query = new Query(filters, new HashMap<>(), options);
-            return processQueryInit(new Search(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false));
+            return processQueryInit(new Search(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName()));
         }
     }
 
@@ -52,7 +52,7 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
             options.put("timeout", 50);
 
             Query query = new Query(filters, new HashMap<>(), options);
-            return processQueryInit(new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false));
+            return processQueryInit(new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName()));
         }
     }
 }

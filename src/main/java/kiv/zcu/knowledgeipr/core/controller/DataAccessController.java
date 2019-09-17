@@ -10,8 +10,8 @@ import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
 import kiv.zcu.knowledgeipr.api.response.ChartResponse;
+import kiv.zcu.knowledgeipr.api.response.ResponseStatus;
 import kiv.zcu.knowledgeipr.api.response.SearchResponse;
-import kiv.zcu.knowledgeipr.api.response.StatusResponse;
 import kiv.zcu.knowledgeipr.api.response.WordNetResponse;
 import kiv.zcu.knowledgeipr.core.model.report.ChartReport;
 import kiv.zcu.knowledgeipr.core.model.report.EmptySearchReport;
@@ -69,7 +69,7 @@ public class DataAccessController {
         try {
             SearchReport report = searchStrategy.search(search);
 
-            response = new SearchResponse(StatusResponse.SUCCESS, "OK", report);
+            response = new SearchResponse(ResponseStatus.SUCCESS, "OK", report);
             response.setDocsInCollection(getCountForDataSource(search.getDataSourceType()));
             response.setSearchedCollection(search.getDataSourceType());
 
@@ -79,7 +79,7 @@ public class DataAccessController {
 
         } catch (UserQueryException | QueryExecutionException e) {
             LOGGER.warning("Query processing was prematurely terminated: " + e.getMessage());
-            response = new SearchResponse(StatusResponse.ERROR, e.getMessage(), new EmptySearchReport());
+            response = new SearchResponse(ResponseStatus.ERROR, e.getMessage(), new EmptySearchReport());
         }
 
         return response;
@@ -105,7 +105,7 @@ public class DataAccessController {
         JsonNode cachedReport = reportHandler.loadReportToJsonFromFile(collectionName + "\\" + filename);
         if (cachedReport != null && !overwrite) {
             LOGGER.info("Cached report found for " + filename);
-            return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+            return new ChartResponse(ResponseStatus.SUCCESS, "OK", cachedReport);
         }
 
         LOGGER.info("Querying database for: " + chartQuery.getTitle());
@@ -117,7 +117,7 @@ public class DataAccessController {
 
         cachedReport = SerializationUtils.getTreeFromObject(report);
 
-        return new ChartResponse(StatusResponse.SUCCESS, "OK", cachedReport);
+        return new ChartResponse(ResponseStatus.SUCCESS, "OK", cachedReport);
     }
 
     public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName) throws ObjectSerializationException {

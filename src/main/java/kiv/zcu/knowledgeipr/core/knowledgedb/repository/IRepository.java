@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.core.knowledgedb.repository;
 
 import kiv.zcu.knowledgeipr.core.knowledgedb.specification.Specification;
 
+import java.sql.SQLException;
 import java.util.List;
 
 // TODO: !!! Create generic repository
@@ -12,9 +13,9 @@ public interface IRepository<T> {
      * @param item - item to be inserted
      * @return id of the inserted record
      */
-    long add(T item);
+    long add(T item) throws SQLException;
 
-    long add(Iterable<T> items);
+    long add(Iterable<T> items) throws SQLException;
 
     void update(T item);
 

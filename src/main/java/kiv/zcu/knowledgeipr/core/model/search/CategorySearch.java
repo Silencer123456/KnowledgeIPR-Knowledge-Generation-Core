@@ -13,8 +13,8 @@ public class CategorySearch extends Search {
      */
     private String category;
 
-    public CategorySearch(Query query, DataSourceType dataSourceType, int page, int limit, boolean advancedSearch, String category) {
-        super(query, dataSourceType, page, limit, advancedSearch);
+    public CategorySearch(Query query, DataSourceType dataSourceType, int page, int limit, boolean advancedSearch, SearchEngineName searchEngineName, String category) {
+        super(query, dataSourceType, page, limit, advancedSearch, searchEngineName);
 
         this.category = category;
     }

@@ -16,7 +16,7 @@ public class SearchResponse {
     /**
      * Status of the response. OK or ERROR
      */
-    private StatusResponse status;
+    private ResponseStatus status;
 
     /**
      * Searched collection
@@ -41,7 +41,7 @@ public class SearchResponse {
     @JsonProperty("report")
     private SearchReport report;
 
-    public SearchResponse(StatusResponse status, String msg, SearchReport report) {
+    public SearchResponse(ResponseStatus status, String msg, SearchReport report) {
         this.msg = msg;
         this.status = status;
         this.report = report;
@@ -51,7 +51,7 @@ public class SearchResponse {
         return msg;
     }
 
-    public StatusResponse getStatus() {
+    public ResponseStatus getStatus() {
         return status;
     }
 

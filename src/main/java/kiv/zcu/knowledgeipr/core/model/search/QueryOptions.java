@@ -34,16 +34,27 @@ public class QueryOptions {
      * @return timeout
      */
     public int getTimeout() {
-        if (options.containsKey("timeout")) {
-            int timeout = (int) options.get("timeout");
-            if (timeout < 0) {
-                timeout = DEFAULT_TIMEOUT;
-            }
-            timeout = Math.min(timeout, MAX_TIMEOUT);
-            return timeout;
+        if (options.containsKey(QueryOption.TIMEOUT.value)) {
+            return (int) options.get(QueryOption.TIMEOUT.value);
         } else {
             return DEFAULT_TIMEOUT;
         }
+    }
+
+    /**
+     * Gets the specified query option value as an Object. If the
+     * option is not present, null is returned
+     *
+     * @param option - The option to find the value for
+     * @return
+     */
+    public Object getOption(QueryOption option) {
+        Object o = null;
+        if (options.containsKey(option.value)) {
+            o = options.get(option.value);
+        }
+
+        return o;
     }
 
     /**
@@ -53,9 +64,23 @@ public class QueryOptions {
      * @throws QueryOptionsValidationException if the validation fails
      */
     public void validate() throws QueryOptionsValidationException {
-        if (options.containsKey("timeout")) {
-            if (!(options.get("timeout") instanceof Integer)) {
+        String timeoutVal = QueryOption.TIMEOUT.value;
+        if (options.containsKey(timeoutVal)) {
+            if (!(options.get(timeoutVal) instanceof Integer)) {
                 throw new QueryOptionsValidationException("Value of field timeout must be an integer");
+            }
+
+            int timeout = (int) options.get(timeoutVal);
+            if (timeout < 0) {
+                timeout = DEFAULT_TIMEOUT;
+            }
+            timeout = Math.min(timeout, MAX_TIMEOUT);
+            options.replace(timeoutVal, options.get(timeoutVal), timeout);
+        }
+
+        if (options.containsKey(QueryOption.USE_CACHE.value)) {
+            if (!(options.get(QueryOption.USE_CACHE.value) instanceof Boolean)) {
+                throw new QueryOptionsValidationException("Value of field " + QueryOption.USE_CACHE.value + " must be boolean");
             }
         }
     }
@@ -64,15 +89,17 @@ public class QueryOptions {
         return options;
     }
 
-    enum Options {
+    public enum QueryOption {
         /**
          * Specifies if the returned documents should be sorted by their score
          */
-        SCORE("score");
+        SCORE("score"),
+        TIMEOUT("timeout"),
+        USE_CACHE("useCache");
 
         final String value;
 
-        Options(String value) {
+        QueryOption(String value) {
             this.value = value;
         }
 
@@ -85,5 +112,4 @@ public class QueryOptions {
             return this.value;
         }
     }
-
 }

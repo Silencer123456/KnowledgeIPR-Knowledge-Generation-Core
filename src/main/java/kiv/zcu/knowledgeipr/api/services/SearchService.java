@@ -6,8 +6,8 @@ import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryOptionsValidationException;
 import kiv.zcu.knowledgeipr.api.filter.Logged;
 import kiv.zcu.knowledgeipr.api.response.BaseResponse;
+import kiv.zcu.knowledgeipr.api.response.ResponseStatus;
 import kiv.zcu.knowledgeipr.api.response.SearchResponse;
-import kiv.zcu.knowledgeipr.api.response.StatusResponse;
 import kiv.zcu.knowledgeipr.api.response.WordNetResponse;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
@@ -28,7 +28,7 @@ public abstract class SearchService<T extends IDataSearcher> {
 
     private DataAccessController dataAccessController;
 
-    private SearchStrategy<Search, T> searchStrategy;
+    protected SearchStrategy<Search, T> searchStrategy;
 
     public SearchService(DataAccessController dataAccessController, SearchStrategy<Search, T> searchStrategy) {
         this.dataAccessController = dataAccessController;
@@ -49,10 +49,8 @@ public abstract class SearchService<T extends IDataSearcher> {
     @Consumes("application/json")
     @Produces("application/json")
     public javax.ws.rs.core.Response search(@PathParam("sourceType") String sourceType, @QueryParam("page") int page, String queryJson) throws ApiException, ObjectSerializationException {
-        DataSourceType dataSourceType;
-        try {
-            dataSourceType = DataSourceType.valueOf(sourceType);
-        } catch (IllegalArgumentException e) {
+        DataSourceType dataSourceType = DataSourceType.getByValue(sourceType);
+        if (dataSourceType == null) {
             dataSourceType = DataSourceType.PATENT;
         }
 
@@ -67,7 +65,7 @@ public abstract class SearchService<T extends IDataSearcher> {
             throw new ApiException(e.getMessage());
         }
 
-        return processQueryInit(new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true));
+        return processQueryInit(new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName()));
     }
 
     /**
@@ -152,7 +150,7 @@ public abstract class SearchService<T extends IDataSearcher> {
     public javax.ws.rs.core.Response invalidateCache() throws ObjectSerializationException {
         dataAccessController.invalidateCache(searchStrategy);
 
-        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(new BaseResponse(StatusResponse.SUCCESS, "OK"))).build();
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(new BaseResponse(ResponseStatus.SUCCESS, "OK"))).build();
     }
 
     @POST
@@ -175,7 +173,7 @@ public abstract class SearchService<T extends IDataSearcher> {
         }
 
         SearchResponse searchResponse = dataAccessController.search(searchStrategy,
-                new Search(query, DataSourceType.PATENT, 1, limit, true));
+                new Search(query, DataSourceType.PATENT, 1, limit, true, searchStrategy.getSearchEngineName()));
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }

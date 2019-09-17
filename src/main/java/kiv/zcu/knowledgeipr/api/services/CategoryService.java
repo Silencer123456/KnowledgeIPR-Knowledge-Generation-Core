@@ -108,7 +108,7 @@ public abstract class CategoryService<T extends IDataSearcher> {
         Query query = new Query(filters, new HashMap<>(), new HashMap<>());
 
         SearchResponse searchResponse = dataAccessController.search(searchStrategy,
-                new CategorySearch(query, DataSourceType.PATENT, page, 20, true, category.data.getName()));
+                new CategorySearch(query, DataSourceType.PATENT, page, 20, true, searchStrategy.getSearchEngineName(), category.data.getName()));
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
     }

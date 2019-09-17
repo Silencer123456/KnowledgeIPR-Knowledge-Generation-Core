@@ -18,24 +18,19 @@ public class ReportRepository extends BasicRepository<ReportDto> {
     }
 
     @Override
-    public long add(Iterable<ReportDto> items) {
+    public long add(Iterable<ReportDto> items) throws SQLException {
         long newId = -1;
 
         ScalarHandler<Long> scalarHandler = new ScalarHandler<>();
 
-        String insertQuery = "INSERT INTO " + TABLE_NAME + " (queryId, docsPerPage, reportText, page) VALUES (?, ?, ?, ?)";
-        try {
-            final Connection connection = DataSourceUtils.getConnection();
-            for (ReportDto report : items) {
-                newId = runner.insert(connection, insertQuery, scalarHandler,
-                        report.getQueryId(), report.getDocsPerPage(), report.getReportText(), report.getPage());
-                // TODO: check if success ...
+        String insertQuery = "INSERT INTO " + TABLE_NAME + " (queryId, docsPerPage, reportText, page, dbEngine, sourceType) VALUES (?, ?, ?, ?, ?, ?)";
+        final Connection connection = DataSourceUtils.getConnection();
+        for (ReportDto report : items) {
+            newId = runner.insert(connection, insertQuery, scalarHandler,
+                    report.getQueryId(), report.getDocsPerPage(), report.getReportText(), report.getPage(), report.getDbEngine(), report.getSourceType());
 
-                // TODO: insert to references + reportreferences table
+            // TODO: insert to references + reportreferences table
 
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return newId;

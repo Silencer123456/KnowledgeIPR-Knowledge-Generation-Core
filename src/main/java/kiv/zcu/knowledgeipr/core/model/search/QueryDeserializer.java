@@ -55,7 +55,7 @@ public class QueryDeserializer extends StdDeserializer<Query> {
         Map<String, Map<String, Integer>> conditions = conditionsNode == null ? new HashMap<>()
                 : mapper.readValue(mapper.treeAsTokens(conditionsNode), conditionsRef);
 
-        // Options map
+        // QueryOption map
         TypeReference<Map<String, Object>> optionsRef = new TypeReference<Map<String, Object>>() {
         };
         JsonNode optionsNode = node.get("options");
