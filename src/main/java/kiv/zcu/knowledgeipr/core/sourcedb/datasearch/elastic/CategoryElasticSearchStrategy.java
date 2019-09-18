@@ -43,10 +43,8 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
 
         if (records.size() < search.getLimit()) {
             dbReport = dataSearcher.search(searchSpecification);
-            //dbReport = dataSearcher.searchData(search);
             // remove records already found in confirmed results in db
             dbReport.getRecords().removeAll(records);
-
             // Add searched documents after the confirmed ones, but only until the specified limit is reached
             for (ElasticRecord record : dbReport.getRecords()) {
                 if (records.size() >= search.getLimit()) {

@@ -70,7 +70,7 @@ public abstract class SearchService<T extends IDataSearcher> {
         Search search = new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName());
         SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);
 
-        return processQueryInit(searchSpecification);
+        return initSearch(searchSpecification);
     }
 
     /**
@@ -185,19 +185,19 @@ public abstract class SearchService<T extends IDataSearcher> {
     }
 
     /**
-     * Initiates the processing of the search
+     * Initiates the search process. Invokes the main controller and provides it with the searching
+     * strategy and the search specification.
      *
-     * @param search - The search instance
+     * @param searchSpecification - The search specification
      * @return Formatted response containing the serialized report as json
      * @throws ApiException if the query is malformed
      */
-    protected javax.ws.rs.core.Response processQueryInit(SearchSpecification<Search> searchSpecification) throws ApiException, ObjectSerializationException {
+    protected javax.ws.rs.core.Response initSearch(SearchSpecification<Search> searchSpecification) throws ApiException, ObjectSerializationException {
         Search search = searchSpecification.getSearch();
         Query query = search.getQuery();
         if (query.getFilters() == null || query.getFilters().isEmpty() || search.getDataSourceType() == null) {
             throw new ApiException("Wrong query format.");
         }
-        //SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);// TODO: Mongo does not make use of the search specifications
 
         SearchResponse searchResponse = dataAccessController.search(searchStrategy, searchSpecification);
 

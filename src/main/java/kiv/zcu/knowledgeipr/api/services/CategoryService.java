@@ -7,6 +7,7 @@ import kiv.zcu.knowledgeipr.api.filter.Logged;
 import kiv.zcu.knowledgeipr.api.response.SearchResponse;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.search.CategorySearch;
+import kiv.zcu.knowledgeipr.core.model.search.ElasticSearchQueryBuilder;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.category.data.Category;
 import kiv.zcu.knowledgeipr.core.model.search.category.data.CategoryHandler;
@@ -20,9 +21,7 @@ import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class CategoryService<T extends IDataSearcher> {
 
@@ -30,10 +29,13 @@ public abstract class CategoryService<T extends IDataSearcher> {
     private SearchStrategy<CategorySearch, T> searchStrategy;
     private CategoryHandler categories;
 
+    private ElasticSearchQueryBuilder elasticSearchQueryBuilder;
+
     public CategoryService(DataAccessController dataAccessController, SearchStrategy<CategorySearch, T> searchStrategy) {
         this.dataAccessController = dataAccessController;
         this.searchStrategy = searchStrategy;
         categories = new CategoryHandler();
+        elasticSearchQueryBuilder = ElasticSearchQueryBuilder.getInstance();
     }
 
     /**
@@ -103,11 +105,7 @@ public abstract class CategoryService<T extends IDataSearcher> {
         }
 
         TreeNode<Category> category = categories.getCategory(categoryName);
-
-        Map<String, String> filters = new HashMap<>();
-        filters.put("$text", category.data.getKeywordsSeparatedBy(" "));
-
-        Query query = new Query(filters, new HashMap<>(), new HashMap<>());
+        Query query = elasticSearchQueryBuilder.buildPatentsForCategoryQuery(category);
 
         CategorySearch search = new CategorySearch(query, DataSourceType.PATENT, page, 20, true, searchStrategy.getSearchEngineName(), category.data.getName());
         SearchSpecification<CategorySearch> specification = new TextSearchElasticSpecification<>(search);

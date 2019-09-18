@@ -5,6 +5,11 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecificat
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
+/**
+ * Specifies an ElasticSearch query which runs a text search using Lucene syntax.
+ *
+ * @param <T>
+ */
 public class TextSearchElasticSpecification<T extends Search> extends SearchSpecification<T> {
 
     public TextSearchElasticSpecification(T search) {

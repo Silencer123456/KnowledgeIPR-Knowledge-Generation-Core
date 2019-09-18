@@ -51,7 +51,7 @@ public class SearchMongoService extends SearchService<IMongoDataSearcher> {
             Search search = new Search(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
             SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search); // TODO: Mongo does not make use of search specifications so far
 
-            return processQueryInit(searchSpecification);
+            return initSearch(searchSpecification);
         }
     }
 
@@ -68,7 +68,7 @@ public class SearchMongoService extends SearchService<IMongoDataSearcher> {
             Search search = new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
             SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);
 
-            return processQueryInit(searchSpecification);
+            return initSearch(searchSpecification);
         }
     }
 }
