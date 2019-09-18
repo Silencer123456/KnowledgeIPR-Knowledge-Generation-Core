@@ -59,9 +59,10 @@ public class DataAccessController {
 
     /**
      *  Initiates the search on the target database according to the search strategy selected.
-     *      * Generates a response to be sent back to the client from the returned results.
+     *  Generates a response to be sent back to the client from the returned results.
      * @param searchStrategy - The search strategy to use
-     * @param search - The search instance containing relevant search information
+     * @param searchSpecification - The search specification containing search information and how it should be transofrmed
+     *                            to the target database query.
      * @param <T> - Type of search according to the search strategy being used
      * @return Response object containing the generated report with results and other info
      */

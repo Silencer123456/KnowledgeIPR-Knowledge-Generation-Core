@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  * Singleton class used for creating specific queries.
+ * TODO: maybe inherit from common class
  */
 public class ElasticSearchQueryBuilder {
 
