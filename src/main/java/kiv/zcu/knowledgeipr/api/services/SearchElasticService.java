@@ -53,11 +53,13 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
 
     @POST
     @Logged
-    @Path("/similar/{id}")
+    @Path("/similar")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response searchSimilar(@QueryParam("page") int page, @PathParam("id") String id)
+    public javax.ws.rs.core.Response searchSimilar(@QueryParam("page") int page, @QueryParam("id") String id)
             throws ApiException, ObjectSerializationException {
+
+        isPageValid(page);
         Search search = new Search(queryBuilder.buildSimilarDocumentsQuery(), DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
 
         SearchSpecification<Search> searchSpecification = new SimilarSearchSpecification(search, id);// TODO: Mongo does not make use of the search specifications

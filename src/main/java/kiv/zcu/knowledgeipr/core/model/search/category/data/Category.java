@@ -1,5 +1,7 @@
 package kiv.zcu.knowledgeipr.core.model.search.category.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Category {
     /**
      * The list of keywords associated with this category
      */
+    @JsonIgnore
     private List<String> keywords;
 
     public Category(String name, List<String> keywords) {

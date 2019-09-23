@@ -17,6 +17,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.TextSearchElasticSp
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
+import kiv.zcu.knowledgeipr.utils.AppConstants;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
@@ -96,22 +97,34 @@ public abstract class CategoryService<T extends IDataSearcher> {
      */
     @GET
     @Logged
-    @Path("/get/{categoryName}/{page}")
+    @Path("/get/{categoryName}")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName, @PathParam("page") int page)
+    public javax.ws.rs.core.Response getResultsForCategory(@PathParam("categoryName") String categoryName, @QueryParam("page") int page)
             throws ApiException, ObjectSerializationException {
         if (!categories.containsCategory(categoryName)) {
             throw new ApiException("Wrong category name.");
         }
 
+        isPageValid(page);
+
         TreeNode<Category> category = categories.getCategory(categoryName);
         Query query = elasticSearchQueryBuilder.buildPatentsForCategoryQuery(category);
 
-        CategorySearch search = new CategorySearch(query, DataSourceType.PATENT, page, 20, true, searchStrategy.getSearchEngineName(), category.data.getName());
+        CategorySearch search = new CategorySearch(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName(), category.data.getName());
         SearchSpecification<CategorySearch> specification = new TextSearchElasticSpecification<>(search);
 
         SearchResponse searchResponse = dataAccessController.search(searchStrategy, specification);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();
+    }
+
+    // TODO: Move to common place
+    protected void isPageValid(int page) throws ApiException {
+        if (page <= 0) {
+            throw new ApiException("Page cannot be <= 0");
+        }
+        if (page > 100) {
+            throw new ApiException("Page cannot be > 100");
+        }
     }
 }
