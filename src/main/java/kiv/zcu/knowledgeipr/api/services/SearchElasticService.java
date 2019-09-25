@@ -8,9 +8,9 @@ import kiv.zcu.knowledgeipr.core.model.search.ElasticSearchQueryBuilder;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.AdvancedTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.SimilarSearchSpecification;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.TextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
@@ -37,7 +37,7 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
 
         Search search = new Search(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
 
-        SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);
+        SearchSpecification<Search> searchSpecification = new AdvancedTextSearchElasticSpecification<>(search);
         return initSearch(searchSpecification);
     }
 
@@ -46,7 +46,7 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
         Query query = queryBuilder.buildPatentNumberSearchQuery(patentNumber);
 
         Search search = new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
-        SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);
+        SearchSpecification<Search> searchSpecification = new AdvancedTextSearchElasticSpecification<>(search);
 
         return initSearch(searchSpecification);
     }

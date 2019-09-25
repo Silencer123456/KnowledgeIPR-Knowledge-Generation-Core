@@ -10,15 +10,15 @@ import org.elasticsearch.index.query.QueryBuilders;
  *
  * @param <T> The search type relevant to the specification
  */
-public class TextSearchElasticSpecification<T extends Search> extends SearchSpecification<T> {
+public class SimpleTextSearchElasticSpecification<T extends Search> extends SearchSpecification<T> {
 
-    public TextSearchElasticSpecification(T search) {
+    public SimpleTextSearchElasticSpecification(T search) {
         super(search);
     }
 
     // TODO: change return value to generic type
     @Override
     public QueryBuilder get() {
-        return QueryBuilders.queryStringQuery(search.getQuery().getTextFilter());
+        return QueryBuilders.simpleQueryStringQuery(search.getQuery().getTextFilter());
     }
 }

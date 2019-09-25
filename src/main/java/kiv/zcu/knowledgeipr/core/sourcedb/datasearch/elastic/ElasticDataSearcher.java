@@ -17,35 +17,11 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-
-
     private CommonElasticRunner elasticRunner;
 
     public ElasticDataSearcher() {
         elasticRunner = new CommonElasticRunner();
     }
-
-//    public DbElasticReport searchData(Search search) {
-//        Query query = search.getQuery();
-//
-//        QueryBuilder queryBuilder = QueryBuilders.queryStringQuery(query.getTextFilter());
-//
-//        LOGGER.info("Running : " + queryBuilder.toString());
-//
-//        return elasticRunner.runQuery(patentIndexPrefix + search.getDataSourceType(), queryBuilder, search);
-//    }
-
-//    @Override
-//    public DbElasticReport searchSimilar(Search search, String id) {
-//        QueryBuilder queryBuilder = QueryBuilders.moreLikeThisQuery(new String[] {"title"}, null,
-//                new MoreLikeThisQueryBuilder.Item[] {new MoreLikeThisQueryBuilder.Item(search.getDataSourceType().value, id)})
-//                .minTermFreq(1)
-//                .minDocFreq(1);
-//
-//        LOGGER.info("Running : " + queryBuilder.toString());
-//
-//        return elasticRunner.runQuery(patentIndexPrefix + search.getDataSourceType(), queryBuilder, search);
-//    }
 
     @Override
     public List<ElasticRecord> searchByReferences(List<ReferenceDto> references, Search search) {
@@ -61,7 +37,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
 
         QueryBuilder queryBuilder = QueryBuilders.termsQuery("_id", urls);
 
-        DbElasticReport dbReport = elasticRunner.runQuery(AppConstants.PATENT_ELASTIC_PREFIX + search.getDataSourceType().value, queryBuilder, search);
+        DbElasticReport dbReport = elasticRunner.runQuery(AppConstants.ELASTIC_INDEX_PREFIX + search.getDataSourceType().value, queryBuilder, search);
 
         return dbReport.getRecords();
     }
@@ -72,6 +48,6 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
         QueryBuilder queryBuilder = searchSpecification.get();
         LOGGER.info("Running ElasticSearch query: " + queryBuilder.toString());
 
-        return elasticRunner.runQuery(AppConstants.PATENT_ELASTIC_PREFIX + search.getDataSourceType(), queryBuilder, search);
+        return elasticRunner.runQuery(AppConstants.ELASTIC_INDEX_PREFIX + search.getDataSourceType(), queryBuilder, search);
     }
 }

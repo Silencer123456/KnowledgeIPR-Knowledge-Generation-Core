@@ -18,7 +18,7 @@ public class SimilarSearchSpecification extends SearchSpecification<Search> {
     @Override
     public QueryBuilder get() {
         return QueryBuilders.moreLikeThisQuery(new String[]{"title"}, null,
-                new MoreLikeThisQueryBuilder.Item[]{new MoreLikeThisQueryBuilder.Item(AppConstants.PATENT_ELASTIC_PREFIX + search.getDataSourceType().value, id)})
+                new MoreLikeThisQueryBuilder.Item[]{new MoreLikeThisQueryBuilder.Item(AppConstants.ELASTIC_INDEX_PREFIX + search.getDataSourceType().value, id)})
                 .minTermFreq(1)
                 .minDocFreq(1);
     }

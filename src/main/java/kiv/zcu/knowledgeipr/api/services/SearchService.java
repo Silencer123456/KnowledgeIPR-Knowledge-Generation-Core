@@ -13,7 +13,7 @@ import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.TextSearchElasticSpecification;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.SimpleTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
@@ -68,7 +68,7 @@ public abstract class SearchService<T extends IDataSearcher> {
         }
 
         Search search = new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName());
-        SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);
+        SearchSpecification<Search> searchSpecification = new SimpleTextSearchElasticSpecification<>(search);
 
         return initSearch(searchSpecification);
     }
@@ -178,7 +178,7 @@ public abstract class SearchService<T extends IDataSearcher> {
         }
 
         Search search = new Search(query, DataSourceType.PATENT, 1, limit, true, searchStrategy.getSearchEngineName());
-        SearchSpecification<Search> searchSpecification = new TextSearchElasticSpecification<>(search);// TODO: Mongo does not make use of the search specifications
+        SearchSpecification<Search> searchSpecification = new SimpleTextSearchElasticSpecification<>(search);// TODO: Mongo does not make use of the search specifications
         SearchResponse searchResponse = dataAccessController.search(searchStrategy, searchSpecification);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(searchResponse)).build();

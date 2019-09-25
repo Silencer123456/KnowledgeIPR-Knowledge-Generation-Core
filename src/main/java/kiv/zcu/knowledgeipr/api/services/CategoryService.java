@@ -13,7 +13,7 @@ import kiv.zcu.knowledgeipr.core.model.search.category.data.Category;
 import kiv.zcu.knowledgeipr.core.model.search.category.data.CategoryHandler;
 import kiv.zcu.knowledgeipr.core.model.search.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.TextSearchElasticSpecification;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.AdvancedTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
@@ -111,7 +111,7 @@ public abstract class CategoryService<T extends IDataSearcher> {
         Query query = elasticSearchQueryBuilder.buildPatentsForCategoryQuery(category);
 
         CategorySearch search = new CategorySearch(query, DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName(), category.data.getName());
-        SearchSpecification<CategorySearch> specification = new TextSearchElasticSpecification<>(search);
+        SearchSpecification<CategorySearch> specification = new AdvancedTextSearchElasticSpecification<>(search);
 
         SearchResponse searchResponse = dataAccessController.search(searchStrategy, specification);
 
