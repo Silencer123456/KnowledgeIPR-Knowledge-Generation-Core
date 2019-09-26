@@ -145,10 +145,10 @@ public class StatsRestService {
 
     @GET
     @Logged
-    @Path("/patentOwnershipEvolution/{owner}/{category}")
+    @Path("/patentOwnershipEvolution")
     @Produces("application/json")
-    public javax.ws.rs.core.Response getPatentOwnershipEvolution(@PathParam("owner") String ownersName,
-                                                                 @PathParam("category") String category)
+    public javax.ws.rs.core.Response getPatentOwnershipEvolution(@QueryParam("owner") String ownersName,
+                                                                 @QueryParam("category") String category)
             throws ObjectSerializationException {
 
         // TODO! check category valid

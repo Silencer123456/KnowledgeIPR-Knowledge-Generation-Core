@@ -96,8 +96,6 @@ public class MongoQueryRunner implements IQueryRunner {
      */
     @Override
     public List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
-        LOGGER.info("Running getPatentOwnershipEvolutionQuery search on " + owner + " owner and " + category + " category on " + collectionName + " collection.");
-
         String field = ResponseField.YEAR.value;
         List<Pair<Integer, Integer>> fieldToCounts = new ArrayList<>();
 

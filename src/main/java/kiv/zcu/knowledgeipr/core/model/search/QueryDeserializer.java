@@ -8,11 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * A handler for deserialization of JSON into the <code>Query</code> class instance
+ * A handler for deserialization of the query body from JSON into the <code>Query</code> class instance
  */
 public class QueryDeserializer extends StdDeserializer<Query> {
 
@@ -50,6 +52,14 @@ public class QueryDeserializer extends StdDeserializer<Query> {
         JsonNode optionsNode = node.get("options");
         Map<String, Object> options = optionsNode == null ? new HashMap<>() : mapper.readValue(mapper.treeAsTokens(optionsNode), optionsRef);
 
-        return new Query(filters, conditions, options);
+
+        JsonNode fieldsNode = node.get("fields");
+        List<String> fields = fieldsNode == null ? new ArrayList<>() : mapper.readValue(mapper.writeValueAsString(fieldsNode), new TypeReference<List<String>>() {
+        });
+
+        Query q = new Query(filters, conditions, options);
+        q.setFields(fields);
+
+        return q;
     }
 }

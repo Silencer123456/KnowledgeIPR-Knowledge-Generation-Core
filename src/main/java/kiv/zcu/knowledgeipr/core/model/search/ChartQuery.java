@@ -4,6 +4,7 @@ import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Abstract class representing a specific search, which returns chart data
@@ -12,6 +13,9 @@ import java.util.List;
  * @param <V> - The y axis data type
  */
 public abstract class ChartQuery<T, V> {
+
+    protected final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     private String title;
     private String xLabel;
     private String yLabel;

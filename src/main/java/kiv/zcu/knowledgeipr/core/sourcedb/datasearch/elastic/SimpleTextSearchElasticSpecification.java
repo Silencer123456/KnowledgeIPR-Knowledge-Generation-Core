@@ -5,6 +5,10 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecificat
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Specifies an ElasticSearch query which runs a text search (now uses Lucene syntax's query string).
  *
@@ -19,6 +23,18 @@ public class SimpleTextSearchElasticSpecification<T extends Search> extends Sear
     // TODO: change return value to generic type
     @Override
     public QueryBuilder get() {
-        return QueryBuilders.simpleQueryStringQuery(search.getQuery().getTextFilter());
+        Map<String, Float> fieldsMap = new HashMap<>();
+        List<String> queryFields = search.getQuery().getFields();
+
+        if (queryFields.isEmpty()) {
+            fieldsMap.put("title", 1F);
+            fieldsMap.put("abstract", 1F);
+        } else {
+            for (String field : queryFields) {
+                fieldsMap.put(field, 1F);
+            }
+        }
+
+        return QueryBuilders.simpleQueryStringQuery(search.getQuery().getTextFilter()).fields(fieldsMap);
     }
 }
