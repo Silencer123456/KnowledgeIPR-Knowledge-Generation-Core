@@ -35,7 +35,7 @@ public class CommonMongoRunner {
 
     private MongoDatabase database;
 
-    public CommonMongoRunner() {
+    private CommonMongoRunner() {
         database = MongoConnection.getInstance().getConnectionInstance();
     }
 

@@ -39,9 +39,7 @@ public class WordBuilder {
 
         // loop through every sentence
         for (Sentence sentence : sentenceObjects) {
-            if (language.equals("NO"))
-                wordsForCurrentSentence = sentence.getText().split("([^\\wæøåÆØÅ]+)");    // norwegian: split for every non-word (including æøå)
-            else if (language.equals("EN"))
+            if (language.equals("EN"))
                 wordsForCurrentSentence = sentence.getText().split("([^\\w']+)");        // 	english:  split for every non-word (including ')
             else
                 System.err.println("Please set a valid language code.");

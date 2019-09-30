@@ -20,7 +20,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     private CommonElasticRunner elasticRunner;
 
     public ElasticDataSearcher() {
-        elasticRunner = new CommonElasticRunner();
+        elasticRunner = CommonElasticRunner.getInstance();
     }
 
     @Override

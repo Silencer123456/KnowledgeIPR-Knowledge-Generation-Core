@@ -11,6 +11,8 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
@@ -24,10 +26,24 @@ import java.util.concurrent.TimeUnit;
  */
 public class CommonElasticRunner {
 
+    private static CommonElasticRunner instance;
+
+    private CommonElasticRunner() {
+
+    }
+
     private RestHighLevelClient client = new RestHighLevelClient(
             RestClient.builder(
                     new HttpHost("localhost", 9200, "http"),
                     new HttpHost("localhost", 9201, "http")));
+
+    public static CommonElasticRunner getInstance() {
+        if (instance == null) {
+            return new CommonElasticRunner();
+        }
+
+        return instance;
+    }
 
     /**
      * Runs the specified query builder on the target collection.
@@ -41,7 +57,7 @@ public class CommonElasticRunner {
         DbElasticReport report = new DbElasticReport();
         List<ElasticRecord> records = new ArrayList<>();
 
-        SearchRequest searchRequest = new SearchRequest(collectionName); // TODO: get name of db from mongo or elastic
+        SearchRequest searchRequest = new SearchRequest(collectionName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.timeout(new TimeValue(search.getQuery().getOptions().getTimeout(), TimeUnit.SECONDS));
         searchSourceBuilder.from((search.getPage() - 1) * search.getLimit());
@@ -69,5 +85,28 @@ public class CommonElasticRunner {
         report.setRecords(records);
 
         return report;
+    }
+
+    /**
+     * @param indexName
+     * @param aggregationBuilders
+     */
+    public void runAggregation(String indexName, AggregationBuilder aggregationBuilders) {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        searchSourceBuilder.aggregation(aggregationBuilders);
+
+        SearchRequest searchRequest = new SearchRequest(indexName);
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+            Aggregations aggregations = searchResponse.getAggregations();
+            //TODO ...
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

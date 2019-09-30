@@ -4,10 +4,23 @@ import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
 import java.util.List;
 
 public class ElasticQueryRunner implements IQueryRunner {
+
+    private CommonElasticRunner elasticRunner;
+
+    public ElasticQueryRunner() {
+        elasticRunner = CommonElasticRunner.getInstance();
+    }
+
     @Override
     public List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field) {
         return null;
@@ -48,6 +61,28 @@ public class ElasticQueryRunner implements IQueryRunner {
         }
 
         return fieldToCounts;*/
+
+        AggregationBuilder filterAggregation =
+                AggregationBuilders
+                        .filters("agg",
+                                new FiltersAggregator.KeyedFilter("owners", QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, "Google")));
+
+
+//        AggregationBuilder aggregationBuilder =
+//                AggregationBuilders.global("patentOwnershipEvo")
+//                        .subAggregation(filterAggregation)
+//                        .subAggregation(yearAgg);
+
+        AggregationBuilder aggregation = AggregationBuilders.global("patentOwnershipEvolution");
+        TermsAggregationBuilder termsAggregation = AggregationBuilders.terms("years").field("year");
+        aggregation.subAggregation(termsAggregation);
+
+        FiltersAggregationBuilder filterAggregationBuilder = AggregationBuilders.filters("agg",
+                new FiltersAggregator.KeyedFilter("owners", QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, "Google")));
+        aggregation.subAggregation(filterAggregationBuilder);
+
+
+        elasticRunner.runAggregation(collectionName.value, aggregation);
 
         return null;
     }
