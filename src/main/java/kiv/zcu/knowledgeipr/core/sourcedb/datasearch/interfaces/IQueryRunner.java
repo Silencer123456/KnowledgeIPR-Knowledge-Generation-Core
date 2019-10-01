@@ -60,5 +60,5 @@ public interface IQueryRunner {
      * @return Chart data
      */
     // TODO: maybe generify, replace category string
-    List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category);
+    List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category);
 }

@@ -16,7 +16,10 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.DefaultElasticSearc
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.ElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.IElasticDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.*;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.CategoryMongoSearchStrategy;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.DefaultMongoSearchStrategy;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.MongoDataSearcher;
 import kiv.zcu.knowledgeipr.logging.MyLogger;
 
 import javax.ws.rs.core.Application;
@@ -40,7 +43,7 @@ public class AppRunner extends Application {
 
         DbQueryService dbQueryService = new DbQueryService();
 
-        DataAccessController reportGenerator = new DataAccessController(new MongoQueryRunner(), new ReportHandler(new FileRepository()));
+        DataAccessController reportGenerator = new DataAccessController(new ReportHandler(new FileRepository()));
 
         SearchStrategy<CategorySearch, IMongoDataSearcher> mongoSearchStrategy = new CategoryMongoSearchStrategy(mongoDataSearcher, dbQueryService);
         SearchStrategy<CategorySearch, IElasticDataSearcher> elastiSearchStrategy = new CategoryElasticSearchStrategy(elasticDataSearcher, dbQueryService);

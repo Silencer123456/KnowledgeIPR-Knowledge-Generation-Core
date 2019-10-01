@@ -21,7 +21,6 @@ import kiv.zcu.knowledgeipr.core.model.search.ChartQuery;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
@@ -44,16 +43,10 @@ public class DataAccessController {
      */
     private ReportHandler reportHandler;
 
-    /**
-     * Provides methods for running concrete queries on the target database
-     */
-    private IQueryRunner queryRunner;
-
     private TextSummarizer summarizer;
 
-    public DataAccessController(IQueryRunner queryRunner, ReportHandler reportHandler) {
+    public DataAccessController(ReportHandler reportHandler) {
         this.reportHandler = reportHandler;
-        this.queryRunner = queryRunner;
         summarizer = new TextSummarizer();
     }
 
@@ -171,9 +164,5 @@ public class DataAccessController {
         }
 
         return count;
-    }
-
-    public IQueryRunner getQueryRunner() {
-        return queryRunner;
     }
 }

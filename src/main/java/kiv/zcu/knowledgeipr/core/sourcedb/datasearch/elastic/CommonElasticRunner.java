@@ -29,7 +29,6 @@ public class CommonElasticRunner {
     private static CommonElasticRunner instance;
 
     private CommonElasticRunner() {
-
     }
 
     private RestHighLevelClient client = new RestHighLevelClient(
@@ -88,10 +87,15 @@ public class CommonElasticRunner {
     }
 
     /**
-     * @param indexName
-     * @param aggregationBuilders
+     * Creates a search response and returns created Aggregations object with agg results.
+     *
+     * @param indexName - The name of the index to search
+     * @param aggregationBuilders - The ElasticSearch builder with specified aggregations
+     * @return aggregation results. If the aggregation fails, null is returned
      */
-    public void runAggregation(String indexName, AggregationBuilder aggregationBuilders) {
+    public Aggregations runAggregation(String indexName, AggregationBuilder aggregationBuilders) {
+        Aggregations agg = null;
+
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         searchSourceBuilder.aggregation(aggregationBuilders);
@@ -102,11 +106,12 @@ public class CommonElasticRunner {
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-            Aggregations aggregations = searchResponse.getAggregations();
-            //TODO ...
+            agg = searchResponse.getAggregations();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return agg;
     }
 }

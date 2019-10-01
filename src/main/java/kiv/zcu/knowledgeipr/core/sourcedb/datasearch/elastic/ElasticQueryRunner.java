@@ -4,13 +4,19 @@ import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
+import kiv.zcu.knowledgeipr.utils.AppConstants;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.filter.Filters;
 import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
+import org.elasticsearch.search.aggregations.bucket.global.Global;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ElasticQueryRunner implements IQueryRunner {
@@ -37,53 +43,32 @@ public class ElasticQueryRunner implements IQueryRunner {
     }
 
     @Override
-    public List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
-        /*String field = ResponseField.YEAR.value;
-        List<Pair<Integer, Integer>> fieldToCounts = new ArrayList<>();
+    public List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
+        String globalAggName = "patentOwnershipEvolution";
+        String ownersAggName = "owners";
+        String yearsAggName = "years";
 
-        String categoryStr = WordNet.getInstance().getSynonymsForWordString(category);
+        AggregationBuilder aggregation = AggregationBuilders.global(globalAggName);
 
-        List<Bson> list = Arrays.asList(
-                match(and(Filters.text(categoryStr), Filters.eq("owners.name", owner))),
-                project(new Document("_id", 0)
-                        .append(field, 1)),
-                group("$" + field, Accumulators.sum("count", 1)),
-                project(new Document("_id", 0).append(field, "$_id").append("count", 1)),
-                sort(new Document("count", -1)),
-                limit(30));
-
-        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, list);
-
-        for (Document doc : output) {
-            //String author = String.valueOf(doc.get(field));
-            int author = (Integer) doc.get(field);
-            fieldToCounts.add(new Pair<>(author, (Integer) doc.get("count")));
-        }
-
-        return fieldToCounts;*/
-
-        AggregationBuilder filterAggregation =
-                AggregationBuilders
-                        .filters("agg",
-                                new FiltersAggregator.KeyedFilter("owners", QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, "Google")));
-
-
-//        AggregationBuilder aggregationBuilder =
-//                AggregationBuilders.global("patentOwnershipEvo")
-//                        .subAggregation(filterAggregation)
-//                        .subAggregation(yearAgg);
-
-        AggregationBuilder aggregation = AggregationBuilders.global("patentOwnershipEvolution");
-        TermsAggregationBuilder termsAggregation = AggregationBuilders.terms("years").field("year");
-        aggregation.subAggregation(termsAggregation);
-
-        FiltersAggregationBuilder filterAggregationBuilder = AggregationBuilders.filters("agg",
+        FiltersAggregationBuilder filterAggregationBuilder = AggregationBuilders.filters(ownersAggName,
                 new FiltersAggregator.KeyedFilter("owners", QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, "Google")));
         aggregation.subAggregation(filterAggregationBuilder);
 
+        TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(yearsAggName).field("year");
+        filterAggregationBuilder.subAggregation(termsAggregation);
 
-        elasticRunner.runAggregation(collectionName.value, aggregation);
+        Aggregations agg = elasticRunner.runAggregation(AppConstants.ELASTIC_INDEX_PREFIX + collectionName.value, aggregation);
 
-        return null;
+        Global g = agg.get(globalAggName);
+        Filters f = g.getAggregations().get(ownersAggName);
+        Terms t = f.getBuckets().get(0).getAggregations().get(yearsAggName);
+
+        List<Pair<Long, Long>> years = new ArrayList<>();
+
+        for (Terms.Bucket bucket : t.getBuckets()) {
+            years.add(new Pair<>((Long) bucket.getKey(), bucket.getDocCount()));
+        }
+
+        return years;
     }
 }

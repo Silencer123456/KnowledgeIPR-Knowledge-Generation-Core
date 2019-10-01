@@ -95,9 +95,9 @@ public class MongoQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<Integer, Integer>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
+    public List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
         String field = ResponseField.YEAR.value;
-        List<Pair<Integer, Integer>> fieldToCounts = new ArrayList<>();
+        List<Pair<Long, Long>> fieldToCounts = new ArrayList<>();
 
         String categoryStr = WordNet.getInstance().getSynonymsForWordString(category);
 
@@ -114,8 +114,8 @@ public class MongoQueryRunner implements IQueryRunner {
 
         for (Document doc : output) {
             //String author = String.valueOf(doc.get(field));
-            int author = (Integer) doc.get(field);
-            fieldToCounts.add(new Pair<>(author, (Integer) doc.get("count")));
+            long author = (Long) doc.get(field);
+            fieldToCounts.add(new Pair<>(author, (Long) doc.get("count")));
         }
 
         return fieldToCounts;
