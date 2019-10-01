@@ -125,7 +125,7 @@ public class DataAccessController {
     }
 
     /**
-     * Todo: move somewhere else along with other similar methods
+     * Todo: move somewhere else with other similar methods
      *
      * @param word
      * @return

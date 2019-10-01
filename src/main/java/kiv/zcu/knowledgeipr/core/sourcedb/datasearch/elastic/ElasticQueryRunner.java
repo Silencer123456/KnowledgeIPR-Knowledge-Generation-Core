@@ -19,8 +19,14 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilde
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contains implementations of concrete queries specific to ElasticSearch
+ */
 public class ElasticQueryRunner implements IQueryRunner {
 
+    /**
+     * Query runner
+     */
     private CommonElasticRunner elasticRunner;
 
     public ElasticQueryRunner() {
@@ -42,6 +48,13 @@ public class ElasticQueryRunner implements IQueryRunner {
         return null;
     }
 
+    /**
+     * Constructs a filter aggregation which creates two filters, one for filtering by owners name,
+     * second one for filtering by category.
+     * Third term aggregation groups the filtered results by year.
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
         String globalAggName = "patentOwnershipEvolution";

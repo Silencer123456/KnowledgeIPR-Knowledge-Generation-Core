@@ -4,8 +4,14 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDbRecord;
 
 import java.util.Map;
 
+/**
+ * A single record holder specific to ElasticSearch
+ */
 public class ElasticRecord implements IDbRecord {
 
+    /**
+     * Representation of an ElasticSearch record
+     */
     private Map<String, Object> document;
 
     public ElasticRecord() {

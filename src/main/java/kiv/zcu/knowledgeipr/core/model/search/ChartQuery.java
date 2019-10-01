@@ -30,7 +30,9 @@ public abstract class ChartQuery<T, V> {
     }
 
     /**
-     * Creates the search and gets the results
+     * Implemented methods create the concrete query and from the
+     * returned results is constructed a list of chart data.
+     *
      * @return - Chart data in form of list of pair values
      */
     public abstract List<Pair<T, V>> get();
