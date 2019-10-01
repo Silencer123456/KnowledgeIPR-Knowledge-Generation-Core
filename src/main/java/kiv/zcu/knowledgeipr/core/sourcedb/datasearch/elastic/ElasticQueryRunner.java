@@ -51,7 +51,8 @@ public class ElasticQueryRunner implements IQueryRunner {
         AggregationBuilder aggregation = AggregationBuilders.global(globalAggName);
 
         FiltersAggregationBuilder filterAggregationBuilder = AggregationBuilders.filters(ownersAggName,
-                new FiltersAggregator.KeyedFilter("owners", QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, "Google")));
+                new FiltersAggregator.KeyedFilter("owners", QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, owner)),
+                new FiltersAggregator.KeyedFilter("categories", QueryBuilders.simpleQueryStringQuery(category)));
         aggregation.subAggregation(filterAggregationBuilder);
 
         TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(yearsAggName).field("year");
@@ -64,7 +65,6 @@ public class ElasticQueryRunner implements IQueryRunner {
         Terms t = f.getBuckets().get(0).getAggregations().get(yearsAggName);
 
         List<Pair<Long, Long>> years = new ArrayList<>();
-
         for (Terms.Bucket bucket : t.getBuckets()) {
             years.add(new Pair<>((Long) bucket.getKey(), bucket.getDocCount()));
         }

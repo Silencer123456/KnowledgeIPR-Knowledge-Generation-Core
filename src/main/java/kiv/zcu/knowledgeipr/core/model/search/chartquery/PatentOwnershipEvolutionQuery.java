@@ -25,7 +25,7 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Long, Long> {
      * @param category - Name of the category to search
      */
     public PatentOwnershipEvolutionQuery(IQueryRunner queryCreator, String ownersName, String category) {
-        super(queryCreator, "Patent ownership for owner " + ownersName + " in " + category + " category.", X_AXIS, Y_AXIS);
+        super(queryCreator, "Patent ownership for owner `" + ownersName + "` in `" + category + "` category.", X_AXIS, Y_AXIS);
 
         this.queryCreator = queryCreator;
         this.ownersName = ownersName;
@@ -34,7 +34,7 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Long, Long> {
 
     @Override
     public List<Pair<Long, Long>> get() {
-        LOGGER.info("Running getPatentOwnershipEvolutionQuery search on " + ownersName + " owner and " + category + " category on " + DataSourceType.PATENT + " collection.");
+        LOGGER.info("Running getPatentOwnershipEvolutionQuery search on `" + ownersName + "` owner and `" + category + "` category on " + DataSourceType.PATENT + " collection.");
 
         return queryCreator.getPatentOwnershipEvolutionQuery(DataSourceType.PATENT, ownersName, category);
     }
