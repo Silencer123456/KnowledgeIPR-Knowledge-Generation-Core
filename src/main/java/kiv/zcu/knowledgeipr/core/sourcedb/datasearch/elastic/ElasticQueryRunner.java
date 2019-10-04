@@ -52,7 +52,7 @@ public class ElasticQueryRunner implements IQueryRunner {
      * Constructs a filter aggregation which creates two filters, one for filtering by owners name,
      * second one for filtering by category.
      * Third term aggregation groups the filtered results by year.
-     * <p>
+     *
      * {@inheritDoc}
      */
     @Override
