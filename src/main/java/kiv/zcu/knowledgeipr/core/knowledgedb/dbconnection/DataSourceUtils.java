@@ -50,6 +50,7 @@ public class DataSourceUtils {
         // Get conneciton from the thread
         Connection conn = tl.get();
         if (conn == null) {
+            LOGGER.finer("NEW CONNECTION");
             conn = ds.getConnection();
             // bind to the current thread
             tl.set(conn);
@@ -131,7 +132,7 @@ public class DataSourceUtils {
     public static void closeConn(Connection conn) {
         if (conn != null) {
             try {
-                conn.close();
+                close(conn);
                 // untied with the thread
                 tl.remove();
             } catch (SQLException e) {
@@ -187,7 +188,7 @@ public class DataSourceUtils {
         try {
             conn = getConnection();
             // close the resource
-            conn.close();
+            close(conn);
             // Unbind
             tl.remove();
         } catch (SQLException e) {
@@ -196,27 +197,33 @@ public class DataSourceUtils {
         }
     }
 
+    public static void close(Connection connection) throws SQLException {
+        connection.close();
+        LOGGER.finer("CONNECTION CLOSED");
+    }
+
     /**
      * Transaction is committed and the connection is released
      */
     public static void commitAndClose() {
-        LOGGER.info("-------------");
-        LOGGER.info("INIT COMMIT");
+        LOGGER.finer("-------------");
+        LOGGER.finer("INIT COMMIT");
         Connection conn;
         try {
             conn = getConnection();
             // transaction commit
             conn.commit();
             // close the resource
-            conn.close();
+            close(conn);
             // Unbind
             tl.remove();
-            LOGGER.info("COMMIT SUCCESS");
+            LOGGER.finer("COMMIT SUCCESS");
+            LOGGER.finer("CONNECTION CLOSED");
         } catch (SQLException e) {
             LOGGER.warning("COMMIT FAIL with error: " + e.getMessage());
             e.printStackTrace();
         }
-        LOGGER.info("-------------");
+        LOGGER.finer("-------------");
     }
 
     /**
@@ -232,7 +239,7 @@ public class DataSourceUtils {
             // transaction rollback
             conn.rollback();
             // close the resource
-            conn.close();
+            close(conn);
             // Release the version
             tl.remove();
             LOGGER.info("ROLLBACK SUCCESS");

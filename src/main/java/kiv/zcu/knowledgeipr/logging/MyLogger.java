@@ -47,7 +47,6 @@ public class MyLogger {
                 sb.append(text);
                 sb.append(" ");
 
-
                 // Class name
                 if (record.getSourceClassName() != null) {
                     sb.append(record.getSourceClassName());
@@ -95,21 +94,23 @@ public class MyLogger {
         Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
         // suppress the logging output to the console
-        Logger rootLogger = Logger.getLogger("");
+        /*Logger rootLogger = Logger.getLogger("");
         Handler[] handlers = rootLogger.getHandlers();
         if (handlers[0] instanceof ConsoleHandler) {
             rootLogger.removeHandler(handlers[0]);
-        }
+        }*/
+
+        LogManager.getLogManager().reset();
 
         logger.setLevel(Level.ALL);
 
-        //setupConsoleHandler(logger);
+        setupConsoleHandler(logger);
         setupFileHandler(logger, fileSuffix);
     }
 
     private static void setupConsoleHandler(Logger logger) {
         ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.ALL);
+        consoleHandler.setLevel(Level.INFO);
         consoleHandler.setFormatter(formatterTxt);
         logger.addHandler(consoleHandler);
     }
