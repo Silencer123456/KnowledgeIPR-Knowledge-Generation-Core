@@ -44,19 +44,23 @@ public class CommonElasticRunner {
         return instance;
     }
 
+    DbElasticReport runQuery(QueryBuilder queryBuilder, final Search search, String index) {
+        return runQuery(queryBuilder, search, new String[]{index});
+    }
+
     /**
      * Runs the specified query builder on the target collection.
      *
-     * @param collectionName - Name of the collection/index on which to run the query
+     * @param indexes - Names of the indexes on which to run the query
      * @param queryBuilder   - The Query Builder containing the query filters
      * @param search         - The search instance
      * @return List of ElasticSearch records
      */
-    DbElasticReport runQuery(String collectionName, QueryBuilder queryBuilder, final Search search) {
+    DbElasticReport runQuery(QueryBuilder queryBuilder, final Search search, String[] indexes) {
         DbElasticReport report = new DbElasticReport();
         List<ElasticRecord> records = new ArrayList<>();
 
-        SearchRequest searchRequest = new SearchRequest(collectionName);
+        SearchRequest searchRequest = new SearchRequest(indexes);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.timeout(new TimeValue(search.getQuery().getOptions().getTimeout(), TimeUnit.SECONDS));
         searchSourceBuilder.from((search.getPage() - 1) * search.getLimit());
@@ -72,6 +76,8 @@ public class CommonElasticRunner {
             for (SearchHit hit : searchHits) {
                 Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                 sourceAsMap.put("_id", hit.getId());
+                sourceAsMap.put("_score", hit.getScore());
+
                 records.add(new ElasticRecord(sourceAsMap));
             }
 

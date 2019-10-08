@@ -154,6 +154,9 @@ public class DataAccessController {
     private int getCountForDataSource(DataSourceType source) {
         int count = 0;
 
+        int publicationCount = 166613546;
+        int patentCount = 3645421;
+
         switch (source) {
             case PUBLICATION:
                 count = 166613546;
@@ -161,6 +164,8 @@ public class DataAccessController {
             case PATENT:
                 count = 3645421;
                 break;
+            case ALL:
+                count = publicationCount + patentCount;
         }
 
         return count;

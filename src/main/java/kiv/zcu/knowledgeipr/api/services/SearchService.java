@@ -47,13 +47,13 @@ public abstract class SearchService<T extends IDataSearcher> {
      */
     @POST
     @Logged
-    @Path("/{sourceType}")
+    @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response search(@PathParam("sourceType") String sourceType, @QueryParam("page") int page, String queryJson) throws ApiException, ObjectSerializationException {
+    public javax.ws.rs.core.Response search(@QueryParam("sourceType") String sourceType, @QueryParam("page") int page, String queryJson) throws ApiException, ObjectSerializationException {
         DataSourceType dataSourceType = DataSourceType.getByValue(sourceType);
         if (dataSourceType == null) {
-            dataSourceType = DataSourceType.PATENT;
+            dataSourceType = DataSourceType.ALL; // Wont work with MongoDB
         }
 
         isPageValid(page);

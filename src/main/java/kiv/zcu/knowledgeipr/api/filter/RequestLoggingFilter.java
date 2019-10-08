@@ -80,42 +80,4 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
         sb.append(" - Entity: ").append(responseContext.getEntity()).append("\n");
         LOGGER.finer("HTTP RESPONSE : " + sb.toString());
     }
-
-
-
-    /*@Override
-    public void filter(ContainerRequestContext containerRequestContext) {
-        LOGGER.info("------------- New client request from " + servletRequest.getRemoteAddr() + " --------------");
-        LOGGER.info(containerRequestContext.getMethod());
-        UriInfo info = containerRequestContext.getUriInfo();
-        if (info != null) {
-            LOGGER.info("Path: " + info.getPath());
-            MultivaluedMap<String, String> queryParams = info.getQueryParameters();
-            StringBuilder sb = new StringBuilder();
-            for (String str : queryParams.keySet()) {
-                sb.append(str).append(" -> ").append(queryParams.getFirst(str)).append("; ");
-            }
-
-            LOGGER.info("Query params: " + sb.toString());
-
-            if ("POST".equalsIgnoreCase(servletRequest.getMethod()))
-            {
-                String body;
-                try {
-                    body = servletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-
-                    servletRequest.setentt
-                } catch (IOException e) {
-                    body = "Cannot read request body";
-                }
-
-                LOGGER.info("Body" + body);
-            }
-        }
-        MediaType mediaType = containerRequestContext.getMediaType();
-        if (mediaType != null) {
-            LOGGER.info("Media type: " + containerRequestContext.getMediaType().getType());
-        }
-        LOGGER.info("-----------------------------------------------------------");
-    }*/
 }

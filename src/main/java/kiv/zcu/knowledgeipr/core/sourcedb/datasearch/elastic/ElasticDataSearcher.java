@@ -3,7 +3,6 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
-import kiv.zcu.knowledgeipr.utils.AppConstants;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -37,7 +36,8 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
 
         QueryBuilder queryBuilder = QueryBuilders.termsQuery("_id", urls);
 
-        DbElasticReport dbReport = elasticRunner.runQuery(AppConstants.ELASTIC_INDEX_PREFIX + search.getDataSourceType().value, queryBuilder, search);
+        List<String> indexes = search.getAllIndexesFromSourceType();
+        DbElasticReport dbReport = elasticRunner.runQuery(queryBuilder, search, indexes.toArray(new String[0]));
 
         return dbReport.getRecords();
     }
@@ -48,6 +48,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
         QueryBuilder queryBuilder = searchSpecification.get();
         LOGGER.info("Running ElasticSearch query: " + queryBuilder.toString());
 
-        return elasticRunner.runQuery(AppConstants.ELASTIC_INDEX_PREFIX + search.getDataSourceType(), queryBuilder, search);
+        List<String> indexes = search.getAllIndexesFromSourceType();
+        return elasticRunner.runQuery(queryBuilder, search, indexes.toArray(new String[0]));
     }
 }
