@@ -5,9 +5,9 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch;
  * Changing the names of the collections is not recommended, some functions will not work properly
  */
 public enum DataSourceType {
-
     PUBLICATION("publication"),
     PATENT("patent"),
+    SPRINGER("springer"),
     ALL("all");
 
     public final String value;

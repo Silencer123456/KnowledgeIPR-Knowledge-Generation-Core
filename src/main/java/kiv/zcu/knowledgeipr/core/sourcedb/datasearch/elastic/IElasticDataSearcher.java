@@ -14,5 +14,5 @@ public interface IElasticDataSearcher extends IDataSearcher<ElasticRecord> {
      * @param searchSpecification - Contains information related to the concrete search
      * @return A report used for ElasticSearch
      */
-    DbElasticReport search(SearchSpecification searchSpecification);
+    DbElasticReportWrapper search(SearchSpecification searchSpecification);
 }

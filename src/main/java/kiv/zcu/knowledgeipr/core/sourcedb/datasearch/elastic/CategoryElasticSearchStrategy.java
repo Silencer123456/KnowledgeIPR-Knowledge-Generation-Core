@@ -30,7 +30,7 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
             return report;
         }
 
-        DbElasticReport dbReport = new DbElasticReport();
+        DbElasticReportWrapper dbReport = new DbElasticReportWrapper();
         List<ElasticRecord> records = new ArrayList<>();
 
         List<ReferenceDto> referenceDtos = queryService.getConfirmedRecordsForCategory(search.getCategory());
@@ -54,7 +54,7 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
             }
         }
 
-        report = new ElasticSearchReport(records, dbReport.getDocsCount());
+        report = new ElasticSearchReport(records, dbReport.getDocsCount(), dbReport.getTimeValue());
         //report.setDocsCount(dbReport.getDocsCount() == 0 ? recordsInCategory : dbReport.getDocsCount());
         cacheSearch(search, report);
 

@@ -85,6 +85,7 @@ public class Search {
         if (getDataSourceType() == DataSourceType.ALL) {
             indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + DataSourceType.PATENT.value);
             indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + DataSourceType.PUBLICATION.value);
+            indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + DataSourceType.SPRINGER.value);
         } else {
             indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + getDataSourceType().value);
         }

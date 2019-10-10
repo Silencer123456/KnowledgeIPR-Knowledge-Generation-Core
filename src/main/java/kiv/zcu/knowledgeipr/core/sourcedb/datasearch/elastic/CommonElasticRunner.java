@@ -44,7 +44,7 @@ public class CommonElasticRunner {
         return instance;
     }
 
-    DbElasticReport runQuery(QueryBuilder queryBuilder, final Search search, String index) {
+    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String index) {
         return runQuery(queryBuilder, search, new String[]{index});
     }
 
@@ -56,8 +56,8 @@ public class CommonElasticRunner {
      * @param search         - The search instance
      * @return List of ElasticSearch records
      */
-    DbElasticReport runQuery(QueryBuilder queryBuilder, final Search search, String[] indexes) {
-        DbElasticReport report = new DbElasticReport();
+    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String[] indexes) {
+        DbElasticReportWrapper report = new DbElasticReportWrapper();
         List<ElasticRecord> records = new ArrayList<>();
 
         SearchRequest searchRequest = new SearchRequest(indexes);
@@ -70,6 +70,8 @@ public class CommonElasticRunner {
 
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+            report.setTimeValue(searchResponse.getTook().getStringRep());
 
             SearchHits hits = searchResponse.getHits();
             SearchHit[] searchHits = hits.getHits();

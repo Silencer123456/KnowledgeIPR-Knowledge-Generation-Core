@@ -28,9 +28,9 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
         }
         //}
 
-        DbElasticReport dbReport = dataSearcher.search(searchSpecification);
+        DbElasticReportWrapper dbReport = dataSearcher.search(searchSpecification);
 
-        report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount());
+        report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount(), dbReport.getTimeValue());
 
         cacheSearch(search, report);
 

@@ -15,12 +15,13 @@ public class ElasticSearchReport extends SearchReport<ElasticRecord> {
     }
 
     public ElasticSearchReport(List<ElasticRecord> elasticRecords) {
-        this(elasticRecords, 0);
+        this(elasticRecords, 0, "");
     }
 
-    public ElasticSearchReport(List<ElasticRecord> elasticRecords, final long docsCount) {
+    public ElasticSearchReport(List<ElasticRecord> elasticRecords, final long docsCount, final String timeValue) {
         super(elasticRecords);
 
         setDocsCount(docsCount);
+        setExecutionTime(timeValue);
     }
 }

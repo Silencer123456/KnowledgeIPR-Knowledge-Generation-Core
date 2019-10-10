@@ -17,12 +17,13 @@ public abstract class DbReport<T extends IDbRecord> {
      * List of stored records of type IDbRecord
      */
     private List<T> records;
+
     /**
      * Total number of hits(documents) returned from the query.
      */
     private long docsCount;
 
-    public DbReport(List<T> records, long docsCount) {
+    public DbReport(List<T> records, final long docsCount) {
         this.records = records;
         this.docsCount = docsCount;
     }
