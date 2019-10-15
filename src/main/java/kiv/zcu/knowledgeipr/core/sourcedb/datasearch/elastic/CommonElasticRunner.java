@@ -46,7 +46,9 @@ public class CommonElasticRunner {
     }
 
     DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String index) throws QueryExecutionException {
-        return runQuery(queryBuilder, search, new String[]{index});
+        return runQuery(queryBuilder, search, new ArrayList<String>() {{
+            add(index);
+        }});
     }
 
     /**
@@ -57,11 +59,11 @@ public class CommonElasticRunner {
      * @param search         - The search instance
      * @return List of ElasticSearch records
      */
-    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String[] indexes) throws QueryExecutionException {
+    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, List<String> indexes) throws QueryExecutionException {
         DbElasticReportWrapper report = new DbElasticReportWrapper();
         List<ElasticRecord> records = new ArrayList<>();
 
-        SearchRequest searchRequest = new SearchRequest(indexes);
+        SearchRequest searchRequest = new SearchRequest(indexes.toArray(new String[0]));
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.timeout(new TimeValue(search.getQuery().getOptions().getTimeout(), TimeUnit.SECONDS));
         searchSourceBuilder.from((search.getPage() - 1) * search.getLimit());
@@ -85,6 +87,7 @@ public class CommonElasticRunner {
             }
 
             report.setDocsCount(hits.getTotalHits().value);
+            report.setSearchedIndexes(indexes);
 
         } catch (IOException e) {
             e.printStackTrace();

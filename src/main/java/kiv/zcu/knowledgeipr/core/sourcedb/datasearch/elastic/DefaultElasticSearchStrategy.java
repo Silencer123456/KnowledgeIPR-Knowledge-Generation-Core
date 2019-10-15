@@ -10,6 +10,10 @@ import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 
+/**
+ * Implements a default search strategy. It tries to get the cached report if exists and then performs the search,
+ * retrieves the Elastic report and caches all the new searches to the database.
+ */
 public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasticDataSearcher> {
     public DefaultElasticSearchStrategy(IElasticDataSearcher dataSearcher, DbQueryService queryService) {
         super(dataSearcher, queryService, SearchEngineName.elastic);
@@ -30,7 +34,7 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
 
         DbElasticReportWrapper dbReport = dataSearcher.search(searchSpecification);
 
-        report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount(), dbReport.getTimeValue());
+        report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount(), dbReport.getTimeValue(), dbReport.getSearchedIndexes());
 
         cacheSearch(search, report);
 

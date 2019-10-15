@@ -38,7 +38,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
         QueryBuilder queryBuilder = QueryBuilders.termsQuery("_id", urls);
 
         List<String> indexes = search.getAllIndexesFromSourceType();
-        DbElasticReportWrapper dbReport = elasticRunner.runQuery(queryBuilder, search, indexes.toArray(new String[0]));
+        DbElasticReportWrapper dbReport = elasticRunner.runQuery(queryBuilder, search, indexes);
 
         return dbReport.getRecords();
     }
@@ -50,6 +50,6 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
         LOGGER.info("Running ElasticSearch query: " + queryBuilder.toString());
 
         List<String> indexes = search.getAllIndexesFromSourceType();
-        return elasticRunner.runQuery(queryBuilder, search, indexes.toArray(new String[0]));
+        return elasticRunner.runQuery(queryBuilder, search, indexes);
     }
 }

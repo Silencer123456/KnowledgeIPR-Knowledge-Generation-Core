@@ -68,7 +68,7 @@ public class DataAccessController {
             Search search = searchSpecification.getSearch();
             response = new SearchResponse(ResponseStatus.SUCCESS, "OK", report);
             response.setDocsInCollection(getCountForDataSource(search.getDataSourceType()));
-            response.setSearchedCollection(search.getDataSourceType());
+            response.setSearchedType(search.getDataSourceType());
 
             response.setDocsReturned(report.getData().size());
             response.setPage(search.getPage());

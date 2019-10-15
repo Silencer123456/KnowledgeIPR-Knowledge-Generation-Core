@@ -18,14 +18,18 @@ public abstract class SearchReport<T> {
      */
     private long docsCount;
 
-    /**
-     * The data assigned to this report
-     */
-    protected List<T> data;
+    private List<String> searchedIndexes;
+
     /**
      * Total time of execution of the query
      */
     private String executionTime;
+
+    /**
+     * The data assigned to this report
+     */
+    protected List<T> data;
+
 
     public SearchReport(List<T> data) {
         this.data = data;
@@ -53,5 +57,13 @@ public abstract class SearchReport<T> {
 
     public void setExecutionTime(String executionTime) {
         this.executionTime = executionTime;
+    }
+
+    public List<String> getSearchedIndexes() {
+        return searchedIndexes;
+    }
+
+    public void setSearchedIndexes(List<String> searchedIndexes) {
+        this.searchedIndexes = searchedIndexes;
     }
 }

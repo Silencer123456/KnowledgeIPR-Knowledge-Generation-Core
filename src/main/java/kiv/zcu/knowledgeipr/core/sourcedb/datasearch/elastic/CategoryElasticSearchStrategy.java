@@ -54,7 +54,7 @@ public class CategoryElasticSearchStrategy extends SearchStrategy<CategorySearch
             }
         }
 
-        report = new ElasticSearchReport(records, dbReport.getDocsCount(), dbReport.getTimeValue());
+        report = new ElasticSearchReport(records, dbReport.getDocsCount(), dbReport.getTimeValue(), dbReport.getSearchedIndexes());
         //report.setDocsCount(dbReport.getDocsCount() == 0 ? recordsInCategory : dbReport.getDocsCount());
         cacheSearch(search, report);
 

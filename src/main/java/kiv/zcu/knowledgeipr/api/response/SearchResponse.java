@@ -21,7 +21,7 @@ public class SearchResponse {
     /**
      * Searched collection
      */
-    private DataSourceType searchedCollection;
+    private DataSourceType searchedDataType;
 
     /**
      * Number of documents in the searched collection
@@ -63,8 +63,8 @@ public class SearchResponse {
         this.docsInCollection = docsInCollection;
     }
 
-    public void setSearchedCollection(DataSourceType searchedCollection) {
-        this.searchedCollection = searchedCollection;
+    public void setSearchedType(DataSourceType searchedCollection) {
+        this.searchedDataType = searchedCollection;
     }
 
     public void setDocsReturned(int docsReturned) {
