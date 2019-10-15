@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
@@ -23,7 +24,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     }
 
     @Override
-    public List<ElasticRecord> searchByReferences(List<ReferenceDto> references, Search search) {
+    public List<ElasticRecord> searchByReferences(List<ReferenceDto> references, Search search) throws QueryExecutionException {
         List<String> urls = references
                 .stream()
                 .filter(object -> ObjectId.isValid(object.getUrl()))
@@ -43,7 +44,7 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     }
 
     @Override
-    public DbElasticReportWrapper search(SearchSpecification searchSpecification) {
+    public DbElasticReportWrapper search(SearchSpecification searchSpecification) throws QueryExecutionException {
         Search search = searchSpecification.getSearch();
         QueryBuilder queryBuilder = searchSpecification.get();
         LOGGER.info("Running ElasticSearch query: " + queryBuilder.toString());

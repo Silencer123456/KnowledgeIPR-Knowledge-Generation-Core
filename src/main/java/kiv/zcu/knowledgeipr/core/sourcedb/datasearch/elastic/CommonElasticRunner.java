@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
@@ -44,7 +45,7 @@ public class CommonElasticRunner {
         return instance;
     }
 
-    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String index) {
+    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String index) throws QueryExecutionException {
         return runQuery(queryBuilder, search, new String[]{index});
     }
 
@@ -56,7 +57,7 @@ public class CommonElasticRunner {
      * @param search         - The search instance
      * @return List of ElasticSearch records
      */
-    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String[] indexes) {
+    DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String[] indexes) throws QueryExecutionException {
         DbElasticReportWrapper report = new DbElasticReportWrapper();
         List<ElasticRecord> records = new ArrayList<>();
 
@@ -87,6 +88,8 @@ public class CommonElasticRunner {
 
         } catch (IOException e) {
             e.printStackTrace();
+
+            throw new QueryExecutionException(e.getMessage());
         }
 
         report.setRecords(records);

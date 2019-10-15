@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.knowledgedb.dto.ReferenceDto;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 
@@ -20,5 +21,5 @@ public interface IDataSearcher<T extends IDbRecord> {
      * @param references - The list of references containing urls of the documents to retrieve
      * @return - The list of documents from Mongo associated with the references
      */
-    List<T> searchByReferences(List<ReferenceDto> references, Search search);
+    List<T> searchByReferences(List<ReferenceDto> references, Search search) throws QueryExecutionException;
 }

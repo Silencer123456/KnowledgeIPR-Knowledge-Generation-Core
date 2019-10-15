@@ -1,9 +1,8 @@
 package kiv.zcu.knowledgeipr.core.model.search;
 
+import kiv.zcu.knowledgeipr.core.sourcedb.DataSourceManager;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
-import kiv.zcu.knowledgeipr.utils.AppConstants;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,14 +80,7 @@ public class Search {
      * @return the list of indexes from the dataSourceType field.
      */
     public List<String> getAllIndexesFromSourceType() {
-        List<String> indexes = new ArrayList<>();
-        if (getDataSourceType() == DataSourceType.ALL) {
-            indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + DataSourceType.PATENT.value);
-            indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + DataSourceType.PUBLICATION.value);
-            indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + DataSourceType.SPRINGER.value);
-        } else {
-            indexes.add(AppConstants.ELASTIC_INDEX_PREFIX + getDataSourceType().value);
-        }
+        List<String> indexes = DataSourceManager.getDataSourcesForSourceTypeAsString(getDataSourceType(), searchEngineName);
 
         return indexes;
     }

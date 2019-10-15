@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 
@@ -14,5 +15,5 @@ public interface IElasticDataSearcher extends IDataSearcher<ElasticRecord> {
      * @param searchSpecification - Contains information related to the concrete search
      * @return A report used for ElasticSearch
      */
-    DbElasticReportWrapper search(SearchSpecification searchSpecification);
+    DbElasticReportWrapper search(SearchSpecification searchSpecification) throws QueryExecutionException;
 }
