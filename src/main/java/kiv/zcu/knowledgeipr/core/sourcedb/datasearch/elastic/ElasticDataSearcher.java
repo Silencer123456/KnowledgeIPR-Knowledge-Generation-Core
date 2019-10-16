@@ -47,7 +47,6 @@ public class ElasticDataSearcher implements IElasticDataSearcher {
     public DbElasticReportWrapper search(SearchSpecification searchSpecification) throws QueryExecutionException {
         Search search = searchSpecification.getSearch();
         QueryBuilder queryBuilder = searchSpecification.get();
-        LOGGER.info("Running ElasticSearch query: " + queryBuilder.toString());
 
         List<String> indexes = search.getAllIndexesFromSourceType();
         return elasticRunner.runQuery(queryBuilder, search, indexes);

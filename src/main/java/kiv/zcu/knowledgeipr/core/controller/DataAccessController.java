@@ -9,10 +9,7 @@ import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.api.errorhandling.UserQueryException;
-import kiv.zcu.knowledgeipr.api.response.ChartResponse;
-import kiv.zcu.knowledgeipr.api.response.ResponseStatus;
-import kiv.zcu.knowledgeipr.api.response.SearchResponse;
-import kiv.zcu.knowledgeipr.api.response.WordNetResponse;
+import kiv.zcu.knowledgeipr.api.response.*;
 import kiv.zcu.knowledgeipr.core.model.report.ChartReport;
 import kiv.zcu.knowledgeipr.core.model.report.EmptySearchReport;
 import kiv.zcu.knowledgeipr.core.model.report.ReportHandler;
@@ -97,7 +94,7 @@ public class DataAccessController {
      * @return - The chart response object
      * @throws ObjectSerializationException in case of serialization errors
      */
-    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName, boolean overwrite)
+    public <T, V> IResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName, boolean overwrite)
             throws ObjectSerializationException {
         JsonNode cachedReport = reportHandler.loadReportToJsonFromFile(collectionName + "\\" + filename);
         if (cachedReport != null && !overwrite) {
@@ -107,17 +104,21 @@ public class DataAccessController {
 
         LOGGER.info("Querying database for: " + chartQuery.getTitle());
 
-        List<Pair<T, V>> list = chartQuery.get();
-        ChartReport<T, V> report = reportHandler.createChartReport(chartQuery.getTitle(), chartQuery.getxLabel(), chartQuery.getyLabel(), list);
+        try {
+            List<Pair<T, V>> list = chartQuery.get();
+            ChartReport<T, V> report = reportHandler.createChartReport(chartQuery.getTitle(), chartQuery.getxLabel(), chartQuery.getyLabel(), list);
+            report.save(collectionName + "\\" + filename);
+            cachedReport = SerializationUtils.getTreeFromObject(report);
 
-        report.save(collectionName + "\\" + filename);
+            return new ChartResponse(ResponseStatus.SUCCESS, "OK", cachedReport);
+        } catch (QueryExecutionException e) {
+            return new SearchResponse(ResponseStatus.ERROR, e.getMessage(), new EmptySearchReport());
 
-        cachedReport = SerializationUtils.getTreeFromObject(report);
+        }
 
-        return new ChartResponse(ResponseStatus.SUCCESS, "OK", cachedReport);
     }
 
-    public <T, V> ChartResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName) throws ObjectSerializationException {
+    public <T, V> IResponse chartQuery(ChartQuery<T, V> chartQuery, String filename, DataSourceType collectionName) throws ObjectSerializationException {
         return chartQuery(chartQuery, filename, collectionName, false);
     }
 

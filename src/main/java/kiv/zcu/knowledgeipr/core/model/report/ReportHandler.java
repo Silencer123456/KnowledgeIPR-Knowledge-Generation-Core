@@ -19,8 +19,7 @@ public class ReportHandler {
     }
 
     public <X, Y> ChartReport<X, Y> createChartReport(String title, String xLabel, String yLabel, List<Pair<X, Y>> data) {
-        ChartReport<X, Y> report = new ChartReport<>(new Chart<>(title, xLabel, yLabel, data), reportRepository);
-        return report;
+        return new ChartReport<>(new Chart<>(title, xLabel, yLabel, data), reportRepository);
     }
 
     public JsonNode loadReportToJsonFromFile(String filename) {

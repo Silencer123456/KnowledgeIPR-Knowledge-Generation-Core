@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.model.search.chartquery;
 
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.model.search.ChartQuery;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
@@ -33,7 +34,7 @@ public class PatentOwnershipEvolutionQuery extends ChartQuery<Long, Long> {
     }
 
     @Override
-    public List<Pair<Long, Long>> get() {
+    public List<Pair<Long, Long>> get() throws QueryExecutionException {
         LOGGER.info("Running getPatentOwnershipEvolutionQuery search on `" + ownersName + "` owner and `" + category + "` category on " + DataSourceType.PATENT + " collection.");
 
         return queryCreator.getPatentOwnershipEvolutionQuery(DataSourceType.PATENT, ownersName, category);

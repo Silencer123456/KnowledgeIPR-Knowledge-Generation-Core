@@ -7,7 +7,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 /**
  * Holds the data for the response to the user's search request.
  */
-public class SearchResponse {
+public class SearchResponse implements IResponse {
     /**
      * Description text of the response
      */

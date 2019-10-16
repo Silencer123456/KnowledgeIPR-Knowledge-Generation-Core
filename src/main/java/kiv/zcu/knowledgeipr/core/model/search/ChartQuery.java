@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.model.search;
 
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class ChartQuery<T, V> {
      *
      * @return - Chart data in form of list of pair values
      */
-    public abstract List<Pair<T, V>> get();
+    public abstract List<Pair<T, V>> get() throws QueryExecutionException;
 
     public String getTitle() {
         return title;

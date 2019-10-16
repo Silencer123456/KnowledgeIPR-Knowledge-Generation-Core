@@ -2,7 +2,7 @@ package kiv.zcu.knowledgeipr.api.services;
 
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.api.filter.Logged;
-import kiv.zcu.knowledgeipr.api.response.ChartResponse;
+import kiv.zcu.knowledgeipr.api.response.IResponse;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.report.ReportFilename;
 import kiv.zcu.knowledgeipr.core.model.search.chartquery.ActivePersonQuery;
@@ -40,7 +40,7 @@ public class StatsRestService {
     @Path("/activeAuthorsPatents")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ObjectSerializationException {
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new ActivePersonQuery(mongoQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PATENT);
 
@@ -52,7 +52,7 @@ public class StatsRestService {
     @Path("/activeOwnersPatents")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveOwnersPatents() throws ObjectSerializationException {
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new ActivePersonQuery(mongoQueryRunner, ResponseField.OWNERS.value),
                 ReportFilename.ACTIVE_OWNERS.value, DataSourceType.PATENT);
 
@@ -63,7 +63,7 @@ public class StatsRestService {
     @Path("/activeAuthorsPublications")
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ObjectSerializationException {
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new ActivePersonQuery(mongoQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PUBLICATION);
 
@@ -77,8 +77,8 @@ public class StatsRestService {
     public javax.ws.rs.core.Response getCountsByFosPublications() throws ObjectSerializationException {
 //        ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_FOS);
 
-        ChartResponse response = dataAccessController.chartQuery(
-                new CountByArrayFieldQuery(mongoQueryRunner, ResponseField.FOS, DataSourceType.PUBLICATION),
+        IResponse response = dataAccessController.chartQuery(
+                new CountByArrayFieldQuery(elasticQueryRunner, ResponseField.FOS, DataSourceType.PUBLICATION),
                 ReportFilename.TOP_FOS.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -91,7 +91,7 @@ public class StatsRestService {
     public javax.ws.rs.core.Response getProlificPublishers() throws ObjectSerializationException {
         //ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_PUBLISHER);
 
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new CountByFieldQuery(mongoQueryRunner, ResponseField.PUBLISHER, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_PUBLISHER.value, DataSourceType.PUBLICATION);
 
@@ -105,7 +105,7 @@ public class StatsRestService {
     public javax.ws.rs.core.Response getProlificVenues() throws ObjectSerializationException {
         //ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_VENUES);
 
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new CountByFieldQuery(mongoQueryRunner, ResponseField.VENUE, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_VENUES.value, DataSourceType.PUBLICATION);
 
@@ -119,7 +119,7 @@ public class StatsRestService {
     public javax.ws.rs.core.Response getCountByKeywords() throws ObjectSerializationException {
         // ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_KEYWORD);
 
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new CountByArrayFieldQuery(mongoQueryRunner, ResponseField.KEYWORDS, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_KEYWORD.value, DataSourceType.PUBLICATION);
 
@@ -133,7 +133,7 @@ public class StatsRestService {
     public javax.ws.rs.core.Response getCountsByYearPublications() throws ObjectSerializationException {
         // ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_YEAR);
 
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new CountByFieldQuery(mongoQueryRunner, ResponseField.YEAR, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_YEAR.value, DataSourceType.PUBLICATION);
 
@@ -147,7 +147,7 @@ public class StatsRestService {
     public javax.ws.rs.core.Response getCountsByLangPublication() throws ObjectSerializationException {
         // ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_YEAR);
 
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new CountByFieldQuery(mongoQueryRunner, ResponseField.LANG, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_LANG.value, DataSourceType.PUBLICATION);
 
@@ -165,7 +165,7 @@ public class StatsRestService {
         // TODO! check category valid
         // TODO! better way of disambiguaiting reports filenames, probably saving to database instead
 
-        ChartResponse response = dataAccessController.chartQuery(
+        IResponse response = dataAccessController.chartQuery(
                 new PatentOwnershipEvolutionQuery(elasticQueryRunner, ownersName, category),
                 "ownerEvol" + ownersName + category + ".json", DataSourceType.PATENT);
 

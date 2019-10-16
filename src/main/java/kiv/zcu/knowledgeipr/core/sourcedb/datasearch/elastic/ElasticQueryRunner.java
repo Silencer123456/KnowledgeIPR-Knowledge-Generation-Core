@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
@@ -34,17 +35,34 @@ public class ElasticQueryRunner implements IQueryRunner {
     }
 
     @Override
-    public List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field) {
-        return null;
+    public List<Pair<String, Long>> countByField(DataSourceType collectionName, ResponseField field) throws QueryExecutionException {
+        return countByStringArrayField(collectionName, field);
     }
 
     @Override
-    public List<Pair<String, Integer>> countByArrayField(DataSourceType collectionName, ResponseField field) {
-        return null;
+    public List<Pair<String, Long>> countByStringArrayField(DataSourceType collectionName, ResponseField field) throws QueryExecutionException {
+        int limit = 25;
+        String fieldAggName = "countByField";
+
+        TermsAggregationBuilder termsAgg = AggregationBuilders.terms(fieldAggName).field(field.value + ".keyword").size(limit);
+
+        Aggregations agg = elasticRunner.runAggregation(AppConstants.ELASTIC_INDEX_PREFIX + collectionName.value, termsAgg);
+        if (agg == null) {
+            throw new QueryExecutionException("Aggregation " + termsAgg.toString() + " failed.");
+        }
+
+        Terms t = agg.get(fieldAggName);
+
+        List<Pair<String, Long>> data = new ArrayList<>();
+        for (Terms.Bucket bucket : t.getBuckets()) {
+            data.add(new Pair<>((String) bucket.getKey(), bucket.getDocCount()));
+        }
+
+        return data;
     }
 
     @Override
-    public List<Pair<String, Integer>> activePeople(DataSourceType collectionName, String type, int limit) {
+    public List<Pair<String, Long>> activePeople(DataSourceType collectionName, String type, int limit) {
         return null;
     }
 
@@ -56,7 +74,7 @@ public class ElasticQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
+    public List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) throws QueryExecutionException {
         String globalAggName = "patentOwnershipEvolution";
         String ownersAggName = "owners";
         String yearsAggName = "years";
@@ -72,6 +90,9 @@ public class ElasticQueryRunner implements IQueryRunner {
         filterAggregationBuilder.subAggregation(termsAggregation);
 
         Aggregations agg = elasticRunner.runAggregation(AppConstants.ELASTIC_INDEX_PREFIX + collectionName.value, aggregation);
+        if (agg == null) {
+            throw new QueryExecutionException("Aggregation " + aggregation.toString() + " failed.");
+        }
 
         Global g = agg.get(globalAggName);
         Filters f = g.getAggregations().get(ownersAggName);

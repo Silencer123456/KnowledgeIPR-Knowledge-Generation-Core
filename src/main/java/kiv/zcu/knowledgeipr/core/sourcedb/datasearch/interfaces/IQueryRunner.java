@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces;
 
 import javafx.util.Pair;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 
@@ -19,7 +20,8 @@ public interface IQueryRunner {
      * @param field          - Field on which to perform the count aggregation
      * @return - Graph data as a list of 'String, Integer' pairs
      */
-    List<Pair<String, Integer>> countByField(DataSourceType collectionName, ResponseField field);
+    List<Pair<String, Long>> countByField(DataSourceType collectionName, ResponseField field)
+            throws QueryExecutionException;
 
     /**
      * Creates a search which runs an count aggregation on the specified field. in this case, the field is an array
@@ -29,7 +31,8 @@ public interface IQueryRunner {
      * @param field - Field on which to perform the count aggregation
      * @return - Graph data as a list of 'String, Integer' pairs
      */
-    List<Pair<String, Integer>> countByArrayField(DataSourceType collectionName, ResponseField field);
+    List<Pair<String, Long>> countByStringArrayField(DataSourceType collectionName, ResponseField field)
+            throws QueryExecutionException;
 
     /**
      * Queries Mongo database for most active authors.
@@ -48,7 +51,7 @@ public interface IQueryRunner {
      * @param type           - 'authors' or 'owners'
      * @return - List of 'author name, count' pairs
      */
-    List<Pair<String, Integer>> activePeople(DataSourceType collectionName, String type, int limit);
+    List<Pair<String, Long>> activePeople(DataSourceType collectionName, String type, int limit);
 
     /**
      * Creates a search returning evolution of patents ownership by a specified company (owner)
@@ -60,5 +63,6 @@ public interface IQueryRunner {
      * @return Chart data
      */
     // TODO: maybe generify, replace category string
-    List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category);
+    List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category)
+            throws QueryExecutionException;
 }

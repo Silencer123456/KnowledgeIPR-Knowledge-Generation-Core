@@ -21,11 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * Contains common methods while running ElasticSearch queries
  */
 public class CommonElasticRunner {
+
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private static CommonElasticRunner instance;
 
@@ -35,7 +38,10 @@ public class CommonElasticRunner {
     private RestHighLevelClient client = new RestHighLevelClient(
             RestClient.builder(
                     new HttpHost("localhost", 9200, "http"),
-                    new HttpHost("localhost", 9201, "http")));
+                    new HttpHost("localhost", 9201, "http")).setRequestConfigCallback(
+                    requestConfigBuilder -> requestConfigBuilder
+                            .setConnectTimeout(10000)
+                            .setSocketTimeout(60000)));
 
     public static CommonElasticRunner getInstance() {
         if (instance == null) {
@@ -72,6 +78,7 @@ public class CommonElasticRunner {
         searchRequest.source(searchSourceBuilder);
 
         try {
+            LOGGER.info("Running ElasticSearch query: " + queryBuilder.toString());
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
             report.setTimeValue(searchResponse.getTook().getStringRep());
@@ -118,6 +125,8 @@ public class CommonElasticRunner {
         searchRequest.source(searchSourceBuilder);
 
         try {
+            LOGGER.info("Running ElasticSearch query: " + aggregationBuilders.toString());
+
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
             agg = searchResponse.getAggregations();

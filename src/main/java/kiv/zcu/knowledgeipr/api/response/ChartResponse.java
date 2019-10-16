@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 //TODO: Refactor: make abstract class for reports
-public class ChartResponse {
+public class ChartResponse implements IResponse {
     /**
      * Status of the response. OK or ERROR
      */
