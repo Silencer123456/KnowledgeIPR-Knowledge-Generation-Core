@@ -114,7 +114,7 @@ public class CommonElasticRunner {
      * @param aggregationBuilders - The ElasticSearch builder with specified aggregations
      * @return aggregation results. If the aggregation fails, null is returned
      */
-    public Aggregations runAggregation(String indexName, AggregationBuilder aggregationBuilders) {
+    Aggregations runAggregation(String indexName, AggregationBuilder aggregationBuilders) {
         Aggregations agg = null;
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();

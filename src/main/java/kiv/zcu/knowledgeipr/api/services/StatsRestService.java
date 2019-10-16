@@ -75,8 +75,6 @@ public class StatsRestService {
     @Path("/countsByFos")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByFosPublications() throws ObjectSerializationException {
-//        ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_FOS);
-
         IResponse response = dataAccessController.chartQuery(
                 new CountByArrayFieldQuery(elasticQueryRunner, ResponseField.FOS, DataSourceType.PUBLICATION),
                 ReportFilename.TOP_FOS.value, DataSourceType.PUBLICATION);
@@ -89,10 +87,8 @@ public class StatsRestService {
     @Path("/prolificPublishers")
     @Produces("application/json")
     public javax.ws.rs.core.Response getProlificPublishers() throws ObjectSerializationException {
-        //ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_PUBLISHER);
-
         IResponse response = dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.PUBLISHER, DataSourceType.PUBLICATION),
+                new CountByFieldQuery(elasticQueryRunner, ResponseField.PUBLISHER, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_PUBLISHER.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -103,10 +99,8 @@ public class StatsRestService {
     @Path("/prolificVenues")
     @Produces("application/json")
     public javax.ws.rs.core.Response getProlificVenues() throws ObjectSerializationException {
-        //ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_VENUES);
-
         IResponse response = dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.VENUE, DataSourceType.PUBLICATION),
+                new CountByFieldQuery(elasticQueryRunner, ResponseField.VENUE, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_VENUES.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -117,10 +111,8 @@ public class StatsRestService {
     @Path("/countsByKeywords")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountByKeywords() throws ObjectSerializationException {
-        // ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_KEYWORD);
-
         IResponse response = dataAccessController.chartQuery(
-                new CountByArrayFieldQuery(mongoQueryRunner, ResponseField.KEYWORDS, DataSourceType.PUBLICATION),
+                new CountByArrayFieldQuery(elasticQueryRunner, ResponseField.KEYWORDS, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_KEYWORD.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -131,8 +123,6 @@ public class StatsRestService {
     @Path("/countsByYearPublications")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByYearPublications() throws ObjectSerializationException {
-        // ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_YEAR);
-
         IResponse response = dataAccessController.chartQuery(
                 new CountByFieldQuery(mongoQueryRunner, ResponseField.YEAR, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_YEAR.value, DataSourceType.PUBLICATION);
@@ -145,10 +135,8 @@ public class StatsRestService {
     @Path("/countsByLang")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByLangPublication() throws ObjectSerializationException {
-        // ChartResponse response = dataAccessController.chartQuery(DataSourceType.PUBLICATION, ReportFilename.COUNT_BY_YEAR);
-
         IResponse response = dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.LANG, DataSourceType.PUBLICATION),
+                new CountByFieldQuery(elasticQueryRunner, ResponseField.LANG, DataSourceType.PUBLICATION),
                 ReportFilename.COUNT_BY_LANG.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();

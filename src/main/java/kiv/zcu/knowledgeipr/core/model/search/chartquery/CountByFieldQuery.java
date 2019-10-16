@@ -19,7 +19,7 @@ public class CountByFieldQuery extends ChartQuery<String, Long> {
     private ResponseField field;
 
     public CountByFieldQuery(IQueryRunner queryRunner, ResponseField field, DataSourceType collection) {
-        super(queryRunner, "Count by " + field.value, field.value + " name", Y_AXIS);
+        super(queryRunner, "Count aggregation of " + field.value, "Term: " + field.value, Y_AXIS);
 
         this.collection = collection;
         this.field = field;
