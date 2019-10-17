@@ -48,7 +48,7 @@ public class ElasticQueryRunner implements IQueryRunner {
         int limit = 25;
         String fieldAggName = "countByField";
 
-        String val = field == ResponseField.YEAR ? field.value : field.value + "keyword"; // TODO: Temp solution
+        String val = field == ResponseField.YEAR ? field.value : field.value + ".keyword"; // TODO:!!! Temp solution
 
         TermsAggregationBuilder termsAgg = AggregationBuilders.terms(fieldAggName).field(val).size(limit);
 

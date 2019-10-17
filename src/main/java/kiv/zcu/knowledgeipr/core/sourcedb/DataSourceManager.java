@@ -94,6 +94,9 @@ public class DataSourceManager {
             case PATENT:
                 dataSources.add(DataSource.USPTO);
                 break;
+            case SPRINGER:
+                dataSources.add(DataSource.SPRINGER);
+                break;
             case ALL:
                 dataSources.add(DataSource.MAG);
                 dataSources.add(DataSource.SPRINGER);

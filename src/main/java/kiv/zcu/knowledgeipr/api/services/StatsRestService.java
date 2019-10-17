@@ -133,7 +133,7 @@ public class StatsRestService {
     public javax.ws.rs.core.Response getDateHistogram(@QueryParam("dataSource") String dataSource) throws ObjectSerializationException {
         DataSourceType sourceType = DataSourceType.getByValue(dataSource);
         if (sourceType == null) {
-            sourceType = DataSourceType.PATENT;
+            sourceType = DataSourceType.ALL;
         }
 
         List<DataSource> indexes = DataSourceManager.getDataSourcesForSourceType(sourceType, SearchEngineName.elastic);
@@ -144,6 +144,7 @@ public class StatsRestService {
                     new CountByStringArrayFieldAggregation(elasticQueryRunner, ResponseField.YEAR, indexes),
                     ReportFilename.COUNT_BY_YEAR.value, sourceType);
         } else {
+            indexes.remove(DataSource.MAG);
             response = dataAccessController.chartQuery(
                     new DateHistogramAggregation(elasticQueryRunner, indexes),
                     ReportFilename.DATE_HISTOGRAM.value,

@@ -60,7 +60,7 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
             throws ApiException, ObjectSerializationException {
 
         isPageValid(page);
-        Search search = new Search(queryBuilder.buildSimilarDocumentsQuery(), DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
+        Search search = new Search(queryBuilder.buildSimilarDocumentsQuery(id), DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
 
         SearchSpecification<Search> searchSpecification = new SimilarSearchSpecification(search, id);// TODO: Mongo does not make use of the search specifications
 
