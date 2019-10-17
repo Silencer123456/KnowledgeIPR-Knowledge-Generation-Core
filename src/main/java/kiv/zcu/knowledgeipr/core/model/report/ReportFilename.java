@@ -9,6 +9,7 @@ public enum ReportFilename {
     COUNT_BY_YEAR("countByYear.json"),
     COUNT_BY_FOS("countByFos.json"),
     COUNT_BY_KEYWORD("countByKeyword.json"),
+    DATE_HISTOGRAM("date-histogram.json"),
     ACTIVE_AUTHORS("activeAuthors.json"),
     ACTIVE_OWNERS("activeOwners.json"),
     COUNT_BY_PUBLISHER("prolificPublishers.json"),

@@ -5,10 +5,10 @@ import kiv.zcu.knowledgeipr.api.filter.Logged;
 import kiv.zcu.knowledgeipr.api.response.IResponse;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.report.ReportFilename;
-import kiv.zcu.knowledgeipr.core.model.search.chartquery.ActivePersonQuery;
-import kiv.zcu.knowledgeipr.core.model.search.chartquery.CountByArrayFieldQuery;
-import kiv.zcu.knowledgeipr.core.model.search.chartquery.CountByFieldQuery;
-import kiv.zcu.knowledgeipr.core.model.search.chartquery.PatentOwnershipEvolutionQuery;
+import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
+import kiv.zcu.knowledgeipr.core.model.search.aggqueries.*;
+import kiv.zcu.knowledgeipr.core.sourcedb.DataSourceManager;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSource;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.ElasticQueryRunner;
@@ -17,6 +17,8 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.MongoQueryRunner;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
 import javax.ws.rs.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/stats/")
 public class StatsRestService {
@@ -41,7 +43,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new ActivePersonQuery(mongoQueryRunner, ResponseField.AUTHORS.value),
+                new ActivePersonAggregation(mongoQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -53,7 +55,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveOwnersPatents() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new ActivePersonQuery(mongoQueryRunner, ResponseField.OWNERS.value),
+                new ActivePersonAggregation(mongoQueryRunner, ResponseField.OWNERS.value),
                 ReportFilename.ACTIVE_OWNERS.value, DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -64,7 +66,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new ActivePersonQuery(mongoQueryRunner, ResponseField.AUTHORS.value),
+                new ActivePersonAggregation(mongoQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -75,8 +77,11 @@ public class StatsRestService {
     @Path("/countsByFos")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByFosPublications() throws ObjectSerializationException {
+        List<DataSource> indexes = new ArrayList<>();
+        indexes.add(DataSource.MAG);
+
         IResponse response = dataAccessController.chartQuery(
-                new CountByArrayFieldQuery(elasticQueryRunner, ResponseField.FOS, DataSourceType.PUBLICATION),
+                new CountByStringArrayFieldAggregation(elasticQueryRunner, ResponseField.FOS, indexes),
                 ReportFilename.TOP_FOS.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -88,7 +93,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getProlificPublishers() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new CountByFieldQuery(elasticQueryRunner, ResponseField.PUBLISHER, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.PUBLISHER, DataSource.MAG),
                 ReportFilename.COUNT_BY_PUBLISHER.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -100,7 +105,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getProlificVenues() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new CountByFieldQuery(elasticQueryRunner, ResponseField.VENUE, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.VENUE, DataSource.MAG),
                 ReportFilename.COUNT_BY_VENUES.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -111,9 +116,40 @@ public class StatsRestService {
     @Path("/countsByKeywords")
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountByKeywords() throws ObjectSerializationException {
+        List<DataSource> indexes = new ArrayList<>();
+        indexes.add(DataSource.MAG);
+
         IResponse response = dataAccessController.chartQuery(
-                new CountByArrayFieldQuery(elasticQueryRunner, ResponseField.KEYWORDS, DataSourceType.PUBLICATION),
+                new CountByStringArrayFieldAggregation(elasticQueryRunner, ResponseField.KEYWORDS, indexes),
                 ReportFilename.COUNT_BY_KEYWORD.value, DataSourceType.PUBLICATION);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }
+
+    @GET
+    @Logged
+    @Path("/dateHistogram")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getDateHistogram(@QueryParam("dataSource") String dataSource) throws ObjectSerializationException {
+        DataSourceType sourceType = DataSourceType.getByValue(dataSource);
+        if (sourceType == null) {
+            sourceType = DataSourceType.PATENT;
+        }
+
+        List<DataSource> indexes = DataSourceManager.getDataSourcesForSourceType(sourceType, SearchEngineName.elastic);
+
+        IResponse response;
+        if (sourceType == DataSourceType.PUBLICATION) { // MAG data do not contain dates, only years, so do only count aggregation
+            response = dataAccessController.chartQuery(
+                    new CountByStringArrayFieldAggregation(elasticQueryRunner, ResponseField.YEAR, indexes),
+                    ReportFilename.COUNT_BY_YEAR.value, sourceType);
+        } else {
+            response = dataAccessController.chartQuery(
+                    new DateHistogramAggregation(elasticQueryRunner, indexes),
+                    ReportFilename.DATE_HISTOGRAM.value,
+                    sourceType
+            );
+        }
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
@@ -124,7 +160,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByYearPublications() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.YEAR, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.YEAR, DataSource.MAG),
                 ReportFilename.COUNT_BY_YEAR.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -136,7 +172,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getCountsByLangPublication() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new CountByFieldQuery(elasticQueryRunner, ResponseField.LANG, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.LANG, DataSource.MAG),
                 ReportFilename.COUNT_BY_LANG.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -154,7 +190,7 @@ public class StatsRestService {
         // TODO! better way of disambiguaiting reports filenames, probably saving to database instead
 
         IResponse response = dataAccessController.chartQuery(
-                new PatentOwnershipEvolutionQuery(elasticQueryRunner, ownersName, category),
+                new PatentOwnershipEvolutionAggregation(elasticQueryRunner, ownersName, category),
                 "ownerEvol" + ownersName + category + ".json", DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -164,49 +200,52 @@ public class StatsRestService {
     @Logged
     @Path("/generateStats/{overwrite}")
     public javax.ws.rs.core.Response generateStats(@PathParam("overwrite") boolean overwrite) throws ObjectSerializationException {
+        List<DataSource> indexes = new ArrayList<>();
+        indexes.add(DataSource.MAG);
+
         // Active author patents
         dataAccessController.chartQuery(
-                new ActivePersonQuery(mongoQueryRunner, ResponseField.AUTHORS.value),
+                new ActivePersonAggregation(mongoQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PATENT, overwrite);
 
         // Active owners patents
         dataAccessController.chartQuery(
-                new ActivePersonQuery(mongoQueryRunner, ResponseField.OWNERS.value),
+                new ActivePersonAggregation(mongoQueryRunner, ResponseField.OWNERS.value),
                 ReportFilename.ACTIVE_OWNERS.value, DataSourceType.PATENT, overwrite);
 
         // Active authors publication
         dataAccessController.chartQuery(
-                new ActivePersonQuery(mongoQueryRunner, ResponseField.AUTHORS.value),
+                new ActivePersonAggregation(mongoQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PUBLICATION, overwrite);
 
         // Counts by fos
         dataAccessController.chartQuery(
-                new CountByArrayFieldQuery(mongoQueryRunner, ResponseField.FOS, DataSourceType.PUBLICATION),
+                new CountByStringArrayFieldAggregation(mongoQueryRunner, ResponseField.FOS, indexes),
                 ReportFilename.TOP_FOS.value, DataSourceType.PUBLICATION, overwrite);
 
         // prolific publishers
         dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.PUBLISHER, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(mongoQueryRunner, ResponseField.PUBLISHER, indexes),
                 ReportFilename.COUNT_BY_PUBLISHER.value, DataSourceType.PUBLICATION, overwrite);
 
         // prolific venues
         dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.VENUE, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(mongoQueryRunner, ResponseField.VENUE, indexes),
                 ReportFilename.COUNT_BY_VENUES.value, DataSourceType.PUBLICATION, overwrite);
 
         // Count by keyword
         dataAccessController.chartQuery(
-                new CountByArrayFieldQuery(mongoQueryRunner, ResponseField.KEYWORDS, DataSourceType.PUBLICATION),
+                new CountByStringArrayFieldAggregation(mongoQueryRunner, ResponseField.KEYWORDS, indexes),
                 ReportFilename.COUNT_BY_KEYWORD.value, DataSourceType.PUBLICATION, overwrite);
 
         // Count by year publication
         dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.YEAR, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(mongoQueryRunner, ResponseField.YEAR, indexes),
                 ReportFilename.COUNT_BY_YEAR.value, DataSourceType.PUBLICATION, overwrite);
 
         // Count by lang
         dataAccessController.chartQuery(
-                new CountByFieldQuery(mongoQueryRunner, ResponseField.LANG, DataSourceType.PUBLICATION),
+                new CountByFieldAggregation(mongoQueryRunner, ResponseField.LANG, indexes),
                 ReportFilename.COUNT_BY_LANG.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().build();

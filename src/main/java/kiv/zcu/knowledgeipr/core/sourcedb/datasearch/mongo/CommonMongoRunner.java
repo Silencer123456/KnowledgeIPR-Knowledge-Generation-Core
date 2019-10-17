@@ -6,6 +6,7 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Collation;
 import com.mongodb.client.model.CollationStrength;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSource;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.dbconnection.MongoConnection;
@@ -46,7 +47,7 @@ public class CommonMongoRunner {
      * @param list           - List of Bson documents with the search
      * @return - Iterator of retrieved documents
      */
-    AggregateIterable<Document> runAggregation(DataSourceType collectionName, List<Bson> list) {
+    AggregateIterable<Document> runAggregation(DataSource collectionName, List<Bson> list) {
         LOGGER.info("MongoDB search: " + Arrays.toString(list.toArray()));
         MongoCollection<Document> collection = database.getCollection(collectionName.value);
         return collection.aggregate(list).allowDiskUse(true);
@@ -57,13 +58,13 @@ public class CommonMongoRunner {
      * This method should be used if the sum is performed on a list of arrays,
      * an unwind operation is performed
      *
-     * @param collectionName - Collection name to be queried
+     * @param collection - Collection name to be queried
      * @param arrayName      - Name of the array to unwind
      * @param fieldName      - The name of the field to sum
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    AggregateIterable<Document> runCountUnwindAggregation(DataSourceType collectionName, String arrayName, String fieldName, int limit) {
+    AggregateIterable<Document> runCountUnwindAggregation(DataSource collection, String arrayName, String fieldName, int limit) {
         List<Bson> list = Arrays.asList(
                 project(new Document("_id", 0)
                         .append(fieldName, 1)),
@@ -74,7 +75,7 @@ public class CommonMongoRunner {
                 sort(new Document("count", -1)),
                 limit(limit));
 
-        return runAggregation(collectionName, list);
+        return runAggregation(collection, list);
     }
 
     /**
@@ -87,7 +88,7 @@ public class CommonMongoRunner {
      * @param limit          - Number of returned results
      * @return - Iterator with results
      */
-    AggregateIterable<Document> runCountAggregation(DataSourceType collectionName, String fieldName, int limit) {
+    AggregateIterable<Document> runCountAggregation(DataSource collectionName, String fieldName, int limit) {
         List<Bson> list = Arrays.asList(
                 project(new Document("_id", 0)
                         .append(fieldName, 1)),

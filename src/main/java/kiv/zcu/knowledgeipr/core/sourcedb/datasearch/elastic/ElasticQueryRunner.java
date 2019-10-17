@@ -2,7 +2,7 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSource;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
@@ -14,9 +14,13 @@ import org.elasticsearch.search.aggregations.bucket.filter.Filters;
 import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
 import org.elasticsearch.search.aggregations.bucket.global.Global;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,34 +39,36 @@ public class ElasticQueryRunner implements IQueryRunner {
     }
 
     @Override
-    public List<Pair<String, Long>> countByField(DataSourceType collectionName, ResponseField field) throws QueryExecutionException {
-        return countByStringArrayField(collectionName, field);
+    public List<Pair<Object, Long>> countByField(List<DataSource> indexes, ResponseField field) throws QueryExecutionException {
+        return countByStringArrayField(indexes, field);
     }
 
     @Override
-    public List<Pair<String, Long>> countByStringArrayField(DataSourceType collectionName, ResponseField field) throws QueryExecutionException {
+    public List<Pair<Object, Long>> countByStringArrayField(List<DataSource> indexes, ResponseField field) throws QueryExecutionException {
         int limit = 25;
         String fieldAggName = "countByField";
 
-        TermsAggregationBuilder termsAgg = AggregationBuilders.terms(fieldAggName).field(field.value + ".keyword").size(limit);
+        String val = field == ResponseField.YEAR ? field.value : field.value + "keyword"; // TODO: Temp solution
 
-        Aggregations agg = elasticRunner.runAggregation(AppConstants.ELASTIC_INDEX_PREFIX + collectionName.value, termsAgg);
-        if (agg == null) {
-            throw new QueryExecutionException("Aggregation " + termsAgg.toString() + " failed.");
-        }
+        TermsAggregationBuilder termsAgg = AggregationBuilders.terms(fieldAggName).field(val).size(limit);
+
+        List<String> indexesString = new ArrayList<>(); // TODO: !!! change
+        indexes.forEach(item -> indexesString.add(AppConstants.ELASTIC_INDEX_PREFIX + item.value));
+
+        Aggregations agg = elasticRunner.runAggregation(indexesString, termsAgg);
 
         Terms t = agg.get(fieldAggName);
 
-        List<Pair<String, Long>> data = new ArrayList<>();
+        List<Pair<Object, Long>> data = new ArrayList<>();
         for (Terms.Bucket bucket : t.getBuckets()) {
-            data.add(new Pair<>((String) bucket.getKey(), bucket.getDocCount()));
+            data.add(new Pair<>(bucket.getKey(), bucket.getDocCount()));
         }
 
         return data;
     }
 
     @Override
-    public List<Pair<String, Long>> activePeople(DataSourceType collectionName, String type, int limit) {
+    public List<Pair<String, Long>> activePeople(DataSource collectionName, String type, int limit) {
         return null;
     }
 
@@ -74,7 +80,7 @@ public class ElasticQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) throws QueryExecutionException {
+    public List<Pair<Long, Long>> patentOwnershipEvolution(List<DataSource> indexes, String owner, String category) throws QueryExecutionException {
         String globalAggName = "patentOwnershipEvolution";
         String ownersAggName = "owners";
         String yearsAggName = "years";
@@ -89,10 +95,10 @@ public class ElasticQueryRunner implements IQueryRunner {
         TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(yearsAggName).field("year");
         filterAggregationBuilder.subAggregation(termsAggregation);
 
-        Aggregations agg = elasticRunner.runAggregation(AppConstants.ELASTIC_INDEX_PREFIX + collectionName.value, aggregation);
-        if (agg == null) {
-            throw new QueryExecutionException("Aggregation " + aggregation.toString() + " failed.");
-        }
+        List<String> indexesString = new ArrayList<>(); // TODO: !!! change
+        indexes.forEach(item -> indexesString.add(AppConstants.ELASTIC_INDEX_PREFIX + item.value));
+
+        Aggregations agg = elasticRunner.runAggregation(indexesString, aggregation);
 
         Global g = agg.get(globalAggName);
         Filters f = g.getAggregations().get(ownersAggName);
@@ -104,5 +110,27 @@ public class ElasticQueryRunner implements IQueryRunner {
         }
 
         return years;
+    }
+
+    @Override
+    public List<Pair<Long, Long>> dateHistogram(List<DataSource> indexes) throws QueryExecutionException {
+        String dateName = "date_histogram";
+        DateHistogramAggregationBuilder dateHistogramAgg = AggregationBuilders.dateHistogram(dateName)
+                .calendarInterval(DateHistogramInterval.YEAR)
+                .field(ResponseField.DATE.value).keyed(true);
+
+
+        List<String> indexesString = new ArrayList<>(); // TODO: !!! change
+        indexes.forEach(item -> indexesString.add(AppConstants.ELASTIC_INDEX_PREFIX + item.value));
+        Aggregations agg = elasticRunner.runAggregation(indexesString, dateHistogramAgg);
+
+        List<Pair<Long, Long>> dates = new ArrayList<>();
+        Histogram h = agg.get(dateName);
+        for (Histogram.Bucket entry : h.getBuckets()) {
+            ZonedDateTime key = (ZonedDateTime) entry.getKey();
+            dates.add(new Pair<>((long) key.getYear(), entry.getDocCount()));
+        }
+
+        return dates;
     }
 }

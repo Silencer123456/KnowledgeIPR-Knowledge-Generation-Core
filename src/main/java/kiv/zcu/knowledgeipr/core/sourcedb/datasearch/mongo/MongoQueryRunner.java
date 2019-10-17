@@ -5,7 +5,8 @@ import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Filters;
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.analysis.wordnet.WordNet;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSource;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 import org.bson.Document;
@@ -39,7 +40,7 @@ public class MongoQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<String, Long>> activePeople(DataSourceType collectionName, String type, int limit) {
+    public List<Pair<String, Long>> activePeople(DataSource collectionName, String type, int limit) {
         LOGGER.info("Running 'active " + type + "' method on " + collectionName + " collection.");
 
         List<Pair<String, Long>> activeAuthors = new ArrayList<>();
@@ -58,12 +59,13 @@ public class MongoQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<String, Long>> countByStringArrayField(DataSourceType collectionName, ResponseField field) {
-        LOGGER.info("Running search on field " + field.value + " on " + collectionName + " collection.");
 
-        List<Pair<String, Long>> fieldToCounts = new ArrayList<>();
+    public List<Pair<Object, Long>> countByStringArrayField(List<DataSource> collections, ResponseField field) {
+        LOGGER.info("Running search on field " + field.value + " on indexes: " + collections + ".");
 
-        AggregateIterable<Document> output = mongoRunner.runCountUnwindAggregation(collectionName, field.value, field.value, 30);
+        List<Pair<Object, Long>> fieldToCounts = new ArrayList<>();
+
+        AggregateIterable<Document> output = mongoRunner.runCountUnwindAggregation(collections.get(0), field.value, field.value, 30);
 
         for (Document doc : output) {
             String author = String.valueOf(doc.get(field.value));
@@ -76,12 +78,12 @@ public class MongoQueryRunner implements IQueryRunner {
     /**
      * {@inheritDoc}
      */
-    public List<Pair<String, Long>> countByField(DataSourceType collectionName, ResponseField field) {
-        LOGGER.info("Running search on field " + field.value + " on " + collectionName + " collection.");
+    public List<Pair<Object, Long>> countByField(List<DataSource> collections, ResponseField field) {
+        LOGGER.info("Running search on field " + field.value + " on " + collections + " collections.");
 
-        List<Pair<String, Long>> fieldToCounts = new ArrayList<>();
+        List<Pair<Object, Long>> fieldToCounts = new ArrayList<>();
 
-        AggregateIterable<Document> output = mongoRunner.runCountAggregation(collectionName, field.value, 30);
+        AggregateIterable<Document> output = mongoRunner.runCountAggregation(collections.get(0), field.value, 30);
 
         for (Document doc : output) {
             String author = String.valueOf(doc.get(field.value));
@@ -95,7 +97,7 @@ public class MongoQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<Long, Long>> getPatentOwnershipEvolutionQuery(DataSourceType collectionName, String owner, String category) {
+    public List<Pair<Long, Long>> patentOwnershipEvolution(List<DataSource> collections, String owner, String category) {
         String field = ResponseField.YEAR.value;
         List<Pair<Long, Long>> fieldToCounts = new ArrayList<>();
 
@@ -110,7 +112,7 @@ public class MongoQueryRunner implements IQueryRunner {
                 sort(new Document("count", -1)),
                 limit(30));
 
-        AggregateIterable<Document> output = mongoRunner.runAggregation(collectionName, list);
+        AggregateIterable<Document> output = mongoRunner.runAggregation(collections.get(0), list);
 
         for (Document doc : output) {
             //String author = String.valueOf(doc.get(field));
@@ -121,23 +123,8 @@ public class MongoQueryRunner implements IQueryRunner {
         return fieldToCounts;
     }
 
-    public int getPeopleCount(String collectionName, String type) {
-//        MongoCollection<Document> collection = database.getCollection(collectionName);
-//
-//        AggregateIterable<Document> output = collection.aggregate(Arrays.asList(
-//                project(new Document("_id", 0)
-//                        .append(type + ".name", 1)),
-//                unwind("$" + type),
-//                group("$ " + type + ".name", Accumulators.sum("count", 1)),
-//                match(gt("count", 1)),
-//                count("count"),
-//                limit(20)
-//        )).allowDiskUse(true);
-//
-//        for (Document doc : output) {
-//            String author = (String) doc.get("fos"); // TODO: change
-//        }
-
-        return 0;
+    @Override
+    public List<Pair<Long, Long>> dateHistogram(List<DataSource> collections) throws QueryExecutionException {
+        return null;
     }
 }

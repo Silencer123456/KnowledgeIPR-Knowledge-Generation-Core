@@ -114,14 +114,14 @@ public class CommonElasticRunner {
      * @param aggregationBuilders - The ElasticSearch builder with specified aggregations
      * @return aggregation results. If the aggregation fails, null is returned
      */
-    Aggregations runAggregation(String indexName, AggregationBuilder aggregationBuilders) {
+    Aggregations runAggregation(List<String> indexes, AggregationBuilder aggregationBuilders) throws QueryExecutionException {
         Aggregations agg = null;
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         searchSourceBuilder.aggregation(aggregationBuilders);
 
-        SearchRequest searchRequest = new SearchRequest(indexName);
+        SearchRequest searchRequest = new SearchRequest(indexes.toArray(new String[0]));
         searchRequest.source(searchSourceBuilder);
 
         try {
@@ -133,6 +133,10 @@ public class CommonElasticRunner {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        if (agg == null) {
+            throw new QueryExecutionException("Aggregation " + aggregationBuilders.toString() + " failed.");
         }
 
         return agg;

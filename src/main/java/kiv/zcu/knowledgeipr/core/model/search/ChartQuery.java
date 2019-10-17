@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.core.model.search;
 
 import javafx.util.Pair;
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSource;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 
 import java.util.List;
@@ -23,11 +24,15 @@ public abstract class ChartQuery<T, V> {
 
     protected IQueryRunner queryCreator;
 
-    public ChartQuery(IQueryRunner queryCreator, String title, String xLabel, String yLabel) {
+    protected List<DataSource> indexes;
+
+    // TODO: Make sure the indexes is not empty
+    public ChartQuery(IQueryRunner queryCreator, String title, String xLabel, String yLabel, List<DataSource> indexes) {
         this.queryCreator = queryCreator;
         this.title = title;
         this.xLabel = xLabel;
         this.yLabel = yLabel;
+        this.indexes = indexes;
     }
 
     /**
@@ -50,4 +55,7 @@ public abstract class ChartQuery<T, V> {
         return yLabel;
     }
 
+    public List<DataSource> getIndexes() {
+        return indexes;
+    }
 }

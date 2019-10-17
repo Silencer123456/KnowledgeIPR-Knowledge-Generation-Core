@@ -102,7 +102,7 @@ public class DataAccessController {
             return new ChartResponse(ResponseStatus.SUCCESS, "OK", cachedReport);
         }
 
-        LOGGER.info("Querying database for: " + chartQuery.getTitle());
+        LOGGER.info("Querying " + collectionName + "for: " + chartQuery.getTitle());
 
         try {
             List<Pair<T, V>> list = chartQuery.get();

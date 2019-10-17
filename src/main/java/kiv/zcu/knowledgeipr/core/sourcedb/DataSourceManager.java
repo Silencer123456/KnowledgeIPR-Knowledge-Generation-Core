@@ -32,6 +32,18 @@ public class DataSourceManager {
         return new ArrayList<>();
     }
 
+    public static List<DataSource> getDataSourcesForSourceType(DataSourceType dataSourceType, SearchEngineName searchEngineName) {
+        switch (searchEngineName) {
+            case elastic:
+                return getDataSourcesForSourceTypeElastic(dataSourceType);
+            case mongo:
+                getDataSourcesForSourceTypeAsStringMongo(dataSourceType);
+                break;
+        }
+
+        return new ArrayList<>();
+    }
+
     private static List<String> getDataSourcesForSourceTypeAsStringElastic(DataSourceType dataSourceType) {
         String prefix = AppConstants.ELASTIC_INDEX_PREFIX;
 
@@ -66,6 +78,26 @@ public class DataSourceManager {
             case ALL:
                 dataSources.add(DataSourceType.PUBLICATION.value);
                 dataSources.add(DataSourceType.PATENT.value);
+                break;
+        }
+
+        return dataSources;
+    }
+
+    private static List<DataSource> getDataSourcesForSourceTypeElastic(DataSourceType dataSourceType) {
+        List<DataSource> dataSources = new ArrayList<>();
+        switch (dataSourceType) {
+            case PUBLICATION:
+                dataSources.add(DataSource.MAG);
+                dataSources.add(DataSource.SPRINGER);
+                break;
+            case PATENT:
+                dataSources.add(DataSource.USPTO);
+                break;
+            case ALL:
+                dataSources.add(DataSource.MAG);
+                dataSources.add(DataSource.SPRINGER);
+                dataSources.add(DataSource.USPTO);
                 break;
         }
 
