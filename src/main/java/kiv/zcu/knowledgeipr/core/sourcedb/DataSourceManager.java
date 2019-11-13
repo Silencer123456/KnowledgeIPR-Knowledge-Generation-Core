@@ -106,4 +106,20 @@ public class DataSourceManager {
 
         return dataSources;
     }
+
+    /**
+     * Returns a data category (patents or publications) for the specified source of data represented
+     * as string
+     *
+     * @param dataSource - The source of data as string
+     * @return Data category
+     */
+    public static DataSourceType getTypeForDataSource(String dataSource) {
+        //TODO: change
+        if (dataSource.equals("mag") || dataSource.equals("springer")) {
+            return DataSourceType.PUBLICATION;
+        } else {
+            return DataSourceType.PATENT;
+        }
+    }
 }

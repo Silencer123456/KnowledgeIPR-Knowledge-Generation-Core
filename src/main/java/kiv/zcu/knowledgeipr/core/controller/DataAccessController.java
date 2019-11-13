@@ -22,6 +22,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecificat
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -102,7 +103,7 @@ public class DataAccessController {
             return new ChartResponse(ResponseStatus.SUCCESS, "OK", cachedReport);
         }
 
-        LOGGER.info("Querying " + collectionName + "for: " + chartQuery.getTitle());
+        LOGGER.info("Querying " + collectionName + " for: " + chartQuery.getTitle());
 
         try {
             List<Pair<T, V>> list = chartQuery.get();
@@ -150,6 +151,34 @@ public class DataAccessController {
     public WordNetResponse getHyponyms(String word) {
         List<AnalyzedWord> hyponyms = WordNet.getInstance().getHyponymsForWord(word);
         return new WordNetResponse(hyponyms, AnalysisType.HYPONYM);
+    }
+
+    /**
+     * Generates a Wordnet responseof Analyzed words, based on the specified analysis type
+     *
+     * @param word         - Word for which to create the analysis
+     * @param analysisType - The type of analysis
+     * @return - List of analyzed words, if incorrect type of analysis is specified, return empty list
+     */
+    public WordNetResponse wordAnalysis(String word, AnalysisType analysisType) {
+        List<AnalyzedWord> list = new ArrayList<>();
+
+        switch (analysisType) {
+            case SYNONYM:
+                list = WordNet.getInstance().getSynonymsForWord(word);
+                break;
+            case ANTONYM:
+                list = WordNet.getInstance().getAntonymsForWord(word);
+                break;
+            case HYPERNYM:
+                list = WordNet.getInstance().getHypernymsForWord(word);
+                break;
+            case HYPONYM:
+                list = WordNet.getInstance().getHyponymsForWord(word);
+                break;
+        }
+
+        return new WordNetResponse(list, analysisType);
     }
 
     // TODO: Temp solution

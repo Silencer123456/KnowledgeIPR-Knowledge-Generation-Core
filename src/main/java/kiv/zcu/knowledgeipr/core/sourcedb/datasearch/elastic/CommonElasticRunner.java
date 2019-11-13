@@ -2,6 +2,8 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
 
 import kiv.zcu.knowledgeipr.api.errorhandling.QueryExecutionException;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.sourcedb.DataSourceManager;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -89,6 +91,10 @@ public class CommonElasticRunner {
                 Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                 sourceAsMap.put("_id", hit.getId());
                 sourceAsMap.put("_score", hit.getScore());
+                String dataSource = (String) sourceAsMap.get(ResponseField.DATA_SOURCE.value);
+                if (dataSource != null) {
+                    sourceAsMap.put("dataCategory", DataSourceManager.getTypeForDataSource(dataSource));
+                }
 
                 records.add(new ElasticRecord(sourceAsMap));
             }
@@ -110,7 +116,7 @@ public class CommonElasticRunner {
     /**
      * Creates a search response and returns created Aggregations object with agg results.
      *
-     * @param indexName - The name of the index to search
+     * @param indexes - The list of indexes to search
      * @param aggregationBuilders - The ElasticSearch builder with specified aggregations
      * @return aggregation results. If the aggregation fails, null is returned
      */
