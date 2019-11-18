@@ -40,9 +40,6 @@ public class WikiSearcher {
             }
 
             String text = firstHitNode.get(0).textValue();
-            if (firstHitNode.get(0).textValue().contains("may refer to")) {
-                text = firstHitNode.get(1).textValue();
-            }
 
             wikiUrl = mapper.readTree(jsonText).get(3).get(0).textValue();
 
