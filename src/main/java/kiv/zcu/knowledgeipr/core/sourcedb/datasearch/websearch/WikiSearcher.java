@@ -39,9 +39,14 @@ public class WikiSearcher {
                 return JsonNodeFactory.instance.objectNode();
             }
 
+            String text = firstHitNode.get(0).textValue();
+            if (firstHitNode.get(0).textValue().contains("may refer to")) {
+                text = firstHitNode.get(1).textValue();
+            }
+
             wikiUrl = mapper.readTree(jsonText).get(3).get(0).textValue();
 
-            concrete = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=" + URLEncoder.encode(firstHitNode.get(0).textValue(), "UTF8");
+            concrete = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=" + URLEncoder.encode(text, "UTF8");
 
         }
 
