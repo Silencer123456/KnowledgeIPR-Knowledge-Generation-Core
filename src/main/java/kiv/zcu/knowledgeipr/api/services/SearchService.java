@@ -1,5 +1,6 @@
 package kiv.zcu.knowledgeipr.api.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kiv.zcu.knowledgeipr.api.errorhandling.ApiException;
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
@@ -17,6 +18,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.SimpleTextSearchEla
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.websearch.WikiSearcher;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
@@ -71,6 +73,22 @@ public abstract class SearchService<T extends IDataSearcher> {
         SearchSpecification<Search> searchSpecification = new SimpleTextSearchElasticSpecification<>(search);
 
         return initSearch(searchSpecification);
+    }
+
+    @GET
+    @Logged
+    @Path("/web/")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response searcWeb(@QueryParam("query") String query) {
+        JsonNode s = WikiSearcher.searchWiki(query, 10);
+        String json;
+        if (s != null) {
+            json = s.toString();
+        } else {
+            json = "";
+        }
+        return javax.ws.rs.core.Response.ok().entity(json).build();
     }
 
     /**
