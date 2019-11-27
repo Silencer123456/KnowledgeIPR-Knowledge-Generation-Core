@@ -35,7 +35,7 @@ public class GoogleSearcher {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(jsonText);
 
-            return node;
+            return node.get("items");
         }
     }
 }
