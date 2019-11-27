@@ -18,7 +18,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.SimpleTextSearchEla
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.websearch.WikiSearcher;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.websearch.WebSearcher;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
@@ -81,7 +81,7 @@ public abstract class SearchService<T extends IDataSearcher> {
     @Consumes("application/json")
     @Produces("application/json")
     public javax.ws.rs.core.Response searcWeb(@QueryParam("query") String query) {
-        JsonNode s = WikiSearcher.searchWiki(query, 10);
+        JsonNode s = WebSearcher.getWebSearchResults(query);
         String json;
         if (s != null) {
             json = s.toString();

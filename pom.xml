@@ -106,6 +106,13 @@
             <artifactId>commons-dbcp2</artifactId>
             <version>2.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-customsearch</artifactId>
+            <version>v1-rev74-1.25.0</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
