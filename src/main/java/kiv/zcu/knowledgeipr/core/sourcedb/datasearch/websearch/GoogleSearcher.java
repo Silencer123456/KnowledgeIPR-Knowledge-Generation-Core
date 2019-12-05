@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.security.GeneralSecurityException;
 
 public class GoogleSearcher {
 
@@ -20,14 +19,14 @@ public class GoogleSearcher {
             String cx = "016400888427988646158:u5s9qasds9z";
             String url = "https://www.googleapis.com/customsearch/v1?q=" + URLEncoder.encode(query, "UTF8") + "&key=" + apiKey + "&cx=" + cx + "&searchType=image&alt=json";
             return readJsonFromUrl(url);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    private static JsonNode readJsonFromUrl(String url) throws IOException, GeneralSecurityException {
+    private static JsonNode readJsonFromUrl(String url) throws IOException {
         try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             String jsonText = WebSearcher.readAll(rd);

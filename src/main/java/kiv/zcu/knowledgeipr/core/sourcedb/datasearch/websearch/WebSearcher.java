@@ -9,14 +9,6 @@ import java.io.Reader;
 
 public class WebSearcher {
 
-    //private WikiSearcher wikiSearcher;
-    //private GoogleSearcher googleSearcher;
-
-    public WebSearcher(WikiSearcher wikiSearcher, GoogleSearcher googleSearcher) {
-        //this.wikiSearcher = wikiSearcher;
-        //this.googleSearcher = googleSearcher;
-    }
-
     /**
      * Executes the search of the web searching for the specified query
      *
@@ -27,7 +19,7 @@ public class WebSearcher {
         ObjectNode resultJson = new ObjectMapper().createObjectNode();
 
         JsonNode wikiJson = WikiSearcher.searchWiki(query, 5);
-        resultJson.set("wiki", wikiJson);
+        resultJson.set("wikipedia", wikiJson);
 
         JsonNode googleJson = GoogleSearcher.search(query);
         resultJson.set("google", googleJson);
