@@ -1,4 +1,4 @@
-package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic;
+package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification;
 
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;

@@ -9,7 +9,7 @@ import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.SimpleTextSearchElasticSpecification;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification.SimpleTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.mongo.IMongoDataSearcher;

@@ -34,6 +34,8 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
 
         DbElasticReportWrapper dbReport = dataSearcher.search(searchSpecification);
 
+        // TODO: handle postprocessing of returned PATSTAT documents: their full document needs to be fetched from the SQL Server
+
         report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount(), dbReport.getTimeValue(), dbReport.getSearchedIndexes());
 
         cacheSearch(search, report);

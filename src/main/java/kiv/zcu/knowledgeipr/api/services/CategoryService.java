@@ -13,7 +13,7 @@ import kiv.zcu.knowledgeipr.core.model.search.category.data.Category;
 import kiv.zcu.knowledgeipr.core.model.search.category.data.CategoryHandler;
 import kiv.zcu.knowledgeipr.core.model.search.category.tree.TreeNode;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
-import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.AdvancedTextSearchElasticSpecification;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification.AdvancedTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchStrategy;
