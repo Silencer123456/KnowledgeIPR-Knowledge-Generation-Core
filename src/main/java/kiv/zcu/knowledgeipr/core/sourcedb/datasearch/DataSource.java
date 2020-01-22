@@ -7,6 +7,7 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch;
 public enum DataSource {
     SPRINGER("springer"),
     USPTO("patent"), // todo: Rename value to USPTO
+    PATSTAT("patstat"), // todo: Rename value to USPTO
     MAG("publication"); // todo: Rename value to MAG
 
     public final String value;

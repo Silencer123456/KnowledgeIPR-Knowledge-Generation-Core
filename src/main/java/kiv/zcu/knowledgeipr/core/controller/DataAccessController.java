@@ -186,7 +186,7 @@ public class DataAccessController {
         int count = 0;
 
         int publicationCount = 166613546;
-        int patentCount = 3645421;
+        int patentCount = 103242624;
 
         switch (source) {
             case PUBLICATION:

@@ -55,11 +55,13 @@ public class DataSourceManager {
                 break;
             case PATENT:
                 dataSources.add(prefix + DataSource.USPTO.value);
+                dataSources.add(prefix + DataSource.PATSTAT.value);
                 break;
             case ALL:
                 dataSources.add(prefix + DataSource.MAG.value);
                 dataSources.add(prefix + DataSource.SPRINGER.value);
                 dataSources.add(prefix + DataSource.USPTO.value);
+                dataSources.add(prefix + DataSource.PATSTAT.value);
                 break;
         }
 
