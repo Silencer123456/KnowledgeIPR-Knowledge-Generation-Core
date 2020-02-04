@@ -21,7 +21,6 @@ public class PatstatMapper {
             case ABSTRACT:
                 result = "applnAbstr.abstract";
                 break;
-
         }
         return result;
     }

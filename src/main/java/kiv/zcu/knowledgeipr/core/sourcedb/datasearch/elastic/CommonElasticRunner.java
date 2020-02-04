@@ -43,7 +43,7 @@ public class CommonElasticRunner {
                     new HttpHost("localhost", 9201, "http")).setRequestConfigCallback(
                     requestConfigBuilder -> requestConfigBuilder
                             .setConnectTimeout(10000)
-                            .setSocketTimeout(60000)));
+                            .setSocketTimeout(600000)));
 
     public static CommonElasticRunner getInstance() {
         if (instance == null) {
@@ -105,7 +105,7 @@ public class CommonElasticRunner {
         } catch (IOException e) {
             e.printStackTrace();
 
-            throw new QueryExecutionException(e.getMessage());
+            throw new QueryExecutionException(e.getCause().getMessage());
         }
 
         report.setRecords(records);

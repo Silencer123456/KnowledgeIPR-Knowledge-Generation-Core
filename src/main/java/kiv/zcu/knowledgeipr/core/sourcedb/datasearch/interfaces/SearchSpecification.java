@@ -2,7 +2,12 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces;
 
 
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.PatstatMapper;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import org.elasticsearch.index.query.QueryBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides a query specification for a single type of query. The child classes
@@ -31,5 +36,15 @@ public abstract class SearchSpecification<T extends Search> {
 
     public T getSearch() {
         return search;
+    }
+
+    protected Map<String, Float> getDefaultFieldsMap() {
+        Map<String, Float> fieldsMap = new HashMap<>();
+        fieldsMap.put(ResponseField.TITLE.value, 1F);
+        fieldsMap.put(ResponseField.ABSTRACT.value, 1F);
+        fieldsMap.put(PatstatMapper.getMapping(ResponseField.TITLE), 1F);
+        fieldsMap.put(PatstatMapper.getMapping(ResponseField.ABSTRACT), 1F);
+
+        return fieldsMap;
     }
 }

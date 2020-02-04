@@ -47,4 +47,13 @@ public enum ResponseField {
 
         return false;
     }
+
+    public static ResponseField getNameFromValue(String value) {
+        for (ResponseField field : ResponseField.values()) {
+            if (field.value.equals(value)) {
+                return field;
+            }
+        }
+        return null;
+    }
 }
