@@ -39,7 +39,7 @@ public class DefaultElasticSearchStrategy extends SearchStrategy<Search, IElasti
         report = new ElasticSearchReport(dbReport.getRecords(), dbReport.getDocsCount(), dbReport.getTimeValue(), dbReport.getSearchedIndexes());
 
         cacheSearch(search, report);
-
+        ;
         return report;
     }
 }
