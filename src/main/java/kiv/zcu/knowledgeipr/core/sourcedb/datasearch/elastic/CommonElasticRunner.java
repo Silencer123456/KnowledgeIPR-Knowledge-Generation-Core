@@ -47,7 +47,7 @@ public class CommonElasticRunner {
 
     public static CommonElasticRunner getInstance() {
         if (instance == null) {
-            return new CommonElasticRunner();
+            instance = new CommonElasticRunner();
         }
 
         return instance;
