@@ -221,32 +221,32 @@ public class StatsRestService {
 
         // Counts by fos
         dataAccessController.chartQuery(
-                new CountByStringArrayFieldAggregation(mongoQueryRunner, ResponseField.FOS, indexes),
+                new CountByStringArrayFieldAggregation(elasticQueryRunner, ResponseField.FOS, indexes),
                 ReportFilename.TOP_FOS.value, DataSourceType.PUBLICATION, overwrite);
 
         // prolific publishers
         dataAccessController.chartQuery(
-                new CountByFieldAggregation(mongoQueryRunner, ResponseField.PUBLISHER, indexes),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.PUBLISHER, indexes),
                 ReportFilename.COUNT_BY_PUBLISHER.value, DataSourceType.PUBLICATION, overwrite);
 
         // prolific venues
         dataAccessController.chartQuery(
-                new CountByFieldAggregation(mongoQueryRunner, ResponseField.VENUE, indexes),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.VENUE, indexes),
                 ReportFilename.COUNT_BY_VENUES.value, DataSourceType.PUBLICATION, overwrite);
 
         // Count by keyword
         dataAccessController.chartQuery(
-                new CountByStringArrayFieldAggregation(mongoQueryRunner, ResponseField.KEYWORDS, indexes),
+                new CountByStringArrayFieldAggregation(elasticQueryRunner, ResponseField.KEYWORDS, indexes),
                 ReportFilename.COUNT_BY_KEYWORD.value, DataSourceType.PUBLICATION, overwrite);
 
         // Count by year publication
         dataAccessController.chartQuery(
-                new CountByFieldAggregation(mongoQueryRunner, ResponseField.YEAR, indexes),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.YEAR, indexes),
                 ReportFilename.COUNT_BY_YEAR.value, DataSourceType.PUBLICATION, overwrite);
 
         // Count by lang
         dataAccessController.chartQuery(
-                new CountByFieldAggregation(mongoQueryRunner, ResponseField.LANG, indexes),
+                new CountByFieldAggregation(elasticQueryRunner, ResponseField.LANG, indexes),
                 ReportFilename.COUNT_BY_LANG.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().build();
