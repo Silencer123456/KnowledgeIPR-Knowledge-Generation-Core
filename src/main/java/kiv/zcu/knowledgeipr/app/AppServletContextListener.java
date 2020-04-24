@@ -1,5 +1,7 @@
 package kiv.zcu.knowledgeipr.app;
 
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.CommonElasticRunner;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.FileInputStream;
@@ -19,6 +21,8 @@ public class AppServletContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+        //Runtime.getRuntime().addShutdownHook(new Thread(() -> System.exit(1)));
+
         String cfgfile = servletContextEvent.getServletContext().getInitParameter("config_file");
         try {
             properties.load(new FileInputStream(cfgfile));
@@ -29,6 +33,10 @@ public class AppServletContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-
+        try {
+            CommonElasticRunner.getInstance().closeClient();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

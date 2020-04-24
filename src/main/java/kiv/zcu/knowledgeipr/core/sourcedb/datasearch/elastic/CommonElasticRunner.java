@@ -53,6 +53,10 @@ public class CommonElasticRunner {
         return instance;
     }
 
+    public void closeClient() throws IOException {
+        client.close();
+    }
+
     DbElasticReportWrapper runQuery(QueryBuilder queryBuilder, final Search search, String index) throws QueryExecutionException {
         return runQuery(queryBuilder, search, new ArrayList<String>() {{
             add(index);
