@@ -251,6 +251,12 @@ public class StatsRestService {
                 new CountByFieldAggregation(elasticQueryRunner, ResponseField.LANG, indexes),
                 ReportFilename.COUNT_BY_LANG.value, DataSourceType.PUBLICATION);
 
+        // Date Histogram
+        dataAccessController.chartQuery(
+                new DateHistogramAggregation(elasticQueryRunner, indexes),
+                ReportFilename.DATE_HISTOGRAM.value,
+                DataSourceType.PATENT);
+
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(new BaseResponse(ResponseStatus.SUCCESS, "OK"))).build();
     }
 }
