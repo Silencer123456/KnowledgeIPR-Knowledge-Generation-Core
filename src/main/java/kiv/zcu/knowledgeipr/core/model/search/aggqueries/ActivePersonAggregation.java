@@ -13,7 +13,7 @@ import java.util.List;
  * Manages the creation of a search returning evolution of patents ownership or authorship by a specified company (owner)
  * or author in a specified category
  */
-public class ActivePersonAggregation extends ChartQuery<String, Long> {
+public class ActivePersonAggregation extends ChartQuery<String, Integer> {
 
     private static final int LIMIT = 1000;
 
@@ -39,7 +39,7 @@ public class ActivePersonAggregation extends ChartQuery<String, Long> {
     }
 
     @Override
-    public List<Pair<String, Long>> get() throws QueryExecutionException {
+    public List<Pair<String, Integer>> get() throws QueryExecutionException {
         return queryCreator.activePeople(indexes.get(0), personType, LIMIT);
     }
 }

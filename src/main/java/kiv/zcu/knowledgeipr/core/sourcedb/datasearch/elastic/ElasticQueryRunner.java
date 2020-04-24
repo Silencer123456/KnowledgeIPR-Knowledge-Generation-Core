@@ -68,7 +68,8 @@ public class ElasticQueryRunner implements IQueryRunner {
     }
 
     @Override
-    public List<Pair<String, Long>> activePeople(DataSource collectionName, String type, int limit) {
+    // TODO: Implement
+    public List<Pair<String, Integer>> activePeople(DataSource collectionName, String type, int limit) {
         return null;
     }
 

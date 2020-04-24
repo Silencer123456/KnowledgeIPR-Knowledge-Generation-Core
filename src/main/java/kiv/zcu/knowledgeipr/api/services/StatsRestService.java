@@ -2,7 +2,9 @@ package kiv.zcu.knowledgeipr.api.services;
 
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationException;
 import kiv.zcu.knowledgeipr.api.filter.Logged;
+import kiv.zcu.knowledgeipr.api.response.BaseResponse;
 import kiv.zcu.knowledgeipr.api.response.IResponse;
+import kiv.zcu.knowledgeipr.api.response.ResponseStatus;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.report.ReportFilename;
 import kiv.zcu.knowledgeipr.core.model.search.SearchEngineName;
@@ -249,6 +251,6 @@ public class StatsRestService {
                 new CountByFieldAggregation(elasticQueryRunner, ResponseField.LANG, indexes),
                 ReportFilename.COUNT_BY_LANG.value, DataSourceType.PUBLICATION);
 
-        return javax.ws.rs.core.Response.ok().build();
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(new BaseResponse(ResponseStatus.SUCCESS, "OK"))).build();
     }
 }
