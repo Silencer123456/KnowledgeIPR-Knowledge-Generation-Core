@@ -103,6 +103,7 @@ public class DataSourceManager {
                 dataSources.add(DataSource.MAG);
                 dataSources.add(DataSource.SPRINGER);
                 dataSources.add(DataSource.USPTO);
+                dataSources.add(DataSource.PATSTAT);
                 break;
         }
 

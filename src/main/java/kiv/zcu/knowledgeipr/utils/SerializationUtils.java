@@ -62,7 +62,7 @@ public class SerializationUtils {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(content);
         } catch (IOException e) {
-            LOGGER.info("File " + filepath + "was not found.");
+            LOGGER.info("File " + filepath + " was not found.");
             //e.printStackTrace();
             return null;
         }
