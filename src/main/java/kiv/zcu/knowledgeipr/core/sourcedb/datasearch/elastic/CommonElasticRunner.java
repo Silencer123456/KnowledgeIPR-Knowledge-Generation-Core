@@ -5,6 +5,7 @@ import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.DataSourceManager;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import org.apache.http.HttpHost;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -106,7 +107,7 @@ public class CommonElasticRunner {
             report.setDocsCount(hits.getTotalHits().value);
             report.setSearchedIndexes(indexes);
 
-        } catch (IOException e) {
+        } catch (IOException | ElasticsearchException e) {
             e.printStackTrace();
 
             throw new QueryExecutionException(e.getCause().getMessage());
