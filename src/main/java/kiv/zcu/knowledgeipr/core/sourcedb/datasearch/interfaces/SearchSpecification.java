@@ -38,12 +38,20 @@ public abstract class SearchSpecification<T extends Search> {
         return search;
     }
 
+    /**
+     * Returns a set of fields which will be used as a default set
+     * on which to perform the search
+     *
+     * @return A map of default fields
+     */
     protected Map<String, Float> getDefaultFieldsMap() {
         Map<String, Float> fieldsMap = new HashMap<>();
         fieldsMap.put(ResponseField.TITLE.value, 1F);
         fieldsMap.put(ResponseField.ABSTRACT.value, 1F);
+        fieldsMap.put(ResponseField.AUTHORS_NAME.value, 1F);
         fieldsMap.put(PatstatMapper.getMapping(ResponseField.TITLE), 1F);
         fieldsMap.put(PatstatMapper.getMapping(ResponseField.ABSTRACT), 1F);
+        fieldsMap.put(PatstatMapper.getMapping(ResponseField.AUTHORS_NAME), 1F);
 
         return fieldsMap;
     }

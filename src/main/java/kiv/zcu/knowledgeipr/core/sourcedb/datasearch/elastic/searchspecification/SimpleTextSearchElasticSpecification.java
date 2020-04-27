@@ -32,7 +32,6 @@ public class SimpleTextSearchElasticSpecification<T extends Search> extends Sear
         Map<String, Float> fieldsMap = new HashMap<>();
         List<String> queryFields = search.getQuery().getFields();
 
-        // TODO: Instead of taking the names of fields directly from the query's filter, use mapping for other data sources like PATSTAT
         if (queryFields.isEmpty()) {
             fieldsMap = getDefaultFieldsMap();
 

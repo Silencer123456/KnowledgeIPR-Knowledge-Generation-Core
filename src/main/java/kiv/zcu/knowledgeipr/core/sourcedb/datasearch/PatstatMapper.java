@@ -21,6 +21,12 @@ public class PatstatMapper {
             case ABSTRACT:
                 result = "applnAbstr.abstract";
                 break;
+            case AUTHORS_NAME:
+                result = "authors.person_name";
+                break;
+            case DATE:
+                result = "earliest_publn_date";
+                break;
         }
         return result;
     }
