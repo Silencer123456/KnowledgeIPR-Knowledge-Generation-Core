@@ -49,9 +49,9 @@ public abstract class SearchSpecification<T extends Search> {
         fieldsMap.put(ResponseField.TITLE.value, 1F);
         fieldsMap.put(ResponseField.ABSTRACT.value, 1F);
         fieldsMap.put(ResponseField.AUTHORS_NAME.value, 1F);
-        fieldsMap.put(PatstatMapper.getMapping(ResponseField.TITLE), 1F);
-        fieldsMap.put(PatstatMapper.getMapping(ResponseField.ABSTRACT), 1F);
-        fieldsMap.put(PatstatMapper.getMapping(ResponseField.AUTHORS_NAME), 1F);
+        fieldsMap.put(PatstatMapper.getPatstatMapping(ResponseField.TITLE), 1F);
+        fieldsMap.put(PatstatMapper.getPatstatMapping(ResponseField.ABSTRACT), 1F);
+        fieldsMap.put(PatstatMapper.getPatstatMapping(ResponseField.AUTHORS_NAME), 1F);
 
         return fieldsMap;
     }

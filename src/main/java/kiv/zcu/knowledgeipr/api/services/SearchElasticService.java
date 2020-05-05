@@ -43,6 +43,11 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
 
     @Override
     public Response patentNumberSearch(String patentNumber) throws ApiException, ObjectSerializationException {
+        if (!patentNumber.matches("[a-zA-Z0-9 ]*")) {
+            throw new ApiException("Patent number must contain only letters and numbers");
+        }
+
+
         Query query = queryBuilder.buildPatentNumberSearchQuery(patentNumber);
 
         Search search = new Search(query, DataSourceType.PATENT, 1, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());

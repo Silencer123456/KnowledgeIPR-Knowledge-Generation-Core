@@ -190,10 +190,10 @@ public class DataAccessController {
 
         switch (source) {
             case PUBLICATION:
-                count = 166613546;
+                count = publicationCount;
                 break;
             case PATENT:
-                count = 3645421;
+                count = patentCount;
                 break;
             case ALL:
                 count = publicationCount + patentCount;

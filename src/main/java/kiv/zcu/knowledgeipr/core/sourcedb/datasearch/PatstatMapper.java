@@ -12,7 +12,7 @@ public class PatstatMapper {
      * @param field - The standardized field for which to find the concrete mapped field
      * @return mapped field
      */
-    public static String getMapping(ResponseField field) {
+    public static String getPatstatMapping(ResponseField field) {
         String result = "";
         switch (field) {
             case TITLE:
@@ -22,6 +22,7 @@ public class PatstatMapper {
                 result = "applnAbstr.abstract";
                 break;
             case AUTHORS_NAME:
+            case OWNERS_NAME:
                 result = "authors.person_name";
                 break;
             case DATE:

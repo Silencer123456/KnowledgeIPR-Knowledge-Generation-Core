@@ -37,11 +37,10 @@ public class SimpleTextSearchElasticSpecification<T extends Search> extends Sear
 
         } else {
             for (String field : queryFields) {
-                //TODO: Handle addition of mapped fields here as well
                 ResponseField foundField = ResponseField.getNameFromValue(field);
                 if (foundField != null) {
                     fieldsMap.put(field, 1F);
-                    fieldsMap.put(PatstatMapper.getMapping(foundField), 1F);
+                    fieldsMap.put(PatstatMapper.getPatstatMapping(foundField), 1F);
                 } else {
                     LOGGER.warning("The field " + field + " is not a valid search field and will be skipped.");
                 }
