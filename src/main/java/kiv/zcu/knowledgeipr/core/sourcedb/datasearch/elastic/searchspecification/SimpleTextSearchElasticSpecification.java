@@ -32,20 +32,22 @@ public class SimpleTextSearchElasticSpecification<T extends Search> extends Sear
         Map<String, Float> fieldsMap = new HashMap<>();
         List<String> queryFields = search.getQuery().getFields();
 
-        if (queryFields.isEmpty()) {
-            fieldsMap = getDefaultFieldsMap();
-
-        } else {
-            for (String field : queryFields) {
-                ResponseField foundField = ResponseField.getNameFromValue(field);
-                if (foundField != null) {
-                    fieldsMap.put(field, 1F);
-                    fieldsMap.put(PatstatMapper.getPatstatMapping(foundField), 1F);
-                } else {
-                    LOGGER.warning("The field " + field + " is not a valid search field and will be skipped.");
-                }
+        for (String field : queryFields) {
+            ResponseField foundField = ResponseField.getNameFromValue(field);
+            if (foundField != null) {
+                fieldsMap.put(field, 1F);
+                fieldsMap.put(PatstatMapper.getPatstatMapping(foundField), 1F);
+            } else {
+                LOGGER.warning("The field " + field + " is not a valid search field and will be skipped.");
             }
         }
+
+        if (fieldsMap.isEmpty()) {
+            fieldsMap = getDefaultFieldsMap();
+            LOGGER.info("No fields were accepted, using the default set.");
+
+        }
+
         return QueryBuilders.simpleQueryStringQuery(search.getQuery().getTextFilter()).fields(fieldsMap);
     }
 }
