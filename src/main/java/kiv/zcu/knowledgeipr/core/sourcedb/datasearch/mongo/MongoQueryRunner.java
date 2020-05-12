@@ -60,12 +60,12 @@ public class MongoQueryRunner implements IQueryRunner {
      */
     @Override
 
-    public List<Pair<Object, Long>> countByStringArrayField(List<DataSource> collections, ResponseField field) {
+    public List<Pair<Object, Long>> countByStringArrayField(List<DataSource> collections, ResponseField field, int limit) {
         LOGGER.info("Running search on field " + field.value + " on indexes: " + collections + ".");
 
         List<Pair<Object, Long>> fieldToCounts = new ArrayList<>();
 
-        AggregateIterable<Document> output = mongoRunner.runCountUnwindAggregation(collections.get(0), field.value, field.value, 30);
+        AggregateIterable<Document> output = mongoRunner.runCountUnwindAggregation(collections.get(0), field.value, field.value, limit);
 
         for (Document doc : output) {
             String author = String.valueOf(doc.get(field.value));
@@ -78,12 +78,12 @@ public class MongoQueryRunner implements IQueryRunner {
     /**
      * {@inheritDoc}
      */
-    public List<Pair<Object, Long>> countByField(List<DataSource> collections, ResponseField field) {
+    public List<Pair<Object, Long>> countByField(List<DataSource> collections, ResponseField field, int limit) {
         LOGGER.info("Running search on field " + field.value + " on " + collections + " collections.");
 
         List<Pair<Object, Long>> fieldToCounts = new ArrayList<>();
 
-        AggregateIterable<Document> output = mongoRunner.runCountAggregation(collections.get(0), field.value, 30);
+        AggregateIterable<Document> output = mongoRunner.runCountAggregation(collections.get(0), field.value, limit);
 
         for (Document doc : output) {
             String author = String.valueOf(doc.get(field.value));

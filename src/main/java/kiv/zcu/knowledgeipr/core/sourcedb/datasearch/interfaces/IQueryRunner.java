@@ -18,9 +18,10 @@ public interface IQueryRunner {
      *
      * @param indexes - Name of the indexes on which to run the search
      * @param field          - Field on which to perform the count aggregation
+     * @param limit          - Number of results
      * @return - Graph data as a list of 'String, Integer' pairs
      */
-    List<Pair<Object, Long>> countByField(List<DataSource> indexes, ResponseField field)
+    List<Pair<Object, Long>> countByField(List<DataSource> indexes, ResponseField field, int limit)
             throws QueryExecutionException;
 
     /**
@@ -29,9 +30,10 @@ public interface IQueryRunner {
      *
      * @param indexes - Name of the indexes on which to run the search
      * @param field - Field on which to perform the count aggregation
+     * @param limit - Number of results
      * @return - Graph data as a list of 'String, Integer' pairs
      */
-    List<Pair<Object, Long>> countByStringArrayField(List<DataSource> indexes, ResponseField field)
+    List<Pair<Object, Long>> countByStringArrayField(List<DataSource> indexes, ResponseField field, int limit)
             throws QueryExecutionException;
 
     /**

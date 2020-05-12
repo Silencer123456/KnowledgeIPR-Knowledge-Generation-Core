@@ -110,6 +110,14 @@ public abstract class SearchService<T extends IDataSearcher> {
                                                            @QueryParam("year") int year)
             throws ApiException, ObjectSerializationException;
 
+    /*@GET
+    @Logged
+    @Path("/listAllAuthors")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public abstract javax.ws.rs.core.Response listAllAuthors(@QueryParam("limit") int limit)
+            throws ApiException, ObjectSerializationException;*/
+
     /**
      * Fetches patent data about a specified patent number.
      *

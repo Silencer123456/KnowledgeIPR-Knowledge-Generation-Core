@@ -34,6 +34,6 @@ public class CountByFieldAggregation extends ChartQuery<Object, Long> {
 
     @Override
     public List<Pair<Object, Long>> get() throws QueryExecutionException {
-        return queryCreator.countByField(indexes, field);
+        return queryCreator.countByField(indexes, field, 25);
     }
 }

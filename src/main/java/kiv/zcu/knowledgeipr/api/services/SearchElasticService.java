@@ -41,6 +41,15 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
         return initSearch(searchSpecification);
     }
 
+    /*@Override
+    public Response listAllAuthors(@QueryParam("limit") int limit) throws ObjectSerializationException, ApiException {
+        Query query = queryBuilder.buildEmptyQuery(limit+"");
+        Search search = new Search(query, DataSourceType.ALL, 1, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
+        SearchSpecification<Search> searchSpecification = new ListAllAuthorsSpecification(search);
+
+        return initSearch(searchSpecification);
+    }*/
+
     @Override
     public Response patentNumberSearch(String patentNumber) throws ApiException, ObjectSerializationException {
         if (!patentNumber.matches("[a-zA-Z0-9 ]*")) {
@@ -65,7 +74,7 @@ public class SearchElasticService extends SearchService<IElasticDataSearcher> {
             throws ApiException, ObjectSerializationException {
 
         isPageValid(page);
-        Search search = new Search(queryBuilder.buildSimilarDocumentsQuery(id), DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
+        Search search = new Search(queryBuilder.buildEmptyQuery(id), DataSourceType.PATENT, page, AppConstants.RESULTS_LIMIT, false, searchStrategy.getSearchEngineName());
 
         SearchSpecification<Search> searchSpecification = new SimilarSearchSpecification(search, id);// TODO: Mongo does not make use of the search specifications
 

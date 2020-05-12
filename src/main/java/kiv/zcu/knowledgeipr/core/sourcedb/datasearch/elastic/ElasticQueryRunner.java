@@ -39,20 +39,19 @@ public class ElasticQueryRunner implements IQueryRunner {
     }
 
     @Override
-    public List<Pair<Object, Long>> countByField(List<DataSource> indexes, ResponseField field) throws QueryExecutionException {
-        return countByStringArrayField(indexes, field);
+    public List<Pair<Object, Long>> countByField(List<DataSource> indexes, ResponseField field, int limit) throws QueryExecutionException {
+        return countByStringArrayField(indexes, field, limit);
     }
 
     @Override
-    public List<Pair<Object, Long>> countByStringArrayField(List<DataSource> indexes, ResponseField field) throws QueryExecutionException {
-        int limit = 25;
+    public List<Pair<Object, Long>> countByStringArrayField(List<DataSource> indexes, ResponseField field, int limit) throws QueryExecutionException {
         String fieldAggName = "countByField";
 
-        String val = field == ResponseField.YEAR ? field.value : field.value + ".keyword"; // TODO:!!! Temp solution
+        String val = field == ResponseField.YEAR ? field.value : field.value + ".keyword"; // TODO:!!! Temp solution, text fields need to have keyword at the end
 
         TermsAggregationBuilder termsAgg = AggregationBuilders.terms(fieldAggName).field(val).size(limit);
 
-        List<String> indexesString = new ArrayList<>(); // TODO: !!! change
+        List<String> indexesString = new ArrayList<>(); // TODO: change
         indexes.forEach(item -> indexesString.add(AppConstants.ELASTIC_INDEX_PREFIX + item.value));
 
         Aggregations agg = elasticRunner.runAggregation(indexesString, termsAgg);

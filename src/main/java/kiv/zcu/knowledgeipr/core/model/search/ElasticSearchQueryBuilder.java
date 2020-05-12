@@ -49,7 +49,7 @@ public class ElasticSearchQueryBuilder {
         return new Query(filters, new HashMap<>(), options);
     }
 
-    public Query buildSimilarDocumentsQuery(String id) {
+    public Query buildEmptyQuery(String id) {
         HashMap<String, String> filter = new HashMap<>();
         filter.put("null", id);
 

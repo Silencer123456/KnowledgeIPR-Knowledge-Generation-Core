@@ -15,6 +15,7 @@ public class SimilarSearchSpecification extends SearchSpecification<Search> {
         this.id = id;
     }
 
+    // TODO: Create the elastic index name from some unified global method
     @Override
     public QueryBuilder get() {
         return QueryBuilders.moreLikeThisQuery(new String[]{"title"}, null,

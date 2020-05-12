@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Abstract class representing a specific search, which returns chart data
+ * Abstract class representing a specific search which returns chart data
  *
  * @param <T> - The x axis data type
  * @param <V> - The y axis data type
