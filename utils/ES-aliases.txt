@@ -23,3 +23,16 @@ PUT /knowingipr.patstat/_mapping
     }
   }
 }
+
+PUT /knowingipr.patstat/_mapping
+{
+  "properties": {
+    "authors.person_name": {
+      "type": "text"
+    },
+    "authors.name": {
+      "type": "alias",
+      "path": "authors.person_name" 
+    }
+  }
+}
