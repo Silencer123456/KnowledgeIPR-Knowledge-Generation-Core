@@ -5,12 +5,16 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecificat
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
+import java.util.logging.Logger;
+
 /**
  * Specifies an ElasticSearch query which runs an advanced text search (uses Lucene's advanced query string).
  *
  * @param <T> The search type relevant to the specification
  */
 public class AdvancedTextSearchElasticSpecification<T extends Search> extends SearchSpecification<T> {
+
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     public AdvancedTextSearchElasticSpecification(T search) {
         super(search);
@@ -19,6 +23,8 @@ public class AdvancedTextSearchElasticSpecification<T extends Search> extends Se
     // TODO: change return value to generic type
     @Override
     public QueryBuilder get() {
+        LOGGER.info("Running advanced ElasticSearch query string");
+
         return QueryBuilders.queryStringQuery(search.getQuery().getTextFilter());
     }
 }

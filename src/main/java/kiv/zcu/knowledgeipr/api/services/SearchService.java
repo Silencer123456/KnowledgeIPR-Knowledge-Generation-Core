@@ -14,6 +14,7 @@ import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification.AdvancedTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification.SimpleTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
@@ -52,7 +53,11 @@ public abstract class SearchService<T extends IDataSearcher> {
     @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
-    public javax.ws.rs.core.Response search(@QueryParam("sourceType") String sourceType, @QueryParam("page") int page, String queryJson) throws ApiException, ObjectSerializationException {
+    public javax.ws.rs.core.Response search(@QueryParam("sourceType") String sourceType,
+                                            @QueryParam("page") int page,
+                                            String queryJson,
+                                            @DefaultValue("true") @QueryParam("advanced") boolean advanced)
+            throws ApiException, ObjectSerializationException {
         DataSourceType dataSourceType = DataSourceType.getByValue(sourceType);
         if (dataSourceType == null) {
             dataSourceType = DataSourceType.ALL; // Wont work with MongoDB
@@ -70,7 +75,13 @@ public abstract class SearchService<T extends IDataSearcher> {
         }
 
         Search search = new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName());
-        SearchSpecification<Search> searchSpecification = new SimpleTextSearchElasticSpecification<>(search);
+        SearchSpecification<Search> searchSpecification;
+
+        if (advanced) {
+            searchSpecification = new AdvancedTextSearchElasticSpecification<>(search);
+        } else {
+            searchSpecification = new SimpleTextSearchElasticSpecification<>(search);
+        }
 
         return initSearch(searchSpecification);
     }
@@ -133,6 +144,16 @@ public abstract class SearchService<T extends IDataSearcher> {
     @Produces("application/json")
     public abstract javax.ws.rs.core.Response patentNumberSearch(@QueryParam("number") String patentNumber)
             throws ApiException, ObjectSerializationException;
+
+    /*@GET
+    @Logged
+    @Path("/synonyms/{word}")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getWordAnalysis(@PathParam("word") String word) throws ObjectSerializationException {
+        //WordNetResponse response = dataAccessController.wordAnalysis(word);
+
+        return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
+    }*/
 
     @GET
     @Logged
