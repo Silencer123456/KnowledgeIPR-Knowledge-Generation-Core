@@ -1,0 +1,25 @@
+PUT /knowingipr.patstat/_mapping
+{
+  "properties": {
+    "applnTitle.title": {
+      "type": "text"
+    },
+    "title": {
+      "type": "alias",
+      "path": "applnTitle.title" 
+    }
+  }
+}
+
+PUT /knowingipr.patstat/_mapping
+{
+  "properties": {
+    "applnAbstr.abstract": {
+      "type": "text"
+    },
+    "abstract": {
+      "type": "alias",
+      "path": "applnAbstr.abstract" 
+    }
+  }
+}
