@@ -44,6 +44,10 @@ public class Query {
         return filters.get("$text");
     }
 
+    public void setTextFilter(String value) {
+        filters.put("$text", value);
+    }
+
     public Map<String, Map<String, Integer>> getConditions() {
         return conditions;
     }

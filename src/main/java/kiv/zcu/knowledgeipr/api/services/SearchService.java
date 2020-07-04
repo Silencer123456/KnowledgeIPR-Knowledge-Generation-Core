@@ -14,6 +14,7 @@ import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
 import kiv.zcu.knowledgeipr.core.model.search.Query;
 import kiv.zcu.knowledgeipr.core.model.search.Search;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification.AdvancedTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification.SimpleTextSearchElasticSpecification;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IDataSearcher;
@@ -56,7 +57,8 @@ public abstract class SearchService<T extends IDataSearcher> {
     public javax.ws.rs.core.Response search(@QueryParam("sourceType") String sourceType,
                                             @QueryParam("page") int page,
                                             String queryJson,
-                                            @DefaultValue("true") @QueryParam("advanced") boolean advanced)
+                                            @DefaultValue("true") @QueryParam("advanced") boolean advanced,
+                                            @DefaultValue("*") @QueryParam("country") String country)
             throws ApiException, ObjectSerializationException {
         DataSourceType dataSourceType = DataSourceType.getByValue(sourceType);
         if (dataSourceType == null) {
@@ -68,7 +70,9 @@ public abstract class SearchService<T extends IDataSearcher> {
         Query query;
         try {
             query = deserializeQuery(queryJson);
-
+            if (!country.equals("*")) {
+                query.getFilters().put(ResponseField.COUNTRY.name(), country);
+            }
         } catch (IOException | QueryOptionsValidationException e) {
             e.printStackTrace();
             throw new ApiException(e.getMessage());

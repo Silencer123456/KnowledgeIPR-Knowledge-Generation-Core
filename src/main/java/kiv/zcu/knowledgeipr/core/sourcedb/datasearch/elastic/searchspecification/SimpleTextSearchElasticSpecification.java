@@ -15,9 +15,6 @@ import java.util.Map;
  */
 public class SimpleTextSearchElasticSpecification<T extends Search> extends SearchSpecification<T> {
 
-
-
-
     public SimpleTextSearchElasticSpecification(T search) {
         super(search);
     }
@@ -25,6 +22,7 @@ public class SimpleTextSearchElasticSpecification<T extends Search> extends Sear
     // TODO: change return value to generic type
     @Override
     public QueryBuilder get() {
+        super.addSourceSpecificValues();
         LOGGER.info("Running simple ElasticSearch query string");
 
         List<String> queryFields = search.getQuery().getFields();

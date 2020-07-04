@@ -2,6 +2,7 @@ package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces;
 
 
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSourceType;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.PatstatMapper;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -58,6 +59,21 @@ public abstract class SearchSpecification<T extends Search> {
         fieldsMap.put(PatstatMapper.getPatstatMapping(ResponseField.AUTHORS_NAME), 1F);
 
         return fieldsMap;
+    }
+
+    protected void addSourceSpecificValues() {
+        String query = search.getQuery().getTextFilter();
+        if (search.getQuery().getFilters().containsKey(ResponseField.COUNTRY.name()) &&
+                (search.getDataSourceType() == DataSourceType.PATENT || search.getDataSourceType() == DataSourceType.ALL)) {
+            String country = search.getQuery().getFilters().get(ResponseField.COUNTRY.name());
+            if (country.equalsIgnoreCase("us")) {
+                query += " AND (" + ResponseField.DATA_SOURCE + ":uspto OR number:/" + country + ".*/)";
+            } else {
+                query += " AND number:/" + country + ".*/";
+            }
+        }
+
+        search.getQuery().setTextFilter(query);
     }
 
     /**
