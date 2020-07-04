@@ -5,9 +5,6 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecificat
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Specifies an ElasticSearch query which runs a text search (now uses Lucene syntax's query string).
  *
@@ -25,9 +22,9 @@ public class SimpleTextSearchElasticSpecification<T extends Search> extends Sear
         super.addSourceSpecificValues();
         LOGGER.info("Running simple ElasticSearch query string");
 
-        List<String> queryFields = search.getQuery().getFields();
-        Map<String, Float> fieldsMap = getAllMappedFields(queryFields);
+        //List<String> queryFields = search.getQuery().getFields();
+        // Map<String, Float> fieldsMap = getAllMappedFields(queryFields);
 
-        return QueryBuilders.simpleQueryStringQuery(search.getQuery().getTextFilter()).fields(fieldsMap);
+        return QueryBuilders.simpleQueryStringQuery(search.getQuery().getTextFilter());
     }
 }

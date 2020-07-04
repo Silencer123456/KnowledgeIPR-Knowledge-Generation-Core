@@ -5,8 +5,6 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecificat
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -29,9 +27,9 @@ public class AdvancedTextSearchElasticSpecification<T extends Search> extends Se
 
         LOGGER.info("Running advanced ElasticSearch query string");
 
-        List<String> queryFields = search.getQuery().getFields();
-        Map<String, Float> fieldsMap = getAllMappedFields(queryFields);
+        //List<String> queryFields = search.getQuery().getFields();
+        //Map<String, Float> fieldsMap = getAllMappedFields(queryFields);
 
-        return QueryBuilders.queryStringQuery(search.getQuery().getTextFilter()).fields(fieldsMap);
+        return QueryBuilders.queryStringQuery(search.getQuery().getTextFilter());
     }
 }

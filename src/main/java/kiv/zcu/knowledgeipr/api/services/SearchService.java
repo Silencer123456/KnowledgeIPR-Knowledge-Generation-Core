@@ -58,7 +58,8 @@ public abstract class SearchService<T extends IDataSearcher> {
                                             @QueryParam("page") int page,
                                             String queryJson,
                                             @DefaultValue("true") @QueryParam("advanced") boolean advanced,
-                                            @DefaultValue("*") @QueryParam("country") String country)
+                                            @DefaultValue("*") @QueryParam("country") String country,
+                                            @QueryParam("sort") String sort)
             throws ApiException, ObjectSerializationException {
         DataSourceType dataSourceType = DataSourceType.getByValue(sourceType);
         if (dataSourceType == null) {
@@ -70,12 +71,17 @@ public abstract class SearchService<T extends IDataSearcher> {
         Query query;
         try {
             query = deserializeQuery(queryJson);
-            if (!country.equals("*")) {
-                query.getFilters().put(ResponseField.COUNTRY.name(), country);
-            }
         } catch (IOException | QueryOptionsValidationException e) {
             e.printStackTrace();
             throw new ApiException(e.getMessage());
+        }
+
+        if (!country.equals("*")) {
+            query.getFilters().put(ResponseField.COUNTRY.name(), country);
+        }
+
+        if (sort != null) {
+            query.getFilters().put("sort", sort);
         }
 
         Search search = new Search(query, dataSourceType, page, AppConstants.RESULTS_LIMIT, true, searchStrategy.getSearchEngineName());

@@ -18,6 +18,8 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,6 +84,20 @@ public class CommonElasticRunner {
         searchSourceBuilder.from((search.getPage() - 1) * search.getLimit());
         searchSourceBuilder.size(search.getLimit());
         searchSourceBuilder.query(queryBuilder);
+
+        //TODO: Extract method
+        String sort = search.getQuery().getFilters().get("sort");
+        if (sort != null) {
+            String[] arr = sort.split(":");
+            if (!ResponseField.isValid(arr[0])) {
+                throw new QueryExecutionException("The sorting field: " + arr[0] + " is not valid.");
+            }
+            if (arr.length == 2) {
+                SortOrder order = arr[1].equalsIgnoreCase("asc") ? SortOrder.ASC : SortOrder.DESC;
+                searchSourceBuilder.sort(new FieldSortBuilder(arr[0]).order(order));
+            }
+        }
+
         searchRequest.source(searchSourceBuilder);
 
         try {
@@ -109,8 +125,7 @@ public class CommonElasticRunner {
 
         } catch (IOException | ElasticsearchException e) {
             e.printStackTrace();
-
-            throw new QueryExecutionException(e.getCause().getMessage());
+            throw new QueryExecutionException(e.getMessage());
         }
 
         report.setRecords(records);
