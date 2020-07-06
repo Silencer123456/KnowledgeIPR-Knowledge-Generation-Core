@@ -120,7 +120,8 @@ public class CommonElasticRunner {
                 records.add(new ElasticRecord(sourceAsMap));
             }
 
-            report.setDocsCount(hits.getTotalHits().value);
+            long value = hits.getTotalHits().value;
+            report.setDocsCount(value > 2000 ? 2001 : value);
             report.setSearchedIndexes(indexes);
 
         } catch (IOException | ElasticsearchException e) {

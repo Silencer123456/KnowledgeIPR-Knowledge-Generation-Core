@@ -24,6 +24,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.websearch.WebSearcher;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
 import kiv.zcu.knowledgeipr.utils.SerializationUtils;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import java.io.IOException;
 
@@ -54,6 +55,7 @@ public abstract class SearchService<T extends IDataSearcher> {
     @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
+    @RolesAllowed("ADMIN")
     public javax.ws.rs.core.Response search(@QueryParam("sourceType") String sourceType,
                                             @QueryParam("page") int page,
                                             String queryJson,

@@ -3,6 +3,7 @@ package kiv.zcu.knowledgeipr.app;
 import kiv.zcu.knowledgeipr.api.errorhandling.ApiExceptionHandler;
 import kiv.zcu.knowledgeipr.api.errorhandling.GenericExceptionHandler;
 import kiv.zcu.knowledgeipr.api.errorhandling.ObjectSerializationExceptionHandler;
+import kiv.zcu.knowledgeipr.api.filter.AuthenticationFilter;
 import kiv.zcu.knowledgeipr.api.filter.RequestLoggingFilter;
 import kiv.zcu.knowledgeipr.api.services.*;
 import kiv.zcu.knowledgeipr.core.controller.DataAccessController;
@@ -64,6 +65,7 @@ public class AppRunner extends Application {
         singletons.add(new ObjectSerializationExceptionHandler());
         singletons.add(new GenericExceptionHandler());
         singletons.add(new RequestLoggingFilter());
+        singletons.add(new AuthenticationFilter());
 
         MyLogger.setup("restServer");
     }
