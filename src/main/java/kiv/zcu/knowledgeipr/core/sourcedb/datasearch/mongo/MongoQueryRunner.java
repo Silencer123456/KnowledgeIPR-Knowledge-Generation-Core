@@ -40,7 +40,8 @@ public class MongoQueryRunner implements IQueryRunner {
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<String, Integer>> activePeople(DataSource collectionName, String type, int limit) {
+    public List<Pair<String, Integer>> activePeople(List<DataSource> collectionNames, String type, int limit) {
+        DataSource collectionName = collectionNames.get(0);
         LOGGER.info("Running 'active " + type + "' method on " + collectionName + " collection.");
 
         List<Pair<String, Integer>> activeAuthors = new ArrayList<>();

@@ -45,7 +45,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPatents() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new ActivePersonAggregation(mongoQueryRunner, ResponseField.AUTHORS.value),
+                new ActivePersonAggregation(elasticQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -57,7 +57,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveOwnersPatents() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new ActivePersonAggregation(mongoQueryRunner, ResponseField.OWNERS.value),
+                new ActivePersonAggregation(elasticQueryRunner, ResponseField.OWNERS.value),
                 ReportFilename.ACTIVE_OWNERS.value, DataSourceType.PATENT);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
@@ -68,7 +68,7 @@ public class StatsRestService {
     @Produces("application/json")
     public javax.ws.rs.core.Response getActiveAuthorsPublications() throws ObjectSerializationException {
         IResponse response = dataAccessController.chartQuery(
-                new ActivePersonAggregation(mongoQueryRunner, ResponseField.AUTHORS.value),
+                new ActivePersonAggregation(elasticQueryRunner, ResponseField.AUTHORS.value),
                 ReportFilename.ACTIVE_AUTHORS.value, DataSourceType.PUBLICATION);
 
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();

@@ -14,7 +14,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Provider
@@ -85,15 +91,23 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
     }
 
-    private boolean isUserAllowed(final String username, final String password, final Set<String> rolesSet) {
+    private boolean isUserAllowed(final String username, final String password, final Set<String> rolesSet)
+            throws IOException {
         boolean isAllowed = false;
 
-        //Step 1. Fetch password from database and match with password in argument
-        //If both match then get the defined role for user from database and continue; else return isAllowed [false]
-        //Access the database and do this part yourself
-        //String userRole = userMgr.getUserRole(username);
+        Properties props = new Properties();
+        URL resourceUrl = getClass().getClassLoader().getResource("general.properties");
+        if (resourceUrl == null) {
+            throw new IOException("The file 'general.properties' does not exist");
+        }
 
-        if (username.equals("knwserver") && password.equals("knwserver")) {
+        Path path = Paths.get(URI.create(resourceUrl.toString()));
+        try (InputStream stream = Files.newInputStream(path)) {
+            props.load(stream);
+        }
+
+        // TODO: get credentials from external source
+        if (username.equals(props.get("user")) && password.equals(props.get("pass"))) {
             String userRole = "ADMIN";
 
             //Step 2. Verify user role

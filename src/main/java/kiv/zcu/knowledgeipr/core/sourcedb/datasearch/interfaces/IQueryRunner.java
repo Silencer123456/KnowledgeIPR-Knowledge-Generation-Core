@@ -52,7 +52,8 @@ public interface IQueryRunner {
      * @param type           - 'authors' or 'owners'
      * @return - List of 'author name, count' pairs
      */
-    List<Pair<String, Integer>> activePeople(DataSource index, String type, int limit);
+    List<Pair<String, Integer>> activePeople(List<DataSource> indexes, String type, int limit)
+            throws QueryExecutionException;
 
     /**
      * Creates a search returning evolution of patents ownership by a specified company (owner)

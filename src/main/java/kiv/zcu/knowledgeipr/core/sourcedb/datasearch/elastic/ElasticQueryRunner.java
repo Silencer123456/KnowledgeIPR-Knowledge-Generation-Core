@@ -66,9 +66,30 @@ public class ElasticQueryRunner implements IQueryRunner {
         return data;
     }
 
-    @Override
     // TODO: Implement
-    public List<Pair<String, Integer>> activePeople(DataSource collectionName, String type, int limit) {
+    public List<Pair<String, Integer>> activePeople(List<DataSource> indexes, String type, int limit) throws QueryExecutionException {
+        String globalAggName = "Active authors";
+        String activeAuthorsAggName = "activeAuthorsAgg";
+        AggregationBuilder aggregation = AggregationBuilders.global(globalAggName);
+
+
+        TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(activeAuthorsAggName).field("authors.name");
+        aggregation.subAggregation(termsAggregation);
+
+        List<String> indexesString = new ArrayList<>();
+        indexes.forEach(item -> indexesString.add(AppConstants.ELASTIC_INDEX_PREFIX + item.value));
+
+        Aggregations agg = elasticRunner.runAggregation(indexesString, aggregation);
+
+        Global g = agg.get(globalAggName);
+        //Terms t = g.getBuckets().get(0).getAggregations().get(activeAuthorsAggName);
+
+        List<Pair<Long, Long>> years = new ArrayList<>();
+        //for (Terms.Bucket bucket : t.getBuckets()) {
+        //    years.add(new Pair<>((Long) bucket.getKey(), bucket.getDocCount()));
+        // }
+
+
         return null;
     }
 

@@ -40,6 +40,6 @@ public class ActivePersonAggregation extends ChartQuery<String, Integer> {
 
     @Override
     public List<Pair<String, Integer>> get() throws QueryExecutionException {
-        return queryCreator.activePeople(indexes.get(0), personType, LIMIT);
+        return queryCreator.activePeople(indexes, personType, LIMIT);
     }
 }
