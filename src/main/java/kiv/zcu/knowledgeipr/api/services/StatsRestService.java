@@ -199,6 +199,40 @@ public class StatsRestService {
         return javax.ws.rs.core.Response.ok().entity(SerializationUtils.serializeObject(response)).build();
     }
 
+    @GET
+    @Logged
+    @Path("/getDataSourcesInfo")
+    @Produces("application/json")
+    public javax.ws.rs.core.Response getDataSourcesInfo() {
+        String s = "{\n" +
+                "    \"patent\": {\n" +
+                "        \"uspto\": {\n" +
+                "            \"last_updated\": \"05-02-2019\",\n" +
+                "            \"docs_s\": 3944024,\n" +
+                "            \"mem_size_mb\": 4100000\n" +
+                "        },\n" +
+                "        \"patstat\": {\n" +
+                "            \"last_updated\": \"07-02-2020\",\n" +
+                "            \"docs_size\": 99298590,\n" +
+                "            \"mem_size_mb\": 173900000\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"publication\": {\n" +
+                "        \"mag\": {\n" +
+                "            \"last_updated\": \"15-12-2019\",\n" +
+                "            \"docs_size\": 144910000,\n" +
+                "            \"mem_size_mb\": 265200000\n" +
+                "        }, \n" +
+                "        \"springer\": {\n" +
+                "            \"last_updated\": \"11-11-2019\",\n" +
+                "            \"docs_size\": 2249462,\n" +
+                "            \"mem_size_mb\": 4300000\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        return javax.ws.rs.core.Response.ok().entity(s).build();
+    }
+
     @POST
     @Logged
     @Path("/generateStats/{overwrite}")
