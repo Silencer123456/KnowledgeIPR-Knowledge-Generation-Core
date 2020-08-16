@@ -1,6 +1,7 @@
 package kiv.zcu.knowledgeipr.core.sourcedb.datasearch.elastic.searchspecification;
 
 import kiv.zcu.knowledgeipr.core.model.search.Search;
+import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSource;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.PatstatMapper;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.SearchSpecification;
@@ -28,7 +29,8 @@ public class SimilarSearchSpecification extends SearchSpecification<Search> {
         fields.add(PatstatMapper.getPatstatMapping(ResponseField.TITLE));
 
         return QueryBuilders.moreLikeThisQuery(fields.toArray(new String[0]), null,
-                new MoreLikeThisQueryBuilder.Item[]{new MoreLikeThisQueryBuilder.Item(AppConstants.ELASTIC_INDEX_PREFIX + search.getDataSourceType().value, id)})
+                new MoreLikeThisQueryBuilder.Item[]{new MoreLikeThisQueryBuilder.Item(AppConstants.ELASTIC_INDEX_PREFIX + search.getDataSourceType().value, id),
+                        new MoreLikeThisQueryBuilder.Item(AppConstants.ELASTIC_INDEX_PREFIX + DataSource.PATSTAT.value, id)})
                 .minTermFreq(1)
                 .minDocFreq(1);
     }
