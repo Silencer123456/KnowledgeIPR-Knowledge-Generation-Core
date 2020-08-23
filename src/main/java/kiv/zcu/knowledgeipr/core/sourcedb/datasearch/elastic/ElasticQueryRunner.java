@@ -6,6 +6,7 @@ import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.DataSource;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.ResponseField;
 import kiv.zcu.knowledgeipr.core.sourcedb.datasearch.interfaces.IQueryRunner;
 import kiv.zcu.knowledgeipr.utils.AppConstants;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -108,13 +109,19 @@ public class ElasticQueryRunner implements IQueryRunner {
 
         AggregationBuilder aggregation = AggregationBuilders.global(globalAggName);
 
+        BoolQueryBuilder query = QueryBuilders.boolQuery().must(QueryBuilders.boolQuery()
+                .should(QueryBuilders.matchQuery(ResponseField.AUTHORS_NAME.value, owner))
+                .should(QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, owner)))
+                .must(QueryBuilders.matchQuery(ResponseField.ABSTRACT.value, category));
+
         FiltersAggregationBuilder filterAggregationBuilder = AggregationBuilders.filters(ownersAggName,
-                new FiltersAggregator.KeyedFilter("owners", QueryBuilders.matchQuery(ResponseField.OWNERS_NAME.value, owner)),
-                new FiltersAggregator.KeyedFilter("categories", QueryBuilders.simpleQueryStringQuery(category)));
+                new FiltersAggregator.KeyedFilter("owners", query));
         aggregation.subAggregation(filterAggregationBuilder);
 
         TermsAggregationBuilder termsAggregation = AggregationBuilders.terms(yearsAggName).field("year");
         filterAggregationBuilder.subAggregation(termsAggregation);
+
+        //aggregation.subAggregation(termsAggregation);
 
         List<String> indexesString = new ArrayList<>(); // TODO: !!! change
         indexes.forEach(item -> indexesString.add(AppConstants.ELASTIC_INDEX_PREFIX + item.value));

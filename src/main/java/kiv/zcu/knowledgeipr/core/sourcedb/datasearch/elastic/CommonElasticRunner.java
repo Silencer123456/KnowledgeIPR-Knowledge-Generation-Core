@@ -142,11 +142,24 @@ public class CommonElasticRunner {
      * @return aggregation results. If the aggregation fails, null is returned
      */
     Aggregations runAggregation(List<String> indexes, AggregationBuilder aggregationBuilders) throws QueryExecutionException {
-        Aggregations agg = null;
-
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         searchSourceBuilder.aggregation(aggregationBuilders);
+
+        return getSearchResponse(indexes, searchSourceBuilder, aggregationBuilders);
+    }
+
+    Aggregations runAggregation(List<String> indexes, AggregationBuilder aggregationBuilders, QueryBuilder query) throws QueryExecutionException {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        searchSourceBuilder.query(query);
+        searchSourceBuilder.aggregation(aggregationBuilders);
+
+        return getSearchResponse(indexes, searchSourceBuilder, aggregationBuilders);
+    }
+
+    Aggregations getSearchResponse(List<String> indexes, SearchSourceBuilder searchSourceBuilder, AggregationBuilder aggregationBuilders) throws QueryExecutionException {
+        Aggregations agg = null;
 
         SearchRequest searchRequest = new SearchRequest(indexes.toArray(new String[0]));
         searchRequest.source(searchSourceBuilder);

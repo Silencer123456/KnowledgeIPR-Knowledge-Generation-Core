@@ -30,6 +30,7 @@ public class PatentOwnershipEvolutionAggregation extends ChartQuery<Long, Long> 
     public PatentOwnershipEvolutionAggregation(IQueryRunner queryCreator, String ownersName, String category) {
         super(queryCreator, "Patent ownership for owner `" + ownersName + "` in `" + category + "` category.", X_AXIS, Y_AXIS, new ArrayList<DataSource>() {{
             add(DataSource.USPTO);
+            add(DataSource.PATSTAT);
         }});
 
         this.queryCreator = queryCreator;
